@@ -116,9 +116,12 @@ class _hometab extends State<hometab> {
                 onTap: () => _selectDate(context),
                 child: const Icon(Icons.arrow_back_ios, color: Colors.white),
               ),
-              Text(
-                "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+              GestureDetector(
+                onTap: () => _selectDate(context),
+                child: Text(
+                  "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                  style: const TextStyle(color: Colors.white, fontSize: 18, decoration: TextDecoration.none,),
+                ),
               ),
               GestureDetector(
                 onTap: () => _selectDate(context),
