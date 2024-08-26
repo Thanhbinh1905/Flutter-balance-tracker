@@ -1,22 +1,21 @@
-import 'UI/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của bạn
 
 void main() {
   runApp(MyApp());
 }
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login Demo',
+      debugShowCheckedModeBanner: false,
       home: LoginForm(),
     );
   }
 }
-
 class LoginForm extends StatefulWidget {
   @override
   _LoginFormState createState() => _LoginFormState();
@@ -41,26 +40,55 @@ class _LoginFormState extends State<LoginForm> {
       try {
         // Gửi yêu cầu POST đến API
         final response = await http.post(
-          Uri.parse('http://localhost:9001/login'),
-          headers: {'Content-Type': 'application/json'},
+          Uri.parse('http://192.168.1.9:9001/login'),
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: jsonEncode(data),
         );
 
         // Kiểm tra phản hồi từ server
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
-          // Xử lý khi đăng nhập thành công
-          print('Login successful: $responseData');
-          // Điều hướng đến trang chính nếu cần
+          // print('Login successful: $responseData');
+
+          // Điều hướng đến HomeScreen và truyền dữ liệu
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => moneynoteHome(metadata: responseData),
+            ),
+          );
         } else {
-          // Xử lý khi đăng nhập thất bại
-          print('Login failed: ${response.statusCode}');
+          // Hiển thị thông báo lỗi nếu đăng nhập thất bại
+          _showErrorDialog('Login failed: ${response.statusCode}');
         }
       } catch (e) {
-        // Xử lý khi có lỗi
-        print('Error: $e');
+        // Hiển thị thông báo lỗi khi có lỗi
+        _showErrorDialog('Error: $e');
       }
     }
+  }
+
+  // Hàm hiển thị thông báo lỗi
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -76,11 +104,10 @@ class _LoginFormState extends State<LoginForm> {
             children: <Widget>[
               TextFormField(
                 controller: _usernameController,
-                decoration: InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(labelText: 'Username'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return 'Please enter your username';
                   }
                   return null;
                 },

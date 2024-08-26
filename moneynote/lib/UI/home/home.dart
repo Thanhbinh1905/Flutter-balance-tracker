@@ -4,36 +4,30 @@ import 'package:moneynote/UI/Bcao/bcao.dart';
 import 'package:moneynote/UI/Khac/khac.dart';
 import 'package:moneynote/UI/lich/lich.dart';
 
-class moneynote extends StatelessWidget {
-  const moneynote({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'moneynote',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 7, 252, 85)),
-          useMaterial3: true,
-        ),
-        home: moneynoteHome());
-  }
-}
-
 class moneynoteHome extends StatefulWidget {
-  const moneynoteHome({super.key});
+  final Map<String, dynamic> metadata;
+
+  const moneynoteHome({super.key, required this.metadata});
 
   @override
   State<moneynoteHome> createState() => _moneynoteHome();
 }
 
 class _moneynoteHome extends State<moneynoteHome> {
-  final List<Widget> _tabs = [
-    hometab(),
-    const lich(),
-    const Bcao(),
-    const khac(),
-  ];
+  late final List<Widget> _tabs;
+
+  @override
+  void initState() {
+    print("Metadata hehehehe: ${widget.metadata}");
+    super.initState();
+    _tabs = [
+      hometab(metadata: widget.metadata),
+      lich(metadata: widget.metadata),
+      Bcao(metadata: widget.metadata), // Truyền metadata vào Bcao
+      khac(metadata: widget.metadata),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -55,12 +49,16 @@ class _moneynoteHome extends State<moneynoteHome> {
 }
 
 class hometab extends StatefulWidget {
+  final Map<String, dynamic> metadata;
+
+  const hometab({super.key, required this.metadata});
+
   @override
   _hometab createState() => _hometab();
 }
 
 class _hometab extends State<hometab> {
-  List<bool> isSelected = [true, false]; // Initial selection
+  List<bool> isSelected = [true, false];
   TextEditingController noteController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   DateTime selectedDate = DateTime.now();
@@ -72,18 +70,22 @@ class _hometab extends State<hometab> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final userMetadata = widget.metadata['metadata'];//Lấy dữ liệu từ metadata
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const SizedBox(height: 30.0),
+        // Text('Username: ${userMetadata["username"]}'),  // Ví dụ sử dụng metadata
+        // Text('Username: ${userMetadata["_id"]}'),  // Ví dụ sử dụng metadata
         ToggleButtons(
           borderRadius: const BorderRadius.all(Radius.circular(30.0)),
           fillColor: Colors.green,
@@ -120,7 +122,11 @@ class _hometab extends State<hometab> {
                 onTap: () => _selectDate(context),
                 child: Text(
                   "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-                  style: const TextStyle(color: Colors.white, fontSize: 18, decoration: TextDecoration.none,),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    decoration: TextDecoration.none,
+                  ),
                 ),
               ),
               GestureDetector(

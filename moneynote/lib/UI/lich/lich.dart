@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class lich extends StatelessWidget {
-  const lich({super.key});
+  final Map<String, dynamic> metadata;
+
+  const lich({super.key, required this.metadata});
 
   @override
   Widget build(BuildContext context) {

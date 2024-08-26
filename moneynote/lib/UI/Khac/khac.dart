@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class khac extends StatelessWidget {
-  const khac({super.key});
+  final Map<String, dynamic> metadata;
+
+  const khac({super.key, required this.metadata});
 
   @override
   Widget build(BuildContext context) {
