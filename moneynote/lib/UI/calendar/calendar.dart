@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-class lich extends StatelessWidget {
+class calendar extends StatelessWidget {
   final Map<String, dynamic> metadata;
 
-  const lich({super.key, required this.metadata});
+  const calendar({super.key, required this.metadata});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final userMetadata = metadata['metadata'];
+    return Scaffold(
       body: Center(
-        child: Text('lich'),
+        child: Text('Lich - Username: ${userMetadata['username']}'),
       ),
     );
   }

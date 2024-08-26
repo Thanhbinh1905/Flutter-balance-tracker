@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-class Bcao extends StatelessWidget {
+class report extends StatelessWidget {
   final Map<String, dynamic> metadata;
 
-  const Bcao({super.key, required this.metadata});
-  
+  const report({super.key, required this.metadata});
+
   @override
   Widget build(BuildContext context) {
+    final userMetadata = metadata["metadata"];
     return Scaffold(
       body: Center(
-        child: Text('Báo cáo - Username: ${metadata["username"]}'),
+        child: Text('Báo cáo - Username: ${userMetadata['username']}'),
       ),
     );
   }

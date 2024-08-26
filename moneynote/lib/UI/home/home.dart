@@ -22,9 +22,9 @@ class _moneynoteHome extends State<moneynoteHome> {
     super.initState();
     _tabs = [
       hometab(metadata: widget.metadata),
-      lich(metadata: widget.metadata),
-      Bcao(metadata: widget.metadata), // Truyền metadata vào Bcao
-      khac(metadata: widget.metadata),
+      calendar(metadata: widget.metadata),
+      report(metadata: widget.metadata), // Truyền metadata vào Bcao
+      orther(metadata: widget.metadata),
     ];
   }
 
@@ -79,7 +79,7 @@ class _hometab extends State<hometab> {
 
   @override
   Widget build(BuildContext context) {
-    final userMetadata = widget.metadata['metadata'];//Lấy dữ liệu từ metadata
+    final userMetadata = widget.metadata['metadata']; //Lấy dữ liệu từ metadata
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
