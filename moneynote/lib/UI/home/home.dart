@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:moneynote/UI/Bcao/bcao.dart';
-import 'package:moneynote/UI/Khac/khac.dart';
-import 'package:moneynote/UI/lich/lich.dart';
+import 'package:moneynote/UI/report/report.dart';
+import 'package:moneynote/UI/other/other.dart';
+import 'package:moneynote/UI/calendar/calendar.dart';
 
 class moneynoteHome extends StatefulWidget {
   final Map<String, dynamic> metadata;
