@@ -47,6 +47,8 @@ class _moneynoteHome extends State<moneynoteHome> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.more_horiz), label: 'Khác')
               ],
+              activeColor: Color(0xFF62C42A), // Color for the selected tab item
+              // backgroundColor: Colors.green,
             ),
             tabBuilder: (BuildContext a, int index) {
               return _tabs[index];
@@ -123,43 +125,64 @@ class _hometab extends State<hometab> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.only(top: 20.0),
-            height: 63,
-            padding: EdgeInsets.all(10.0),
-            child: ToggleSwitch(
-              minWidth: 110.0,
-              minHeight: 30,
-              cornerRadius: 10.0,
-              activeBgColors: [
-                [const Color.fromARGB(255, 64, 175, 0)],
-                [const Color.fromARGB(255, 64, 175, 0)]
-              ],
-              activeFgColor: Colors.white,
-              inactiveBgColor: Colors.grey,
-              inactiveFgColor: Colors.white,
-              initialLabelIndex: KselectedIndex,
-              totalSwitches: 2,
-              labels: ['Tiền chi', 'Tiền thu'],
-              customTextStyles: [
-                TextStyle(
-                  fontSize: 12.0,
-                  decoration: TextDecoration.none,
-                  color: KselectedIndex == 0 ? Colors.white : Colors.green[800],
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFFDFE6DD),
+                    Color(0xFFFFFFFF),
+                  ], // Các màu của gradient
+                  stops: [0.05, 1], // Các điểm dừng của gradient
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                 ),
-                TextStyle(
-                  fontSize: 12.0,
-                  decoration: TextDecoration.none,
-                  color: KselectedIndex == 1 ? Colors.white : Colors.green[800],
+              ),
+              height: 110,
+              width: double.infinity,
+              padding: EdgeInsets.only(top: 20.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 200,
+                  height: 40,
+                  child: ToggleSwitch(
+                    minWidth: 110.0,
+                    minHeight: 30,
+                    cornerRadius: 10.0,
+                    activeBgColors: [
+                      [const Color.fromARGB(255, 64, 175, 0)],
+                      [const Color.fromARGB(255, 64, 175, 0)]
+                    ],
+                    activeFgColor: Colors.white,
+                    inactiveBgColor: Colors.grey,
+                    inactiveFgColor: Colors.white,
+                    initialLabelIndex: KselectedIndex,
+                    totalSwitches: 2,
+                    labels: ['Tiền chi', 'Tiền thu'],
+                    customTextStyles: [
+                      TextStyle(
+                        fontSize: 16.0,
+                        decoration: TextDecoration.none,
+                        color: KselectedIndex == 0
+                            ? Colors.white
+                            : Colors.green[800],
+                      ),
+                      TextStyle(
+                        fontSize: 12.0,
+                        decoration: TextDecoration.none,
+                        color: KselectedIndex == 1
+                            ? Colors.white
+                            : Colors.green[800],
+                      ),
+                    ],
+                    radiusStyle: true,
+                    onToggle: (index) {
+                      setState(() {
+                        KselectedIndex = index!;
+                      });
+                    },
+                  ),
                 ),
-              ],
-              radiusStyle: true,
-              onToggle: (index) {
-                setState(() {
-                  KselectedIndex = index!;
-                });
-              },
-            ),
-          ),
+              )),
           Expanded(
             child: KselectedIndex == 0
                 ? _buildTienChiFrame()
