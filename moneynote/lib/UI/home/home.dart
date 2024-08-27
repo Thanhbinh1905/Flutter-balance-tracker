@@ -36,7 +36,7 @@ class _moneynoteHome extends State<moneynoteHome> {
               items: const [
                 BottomNavigationBarItem(
                     icon: Icon(Icons.home), label: 'Nhập vào'),
-                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Lịch'),
+                BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Lịch'),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.home), label: 'Báo cáo'),
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Khác')
