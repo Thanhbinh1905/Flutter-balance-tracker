@@ -66,6 +66,7 @@ class hometab extends StatefulWidget {
 class _hometab extends State<hometab> {
   int KselectedIndex = 0;
   int selectedIndex = 0;
+  int selectedIndex2 = 0;
   final List<String> labels = [
     'Ăn uống',
     'Chi tiêu hàng hóa',
@@ -77,7 +78,14 @@ class _hometab extends State<hometab> {
     'Xăng xe',
     'Chỉnh sửa >'
   ];
-
+  final List<String> labels2 = [
+    'Ăn uống',
+    'Chi tiêu hàng hóa',
+    'Quần áo',
+    'Mỹ phẩm',
+    'Tiền điện nước',
+    'Chỉnh sửa >'
+  ];
   final List<IconData> icons = [
     Icons.fastfood,
     Icons.shopping_basket,
@@ -306,9 +314,17 @@ class _hometab extends State<hometab> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
+                        if (labels[index] == "Chỉnh sửa >") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChinhSuaTienChi()),
+                          );
+                        } else {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        }
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -348,7 +364,27 @@ class _hometab extends State<hometab> {
                         ),
                       ),
                     );
-                  }))
+                  })),
+          Center(
+              child: SizedBox(
+                  width: 284,
+                  height: 40,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 74, 175, 0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      "Nhập tiền chi",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )))
         ],
       ),
     );
@@ -487,7 +523,105 @@ class _hometab extends State<hometab> {
                   decoration: TextDecoration.none),
             ),
           ),
+          Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+              child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.6,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                  ),
+                  itemCount: labels2.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedIndex2 = index;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: selectedIndex2 == index
+                              ? Colors.green[50]
+                              : Colors.white,
+                          border: Border.all(
+                            color: selectedIndex2 == index
+                                ? Colors.green
+                                : Colors.grey,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              icons[index],
+                              color: selectedIndex2 == index
+                                  ? Colors.green
+                                  : Colors.grey,
+                              size: 20,
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              labels2[index],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: selectedIndex2 == index
+                                    ? const Color.fromARGB(255, 0, 0, 0)
+                                    : Colors.black,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  })),
+          SizedBox(height: 77),
+          Center(
+              child: SizedBox(
+                  width: 284,
+                  height: 40,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 74, 175, 0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      "Nhập tiền thu",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )))
         ],
+      ),
+    );
+  }
+}
+
+class ChinhSuaTienChi extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Chỉnh sửa"),
+        backgroundColor: Colors.green,
+      ),
+      body: Center(
+        child: Text(
+          "This is the Chỉnh sửa screen",
+          style: TextStyle(fontSize: 20),
+        ),
       ),
     );
   }
