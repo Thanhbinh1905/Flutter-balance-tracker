@@ -6,6 +6,7 @@ import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của b�
 void main() {
   runApp(MyApp());
 }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class LoginForm extends StatefulWidget {
   @override
   _LoginFormState createState() => _LoginFormState();
@@ -40,10 +42,8 @@ class _LoginFormState extends State<LoginForm> {
       try {
         // Gửi yêu cầu POST đến API
         final response = await http.post(
-          Uri.parse('http://192.168.127.242:9001/login'),
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          Uri.parse('http://192.168.1.9:9001/login'),
+          headers: {'Content-Type': 'application/json'},
           body: jsonEncode(data),
         );
 

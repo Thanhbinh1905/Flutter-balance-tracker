@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/cupertino.dart';
 
 class calendar extends StatefulWidget {
   final Map<String, dynamic> metadata;
@@ -39,6 +40,29 @@ class _CalendarScreenState extends State<calendar> {
       // ),
       body: Column(
         children: [
+          Container(
+              margin: EdgeInsets.only(top: 20.0),
+              height: 63,
+              padding: EdgeInsets.all(10.0),
+              // decoration: BoxDecoration(
+              //   color: Colors.green, // Background color
+              // ),
+              child: Container(
+                padding: const EdgeInsets.all(8.0), // Padding bên trong hộp
+                decoration: BoxDecoration(
+                  color: Colors.blue, // Màu nền của hộp
+                  borderRadius:
+                      BorderRadius.circular(12.0), // Bo tròn các góc của hộp
+                ),
+                child: const Text(
+                  "Lịch",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: CupertinoColors.white,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              )),
           // Calendar View
           Container(
             // color: Colors.green,
@@ -54,8 +78,18 @@ class _CalendarScreenState extends State<calendar> {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay;
 
-                  String formattedDate = DateFormat('dd/MM/yyyy').format(_selectedDay);
+                  String formattedDate =
+                      DateFormat('yyyy-MM-dd').format(_selectedDay);
                   print("Selected date: $formattedDate");
+                });
+              },
+              onPageChanged: (focusedDay) {
+                setState(() {
+                  _focusedDay = focusedDay;
+
+                  String currentMonth =
+                      DateFormat('MMMM yyyy').format(_focusedDay);
+                  print("Currently displaying month: $currentMonth");
                 });
               },
               calendarStyle: CalendarStyle(
@@ -67,6 +101,17 @@ class _CalendarScreenState extends State<calendar> {
                   color: Colors.green.withOpacity(0.6),
                   shape: BoxShape.circle,
                 ),
+              ),
+              headerStyle: HeaderStyle(
+                titleTextStyle: TextStyle(color: Colors.white),
+                formatButtonVisible: false,
+                leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+                rightChevronIcon:
+                    Icon(Icons.chevron_right, color: Colors.white),
+                decoration: BoxDecoration(
+                  color: Colors.green, // Màu nền của thanh tiêu đề
+                ),
+                titleCentered: true, // Căn chỉnh tiêu đề về giữa
               ),
             ),
           ),
@@ -81,7 +126,8 @@ class _CalendarScreenState extends State<calendar> {
                     Text('Thu nhập'),
                     Text(
                       '${income.toStringAsFixed(0)}đ',
-                      style: TextStyle(color: income >= 0 ? Colors.green : Colors.red),
+                      style: TextStyle(
+                          color: income >= 0 ? Colors.green : Colors.red),
                     ),
                   ],
                 ),
@@ -90,7 +136,8 @@ class _CalendarScreenState extends State<calendar> {
                     Text('Chi tiêu'),
                     Text(
                       '${expense.abs().toStringAsFixed(0)}đ',
-                      style: TextStyle(color: expense >= 0 ? Colors.green : Colors.red),
+                      style: TextStyle(
+                          color: expense >= 0 ? Colors.green : Colors.red),
                     ),
                   ],
                 ),
@@ -99,7 +146,8 @@ class _CalendarScreenState extends State<calendar> {
                     Text('Tổng'),
                     Text(
                       '${total.toStringAsFixed(0)}đ',
-                      style: TextStyle(color: total >= 0 ? Colors.green : Colors.red),
+                      style: TextStyle(
+                          color: total >= 0 ? Colors.green : Colors.red),
                     ),
                   ],
                 ),
