@@ -357,6 +357,7 @@ class _hometab extends State<hometab> {
                                 color: selectedIndex == index
                                     ? const Color.fromARGB(255, 0, 0, 0)
                                     : Colors.black,
+                                decoration: TextDecoration.none,
                                 fontSize: 10,
                               ),
                             ),
@@ -574,6 +575,7 @@ class _hometab extends State<hometab> {
                                 color: selectedIndex2 == index
                                     ? const Color.fromARGB(255, 0, 0, 0)
                                     : Colors.black,
+                                decoration: TextDecoration.none,
                                 fontSize: 10,
                               ),
                             ),
