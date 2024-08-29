@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:moneynote/UI/report/report.dart';
 import 'package:moneynote/UI/orther/orther.dart';
 import 'package:moneynote/UI/calendar/calendar.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'homedb.dart';
 
 Map<String, dynamic>? userMetadata;
 
@@ -47,8 +49,7 @@ class _moneynoteHome extends State<moneynoteHome> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.more_horiz), label: 'Khác')
               ],
-              activeColor:
-                  const Color(0xFF62C42A), // Color for the selected tab item
+              activeColor: Color(0xFF62C42A), // Color for the selected tab item
               // backgroundColor: Colors.green,
             ),
             tabBuilder: (BuildContext a, int index) {
@@ -101,6 +102,17 @@ class _hometab extends State<hometab> {
     Icons.local_gas_station,
     Icons.edit
   ];
+  final List<IconData> icons2 = [
+    Icons.fastfood,
+    Icons.shopping_basket,
+    Icons.shopping_bag,
+    Icons.brush,
+    Icons.water,
+    Icons.home,
+    Icons.wifi,
+    Icons.local_gas_station,
+    Icons.edit
+  ];
   TextEditingController noteController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   DateTime selectedDate = DateTime.now();
@@ -126,7 +138,7 @@ class _hometab extends State<hometab> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
                     Color(0xFFDFE6DD),
@@ -139,26 +151,26 @@ class _hometab extends State<hometab> {
               ),
               height: 110,
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 20.0),
+              padding: EdgeInsets.only(top: 20.0),
               child: Align(
                 alignment: Alignment.center,
-                child: SizedBox(
+                child: Container(
                   width: 200,
                   height: 40,
                   child: ToggleSwitch(
                     minWidth: 110.0,
                     minHeight: 30,
                     cornerRadius: 10.0,
-                    activeBgColors: const [
-                      [Color.fromARGB(255, 64, 175, 0)],
-                      [Color.fromARGB(255, 64, 175, 0)]
+                    activeBgColors: [
+                      [const Color.fromARGB(255, 64, 175, 0)],
+                      [const Color.fromARGB(255, 64, 175, 0)]
                     ],
                     activeFgColor: Colors.white,
                     inactiveBgColor: Colors.grey,
                     inactiveFgColor: Colors.white,
                     initialLabelIndex: KselectedIndex,
                     totalSwitches: 2,
-                    labels: const ['Tiền chi', 'Tiền thu'],
+                    labels: ['Tiền chi', 'Tiền thu'],
                     customTextStyles: [
                       TextStyle(
                         fontSize: 16.0,
@@ -200,8 +212,8 @@ class _hometab extends State<hometab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 77, 199, 89),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 77, 199, 89),
             ),
             height: 45,
             child: Container(
@@ -277,8 +289,8 @@ class _hometab extends State<hometab> {
           Container(
             padding:
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 98, 196, 24),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 98, 196, 24),
             ),
             height: 45,
             child: Row(
@@ -332,8 +344,8 @@ class _hometab extends State<hometab> {
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
               child: GridView.builder(
                   shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     childAspectRatio: 1.6,
                     crossAxisSpacing: 15,
@@ -347,7 +359,7 @@ class _hometab extends State<hometab> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ChinhSuaTienChi()),
+                                builder: (context) => ChinhSuaTienChi()),
                           );
                         } else {
                           setState(() {
@@ -378,7 +390,7 @@ class _hometab extends State<hometab> {
                                   : Colors.grey,
                               size: 20,
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               labels[index],
                               textAlign: TextAlign.center,
@@ -406,7 +418,7 @@ class _hometab extends State<hometab> {
                       ),
                     ),
                     onPressed: () {},
-                    child: const Text(
+                    child: Text(
                       "Nhập tiền chi",
                       style: TextStyle(
                         fontSize: 16,
@@ -425,8 +437,8 @@ class _hometab extends State<hometab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 77, 199, 89),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 77, 199, 89),
             ),
             height: 45,
             child: Container(
@@ -502,8 +514,8 @@ class _hometab extends State<hometab> {
           Container(
             padding:
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 98, 196, 24),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 98, 196, 24),
             ),
             height: 45,
             child: Row(
@@ -557,8 +569,8 @@ class _hometab extends State<hometab> {
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
               child: GridView.builder(
                   shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     childAspectRatio: 1.6,
                     crossAxisSpacing: 15,
@@ -595,7 +607,7 @@ class _hometab extends State<hometab> {
                                   : Colors.grey,
                               size: 20,
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               labels2[index],
                               textAlign: TextAlign.center,
@@ -611,7 +623,7 @@ class _hometab extends State<hometab> {
                       ),
                     );
                   })),
-          const SizedBox(height: 77),
+          SizedBox(height: 77),
           Center(
               child: SizedBox(
                   width: 284,
@@ -624,7 +636,7 @@ class _hometab extends State<hometab> {
                       ),
                     ),
                     onPressed: () {},
-                    child: const Text(
+                    child: Text(
                       "Nhập tiền thu",
                       style: TextStyle(
                         fontSize: 16,
@@ -639,21 +651,17 @@ class _hometab extends State<hometab> {
 }
 
 class ChinhSuaTienChi extends StatelessWidget {
-  const ChinhSuaTienChi({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chỉnh sửa"),
-        backgroundColor: Colors.green,
+       
+    
       ),
-      body: const Center(
-        child: Text(
-          "This is the Chỉnh sửa screen",
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
+body: category(),
+      );
+
   }
 }
+
+ 
