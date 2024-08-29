@@ -325,4 +325,27 @@ class _CalendarScreenState extends State<calendar> {
 //     return _iconMap[iconName];
 //   }
 // }
+  // Ví dụ sử dụng
+  // String iconString = 'Icons.wifi';
+  // IconData? iconData = IconConverter.getIconDataFromString(iconString);
+  // Icon(iconData ?? Icons.error) // Hiển thị biểu tượng mặc định nếu không tìm thấy
+
+//     class ColorConverter {
+//   static final Map<String, Color> _colorMap = {
+//     'Colors.red': Colors.red,
+//     'Colors.blue': Colors.blue,
+//     'Colors.green': Colors.green,
+//     'Colors.yellow': Colors.yellow,
+//     'Colors.black': Colors.black,
+//     'Colors.white': Colors.white,
+//     // Thêm các màu khác ở đây
+//   };
+
+//   static Color? getColorFromString(String colorName) {
+//     return _colorMap[colorName];
+//   }
+// }
+// String colorString = 'Colors.blue';
+//     Color? color = ColorConverter.getColorFromString(colorString);
+//     color: color ?? Colors.grey
 }
