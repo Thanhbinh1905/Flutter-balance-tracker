@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:moneynote/UI/report/report.dart';
 import 'package:moneynote/UI/orther/orther.dart';
 import 'package:moneynote/UI/calendar/calendar.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'homedb.dart';
 
 Map<String, dynamic>? userMetadata;
 
@@ -90,6 +92,17 @@ class _hometab extends State<hometab> {
     'Chỉnh sửa >'
   ];
   final List<IconData> icons = [
+    Icons.fastfood,
+    Icons.shopping_basket,
+    Icons.shopping_bag,
+    Icons.brush,
+    Icons.water,
+    Icons.home,
+    Icons.wifi,
+    Icons.local_gas_station,
+    Icons.edit
+  ];
+  final List<IconData> icons2 = [
     Icons.fastfood,
     Icons.shopping_basket,
     Icons.shopping_bag,
@@ -642,15 +655,13 @@ class ChinhSuaTienChi extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Chỉnh sửa"),
-        backgroundColor: Colors.green,
+       
+    
       ),
-      body: Center(
-        child: Text(
-          "This is the Chỉnh sửa screen",
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
+body: category(),
+      );
+
   }
 }
+
+ 
