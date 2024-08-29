@@ -21,6 +21,9 @@ class calendar extends StatefulWidget {
 class _CalendarScreenState extends State<calendar> {
   late DateTime _selectedDay;
   late DateTime _focusedDay;
+  late String currentMonth;
+  late String currentYear;
+  late List<Map<String, dynamic>> dataTransaction = [];
 
   @override
   void initState() {
@@ -28,13 +31,14 @@ class _CalendarScreenState extends State<calendar> {
     _selectedDay = DateTime.now();
     _focusedDay = DateTime.now();
     userMetadata = widget.metadata['metadata'];
-    getTransaction();
-    getTransaction1();
+    currentMonth = DateFormat('MM').format(_focusedDay);
+    currentYear = DateFormat('yyyy').format(_focusedDay);
   }
 
-  Future<void> getTransaction1() async {
-    final url =
-        Uri.parse('http://192.168.1.9:9001/category?category_type=outcome');
+  Future<List<Map<String, dynamic>>> getTransaction(
+      String month, String year) async {
+    final url = Uri.parse(
+        'http://192.168.1.9:9001/transaction?month=$month&year=$year');
 
     try {
       print(
@@ -51,45 +55,17 @@ class _CalendarScreenState extends State<calendar> {
           'Status Code: ${response.statusCode}'); // In mã trạng thái để kiểm tra
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final List<dynamic> data = json.decode(response.body);
         print('Data: $data'); // In dữ liệu trả về để kiểm tra
 
-        // Xử lý dữ liệu
+        // Trả về dữ liệu
+        return data.cast<Map<String, dynamic>>();
       } else {
         throw Exception('Failed to load data');
       }
     } catch (e) {
       print('Error: $e');
-    }
-  }
-
-  Future<void> getTransaction() async {
-    final url = Uri.parse('http://192.168.1.9:9001/transaction');
-
-    try {
-      print(
-          'User Metadata: ${userMetadata?['_id']}'); // In metadata để kiểm tra
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id'],
-        },
-      );
-
-      print(
-          'Status Code: ${response.statusCode}'); // In mã trạng thái để kiểm tra
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Data: $data'); // In dữ liệu trả về để kiểm tra
-
-        // Xử lý dữ liệu
-      } else {
-        throw Exception('Failed to load data');
-      }
-    } catch (e) {
-      print('Error: $e');
+      throw Exception('Error occurred while fetching data');
     }
   }
 
@@ -168,14 +144,23 @@ class _CalendarScreenState extends State<calendar> {
                 print(srcHeight);
               });
             },
-            onPageChanged: (focusedDay) {
+            onPageChanged: (focusedDay) async {
               setState(() {
                 _focusedDay = focusedDay;
 
-                String currentMonth =
-                    DateFormat('MMMM yyyy').format(_focusedDay);
-                print("Currently displaying month: $currentMonth");
+                print(
+                    "Currently displaying month: $currentMonth and $currentYear");
               });
+              try {
+                dataTransaction =
+                    await getTransaction(currentMonth, currentYear);
+                setState(() {
+                  // Xử lý và cập nhật giao diện dựa trên dữ liệu nhận được
+                  // print('Received data: $dataTransaction');
+                });
+              } catch (e) {
+                print('Error fetching transaction data: $e');
+              }
             },
             calendarStyle: CalendarStyle(
               outsideDaysVisible: false,
@@ -266,47 +251,78 @@ class _CalendarScreenState extends State<calendar> {
           ),
           Expanded(
               child: ListView(
-            children: const [
-              ExpansionTile(
-                title: Text('Danh sách chi tiêu'),
-                leading: Icon(Icons.monetization_on),
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.shopping_cart, color: Colors.blue),
-                    title: Text('Chi tiêu hàng ngày'),
-                    subtitle: Text('21/08/2024 (Th 4)'),
-                    trailing: Text('700.000đ'),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.lightbulb, color: Colors.orange),
-                    title: Text('Tiền điện nước'),
-                    subtitle: Text('21/08/2024 (Th 4)'),
-                    trailing: Text('300.000đ'),
-                  ),
-                ],
-              ),
-              ExpansionTile(
-                title: Text('Danh sách chi tiêu'),
-                leading: Icon(Icons.monetization_on),
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.shopping_cart, color: Colors.blue),
-                    title: Text('Chi tiêu hàng ngày'),
-                    subtitle: Text('21/08/2024 (Th 4)'),
-                    trailing: Text('700.000đ'),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.lightbulb, color: Colors.orange),
-                    title: Text('Tiền điện nước'),
-                    subtitle: Text('21/08/2024 (Th 4)'),
-                    trailing: Text('300.000đ'),
-                  ),
-                ],
-              ),
-            ],
+            children: _buildExpansionTileList(),
           ))
         ],
       ),
     );
   }
+
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'wifi':
+        return Icons.wifi;
+      case 'home':
+        return Icons.home;
+      // Add other cases as needed
+      default:
+        return Icons.help; // Default icon if none matches
+    }
+  }
+
+  Color _getColor(String hexColor) {
+    hexColor = hexColor.replaceFirst('#', '');
+    if (hexColor.length == 6) {
+      hexColor = '0xFF$hexColor';
+    }
+    // Chuyển đổi chuỗi hex thành số nguyên và tạo đối tượng Color
+    return Color(int.parse(hexColor, radix: 16));
+  }
+
+  List<Widget> _buildExpansionTileList() {
+    Map<String, List<Map<String, dynamic>>> groupedTransactions = {};
+
+    if (dataTransaction.isNotEmpty) {
+      for (var transaction in dataTransaction) {
+        String date = transaction['transaction_date'];
+        if (groupedTransactions.containsKey(date)) {
+          groupedTransactions[date]!.add(transaction);
+        } else {
+          groupedTransactions[date] = [transaction];
+        }
+      }
+    }
+
+    return groupedTransactions.entries.map((entry) {
+      String date = entry.key;
+      List<Map<String, dynamic>> transactionsForDate = entry.value;
+
+      return ExpansionTile(
+        title: Text(date), // Tiêu đề của ExpansionTile là ngày
+        children: transactionsForDate.map((transaction) {
+          return ListTile(
+            // leading:categoryIcon is String
+            // ? _getIconFromString(categoryIcon) // Convert string to Icon
+            // : categoryIcon as Widget, // Use as-is if it's already a Widget,
+            title: Text('${transaction['transaction_amount']}'),
+            subtitle: Text(transaction['category']['category_name']),
+            trailing: Text(transaction['transaction_date']),
+          );
+        }).toList(),
+      );
+    }).toList();
+  }
+//   class IconConverter {
+//   static final Map<String, IconData> _iconMap = {
+//     'Icons.add': Icons.add,
+//     'Icons.remove': Icons.remove,
+//     'Icons.star': Icons.star,
+//     'Icons.wifi': Icons.wifi,
+//     // Thêm các biểu tượng khác ở đây
+//   };
+
+//   static IconData? getIconDataFromString(String iconName) {
+//     return _iconMap[iconName];
+//   }
+// }
 }
