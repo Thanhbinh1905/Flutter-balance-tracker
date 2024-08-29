@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+Map<String, dynamic>? userMetadata;
 const greybgcolor = Color(0xFFDFE6DD);
 const greenbgcolor = Color(0xFF62C42A);
 
@@ -24,6 +27,38 @@ class _CalendarScreenState extends State<calendar> {
     super.initState();
     _selectedDay = DateTime.now();
     _focusedDay = DateTime.now();
+    userMetadata = widget.metadata['metadata'];
+    getTransaction();
+  }
+
+  Future<void> getTransaction() async {
+    final url = Uri.parse('http://192.168.1.9:9001/transaction');
+
+    try {
+      print(
+          'User Metadata: ${userMetadata?['_id']}'); // In metadata để kiểm tra
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'],
+        },
+      );
+
+      print(
+          'Status Code: ${response.statusCode}'); // In mã trạng thái để kiểm tra
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Data: $data'); // In dữ liệu trả về để kiểm tra
+
+        // Xử lý dữ liệu
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
