@@ -40,7 +40,6 @@ dependencies:
   flutter_toggle_tab: ^1.4.1
   toggle_switch: ^2.3.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

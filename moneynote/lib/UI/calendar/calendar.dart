@@ -29,6 +29,38 @@ class _CalendarScreenState extends State<calendar> {
     _focusedDay = DateTime.now();
     userMetadata = widget.metadata['metadata'];
     getTransaction();
+    getTransaction1();
+  }
+
+  Future<void> getTransaction1() async {
+    final url =
+        Uri.parse('http://192.168.1.9:9001/category?category_type=outcome');
+
+    try {
+      print(
+          'User Metadata: ${userMetadata?['_id']}'); // In metadata để kiểm tra
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'],
+        },
+      );
+
+      print(
+          'Status Code: ${response.statusCode}'); // In mã trạng thái để kiểm tra
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Data: $data'); // In dữ liệu trả về để kiểm tra
+
+        // Xử lý dữ liệu
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   Future<void> getTransaction() async {
