@@ -4,6 +4,7 @@ class IconConverter {
   static final Map<String, IconData> _incomeIconMap = {
     'star': Icons.star,
     'wifi': Icons.wifi,
+    'brush': Icons.brush,
     // Add more icons here
   };
 

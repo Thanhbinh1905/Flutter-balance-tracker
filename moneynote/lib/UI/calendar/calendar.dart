@@ -67,7 +67,7 @@ class _CalendarScreenState extends State<calendar> {
       //    'Status Code: ${response.statusCode}'); // In mã trạng thái để kiểm tra
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        print('Data: $data'); // In dữ liệu trả về để kiểm tra
+        // print('Data: $data'); // In dữ liệu trả về để kiểm tra
 
         // Trả về dữ liệu
         return data.cast<Map<String, dynamic>>();
@@ -83,13 +83,14 @@ class _CalendarScreenState extends State<calendar> {
   @override
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
+    final srcWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Column(
         children: [
           Container(
+            height: srcHeight / 12,
             width: double.infinity,
-            // height: srcHeight / 8,
-            padding: const EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFFDFE6DD), Color(0xFFFFFFFF)],
@@ -101,8 +102,8 @@ class _CalendarScreenState extends State<calendar> {
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                padding: const EdgeInsets.all(8.0),
-                width: 120,
+                padding: const EdgeInsets.all(5.0),
+                width: srcWidth / 5,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFCFDFC6), Color(0xFFFFFFFF)],
@@ -124,86 +125,116 @@ class _CalendarScreenState extends State<calendar> {
             ),
           ),
           // Calendar View
-          TableCalendar(
-            // rowHeight: srcHeight / 16,
-            firstDay: DateTime.utc(2000, 1, 1),
-            lastDay: DateTime.utc(2100, 12, 31),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey
+                      .withOpacity(0.5), // Màu và độ mờ của viền dưới
+                  width: 0.5, // Độ dày của viền dưới
+                ),
+              ),
+            ),
+            child: TableCalendar(
+              rowHeight: srcHeight / 18,
+              firstDay: DateTime.utc(2000, 1, 1),
+              lastDay: DateTime.utc(2100, 12, 31),
+              focusedDay: _focusedDay,
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDay, day);
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
 
-                String formattedDate =
-                    DateFormat('yyyy-MM-dd').format(_selectedDay);
-              });
-            },
-            onPageChanged: (focusedDay) async {
-              setState(() {
-                _focusedDay = focusedDay;
-                currentMonth = DateFormat('MM').format(_focusedDay);
-                currentYear = DateFormat('yyyy').format(_focusedDay);
-              });
-              try {
-                dataTransaction =
-                    await getTransaction(currentMonth, currentYear);
-                setState(() {});
-              } catch (e) {
-                print('Error fetching transaction data: $e');
-              }
-            },
-            calendarStyle: CalendarStyle(
-              outsideDaysVisible: false,
-              weekendTextStyle: const TextStyle(color: Colors.red),
-              selectedDecoration: const BoxDecoration(
-                color: greenbgcolor,
-                shape: BoxShape.circle,
+                  String formattedDate =
+                      DateFormat('yyyy-MM-dd').format(_selectedDay);
+                });
+              },
+              onPageChanged: (focusedDay) async {
+                setState(() {
+                  _focusedDay = focusedDay;
+                  currentMonth = DateFormat('MM').format(_focusedDay);
+                  currentYear = DateFormat('yyyy').format(_focusedDay);
+                });
+                try {
+                  dataTransaction =
+                      await getTransaction(currentMonth, currentYear);
+                  setState(() {});
+                } catch (e) {
+                  print('Error fetching transaction data: $e');
+                }
+              },
+              calendarStyle: CalendarStyle(
+                defaultTextStyle: const TextStyle(fontSize: 12),
+                outsideDaysVisible: false,
+                weekendTextStyle: const TextStyle(color: Colors.red),
+                selectedDecoration: const BoxDecoration(
+                  color: greenbgcolor,
+                  shape: BoxShape.circle,
+                ),
+                todayDecoration: BoxDecoration(
+                  color: greenbgcolor.withOpacity(0.6),
+                  shape: BoxShape.circle,
+                ),
               ),
-              todayDecoration: BoxDecoration(
-                color: greenbgcolor.withOpacity(0.6),
-                shape: BoxShape.circle,
+              daysOfWeekStyle: const DaysOfWeekStyle(
+                decoration: BoxDecoration(color: greybgcolor),
+                weekdayStyle: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                weekendStyle: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            daysOfWeekStyle: const DaysOfWeekStyle(
-              decoration: BoxDecoration(color: greybgcolor),
-              weekdayStyle: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+              daysOfWeekVisible: true,
+              daysOfWeekHeight: srcHeight / 20,
+              headerStyle: const HeaderStyle(
+                headerPadding: EdgeInsets.only(top: 0, bottom: 0),
+                titleTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                ),
+                formatButtonVisible: false,
+                leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+                rightChevronIcon:
+                    Icon(Icons.chevron_right, color: Colors.white),
+                decoration: BoxDecoration(color: greenbgcolor),
+                titleCentered: true,
               ),
-              weekendStyle: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            daysOfWeekVisible: true,
-            daysOfWeekHeight: 40,
-            headerStyle: const HeaderStyle(
-              headerPadding: EdgeInsets.only(top: 0, bottom: 0),
-              titleTextStyle: TextStyle(
-                color: Colors.white,
-                fontSize: 16.0,
-              ),
-              formatButtonVisible: false,
-              leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
-              rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
-              decoration: BoxDecoration(color: greenbgcolor),
-              titleCentered: true,
             ),
           ),
           // Income, Expense, and Total Summary
-          Container(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-            child: _buildBalanceContainer(),
-          ),
+
           Flexible(
             child: ListView(
               padding: const EdgeInsets.only(top: 0),
               physics:
                   const BouncingScrollPhysics(), // Hoặc AlwaysScrollableScrollPhysics()
-              children: _buildExpansionTileList(),
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.grey
+                            .withOpacity(0.5), // Màu và độ mờ của viền dưới
+                        width: 0.5, // Độ dày của viền dưới
+                      ),
+                      top: BorderSide(
+                        color: Colors.grey
+                            .withOpacity(0.5), // Màu và độ mờ của viền trên
+                        width: 0.5, // Độ dày của viền trên
+                      ),
+                    ),
+                  ),
+                  child: _buildBalanceContainer(),
+                ),
+                ..._buildExpansionTileList(),
+              ],
             ),
           ),
         ],
@@ -278,60 +309,135 @@ class _CalendarScreenState extends State<calendar> {
     return groupedTransactions.entries.map((entry) {
       String date = entry.key;
       List<Map<String, dynamic>> transactionsForDate = entry.value;
-      return Card(
+
+      return Container(
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0), // Giảm padding xung quanh Card
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        // padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0), // Tạo bo góc
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 4,
+              offset: const Offset(0, 3), // Đổ bóng
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Ngày giao dịch
+            Container(
+              padding: const EdgeInsets.only(top: 5, left: 8, bottom: 5),
+              child: Text(
                 date,
                 style: const TextStyle(
-                  fontSize: 12.0, // Có thể giảm kích thước chữ nếu cần
+                  fontSize: 12.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              ...transactionsForDate.map((transaction) {
-                String icon = transaction['category']['category_icon'];
-                IconData? iconData = IconConverter.getIconDataFromString(icon);
-                String color = transaction['category']['category_color'];
-                Color? colorData = ColorConverter.getColorFromString(color);
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 0.0), // Giảm padding trong ListTile
-                  leading: Icon(
-                    iconData ?? Icons.error,
-                    color: colorData,
-                  ),
-                  title: Text(
-                    transaction['transaction_type'] == 'income'
-                        ? '${transaction['transaction_amount']}đ'
-                        : '-${transaction['transaction_amount']}đ',
-                    style: TextStyle(
-                      color: transaction['transaction_type'] == 'income'
-                          ? greenbgcolor
-                          : Colors.red,
-                      fontSize:
-                          12.0, // Có thể điều chỉnh kích thước chữ nếu cần
+            ),
+            // Danh sách giao dịch
+            ...transactionsForDate.map((transaction) {
+              String icon = transaction['category']['category_icon'];
+              IconData? iconData = IconConverter.getIconDataFromString(icon);
+              String color = transaction['category']['category_color'];
+              Color? colorData = ColorConverter.getColorFromString(color);
+              String tranDes = transaction['transaction_description'];
+              return Container(
+                // margin: const EdgeInsets.only(top: 8.0),
+                child: Material(
+                  color: Colors
+                      .transparent, // Để gợn sóng hiển thị trên nền Container
+                  child: InkWell(
+                    onTap: () {
+                      // In thông tin khi bấm vào Container
+                      print('Transaction Details:');
+                      print(
+                          'Category: ${transaction['category']['category_name']}');
+                      print(
+                          'Description: ${transaction['transaction_description']}');
+                      print('Date: ${transaction['transaction_date']}');
+                      print('Amount: ${transaction['transaction_amount']}');
+                      print('Type: ${transaction['transaction_type']}');
+                    },
+                    splashColor:
+                        Colors.grey.withOpacity(0.3), // Màu hiệu ứng gợn sóng
+                    highlightColor:
+                        Colors.grey.withOpacity(0.1), // Màu khi nhấn xuống
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(
+                              left: 12, top: 8, bottom: 8),
+                          child: Icon(
+                            iconData ?? Icons.error,
+                            color: colorData,
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: transaction['category']
+                                            ['category_name'],
+                                        style: const TextStyle(
+                                            fontSize: 12.0,
+                                            color: Colors.black),
+                                      ),
+                                      TextSpan(
+                                        text: ' ($tranDes)',
+                                        style: const TextStyle(
+                                            fontSize: 10.0, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  transaction['transaction_date'],
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(right: 5, left: 5),
+                          child: Text(
+                            transaction['transaction_type'] == 'income'
+                                ? '${transaction['transaction_amount']}đ'
+                                : '-${transaction['transaction_amount']}đ',
+                            style: TextStyle(
+                              color: transaction['transaction_type'] == 'income'
+                                  ? greenbgcolor
+                                  : Colors.red,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 12,
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                  subtitle: Text(
-                    transaction['transaction_description'],
-                    style: const TextStyle(
-                      fontSize: 12.0, // Kích thước chữ nhỏ hơn cho subtitle
-                    ),
-                  ),
-                  trailing: Text(
-                    transaction['transaction_date'],
-                    style: const TextStyle(
-                      fontSize: 12.0, // Kích thước chữ cho trailing
-                    ),
-                  ),
-                );
-              }),
-            ],
-          ),
+                ),
+              );
+            }),
+          ],
         ),
       );
     }).toList();
