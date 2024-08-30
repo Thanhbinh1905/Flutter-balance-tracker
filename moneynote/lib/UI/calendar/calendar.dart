@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -312,40 +311,4 @@ class _CalendarScreenState extends State<calendar> {
       );
     }).toList();
   }
-//   class IconConverter {
-//   static final Map<String, IconData> _iconMap = {
-//     'Icons.add': Icons.add,
-//     'Icons.remove': Icons.remove,
-//     'Icons.star': Icons.star,
-//     'Icons.wifi': Icons.wifi,
-//     // Thêm các biểu tượng khác ở đây
-//   };
-
-//   static IconData? getIconDataFromString(String iconName) {
-//     return _iconMap[iconName];
-//   }
-// }
-  // Ví dụ sử dụng
-  // String iconString = 'Icons.wifi';
-  // IconData? iconData = IconConverter.getIconDataFromString(iconString);
-  // Icon(iconData ?? Icons.error) // Hiển thị biểu tượng mặc định nếu không tìm thấy
-
-//     class ColorConverter {
-//   static final Map<String, Color> _colorMap = {
-//     'Colors.red': Colors.red,
-//     'Colors.blue': Colors.blue,
-//     'Colors.green': Colors.green,
-//     'Colors.yellow': Colors.yellow,
-//     'Colors.black': Colors.black,
-//     'Colors.white': Colors.white,
-//     // Thêm các màu khác ở đây
-//   };
-
-//   static Color? getColorFromString(String colorName) {
-//     return _colorMap[colorName];
-//   }
-// }
-// String colorString = 'Colors.blue';
-//     Color? color = ColorConverter.getColorFromString(colorString);
-//     color: color ?? Colors.grey
 }
