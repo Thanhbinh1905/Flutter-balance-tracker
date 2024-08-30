@@ -102,7 +102,7 @@ class _hometab extends State<hometab> {
     Icons.local_gas_station,
     Icons.edit
   ];
-  final List<IconData> icons2 = [
+  final List<IconData > icons2 = [
     Icons.fastfood,
     Icons.shopping_basket,
     Icons.shopping_bag,
@@ -649,19 +649,23 @@ class _hometab extends State<hometab> {
     );
   }
 }
+class ChinhSuaTienChi extends StatefulWidget {
+  const ChinhSuaTienChi({super.key});
 
-class ChinhSuaTienChi extends StatelessWidget {
+  @override
+  State<ChinhSuaTienChi> createState() => _ChinhSuaTienChiState();
+}
+
+class _ChinhSuaTienChiState extends State<ChinhSuaTienChi> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-       
-    
-      ),
-body: category(),
+      return const Scaffold(
+        
+body: CategoryScreen(),
       );
 
   }
-}
+  }
+
 
  
