@@ -83,138 +83,131 @@ class _CalendarScreenState extends State<calendar> {
   @override
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
-
-    return CupertinoTabView(
-      builder: (BuildContext context) {
-        return Scaffold(
-          body: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                // height: srcHeight / 8,
-                padding: const EdgeInsets.only(top: 20),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFDFE6DD), Color(0xFFFFFFFF)],
-                    stops: [0.05, 1],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    width: 120,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFCFDFC6), Color(0xFFFFFFFF)],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: const Text(
-                      "Lịch",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Color(0xFF62C42A),
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ),
-                ),
+    return Scaffold(
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            // height: srcHeight / 8,
+            padding: const EdgeInsets.only(top: 20),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFDFE6DD), Color(0xFFFFFFFF)],
+                stops: [0.05, 1],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
-              // Calendar View
-              TableCalendar(
-                // rowHeight: srcHeight / 16,
-                firstDay: DateTime.utc(2000, 1, 1),
-                lastDay: DateTime.utc(2100, 12, 31),
-                focusedDay: _focusedDay,
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(_selectedDay);
-                  });
-                },
-                onPageChanged: (focusedDay) async {
-                  setState(() {
-                    _focusedDay = focusedDay;
-                    currentMonth = DateFormat('MM').format(_focusedDay);
-                    currentYear = DateFormat('yyyy').format(_focusedDay);
-                  });
-                  try {
-                    dataTransaction =
-                        await getTransaction(currentMonth, currentYear);
-                    setState(() {});
-                  } catch (e) {
-                    print('Error fetching transaction data: $e');
-                  }
-                },
-                calendarStyle: CalendarStyle(
-                  outsideDaysVisible: false,
-                  weekendTextStyle: const TextStyle(color: Colors.red),
-                  selectedDecoration: const BoxDecoration(
-                    color: greenbgcolor,
-                    shape: BoxShape.circle,
+            ),
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                width: 120,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFCFDFC6), Color(0xFFFFFFFF)],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
                   ),
-                  todayDecoration: BoxDecoration(
-                    color: greenbgcolor.withOpacity(0.6),
-                    shape: BoxShape.circle,
-                  ),
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-                daysOfWeekStyle: const DaysOfWeekStyle(
-                  decoration: BoxDecoration(color: greybgcolor),
-                  weekdayStyle: TextStyle(
+                child: const Text(
+                  "Lịch",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
                     fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  weekendStyle: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF62C42A),
+                    decoration: TextDecoration.none,
                   ),
                 ),
-                daysOfWeekVisible: true,
-                daysOfWeekHeight: 40,
-                headerStyle: const HeaderStyle(
-                  headerPadding: EdgeInsets.only(top: 0, bottom: 0),
-                  titleTextStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0,
-                  ),
-                  formatButtonVisible: false,
-                  leftChevronIcon:
-                      Icon(Icons.chevron_left, color: Colors.white),
-                  rightChevronIcon:
-                      Icon(Icons.chevron_right, color: Colors.white),
-                  decoration: BoxDecoration(color: greenbgcolor),
-                  titleCentered: true,
-                ),
               ),
-              // Income, Expense, and Total Summary
-              Container(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: _buildBalanceContainer(),
-              ),
-              Flexible(
-                child: ListView(
-                  padding: const EdgeInsets.only(top: 0),
-                  physics:
-                      const BouncingScrollPhysics(), // Hoặc AlwaysScrollableScrollPhysics()
-                  children: _buildExpansionTileList(),
-                ),
-              ),
-            ],
+            ),
           ),
-        );
-      },
+          // Calendar View
+          TableCalendar(
+            // rowHeight: srcHeight / 16,
+            firstDay: DateTime.utc(2000, 1, 1),
+            lastDay: DateTime.utc(2100, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) {
+              return isSameDay(_selectedDay, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+
+                String formattedDate =
+                    DateFormat('yyyy-MM-dd').format(_selectedDay);
+              });
+            },
+            onPageChanged: (focusedDay) async {
+              setState(() {
+                _focusedDay = focusedDay;
+                currentMonth = DateFormat('MM').format(_focusedDay);
+                currentYear = DateFormat('yyyy').format(_focusedDay);
+              });
+              try {
+                dataTransaction =
+                    await getTransaction(currentMonth, currentYear);
+                setState(() {});
+              } catch (e) {
+                print('Error fetching transaction data: $e');
+              }
+            },
+            calendarStyle: CalendarStyle(
+              outsideDaysVisible: false,
+              weekendTextStyle: const TextStyle(color: Colors.red),
+              selectedDecoration: const BoxDecoration(
+                color: greenbgcolor,
+                shape: BoxShape.circle,
+              ),
+              todayDecoration: BoxDecoration(
+                color: greenbgcolor.withOpacity(0.6),
+                shape: BoxShape.circle,
+              ),
+            ),
+            daysOfWeekStyle: const DaysOfWeekStyle(
+              decoration: BoxDecoration(color: greybgcolor),
+              weekdayStyle: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+              weekendStyle: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            daysOfWeekVisible: true,
+            daysOfWeekHeight: 40,
+            headerStyle: const HeaderStyle(
+              headerPadding: EdgeInsets.only(top: 0, bottom: 0),
+              titleTextStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+              formatButtonVisible: false,
+              leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+              rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
+              decoration: BoxDecoration(color: greenbgcolor),
+              titleCentered: true,
+            ),
+          ),
+          // Income, Expense, and Total Summary
+          Container(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            child: _buildBalanceContainer(),
+          ),
+          Flexible(
+            child: ListView(
+              padding: const EdgeInsets.only(top: 0),
+              physics:
+                  const BouncingScrollPhysics(), // Hoặc AlwaysScrollableScrollPhysics()
+              children: _buildExpansionTileList(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
