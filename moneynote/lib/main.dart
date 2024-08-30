@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của bạn
+import 'package:moneynote/constants/constant.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,9 +47,7 @@ class _LoginFormState extends State<LoginForm> {
       try {
         // Gửi yêu cầu POST đến API
         final response = await http.post(
-
-          Uri.parse('http://192.168.1.106:9001/login'),
-
+          Uri.parse('${GetConstant().apiEndPoint}/login'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(data),
         );

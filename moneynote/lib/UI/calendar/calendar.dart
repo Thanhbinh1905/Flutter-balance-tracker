@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:moneynote/utils/color_convert.dart';
 import 'package:moneynote/utils/icon_convert.dart';
+import 'package:moneynote/constants/constant.dart';
 
 Map<String, dynamic>? userMetadata;
 const greybgcolor = Color(0xFFDFE6DD);
@@ -50,8 +51,7 @@ class _CalendarScreenState extends State<calendar> {
   Future<List<Map<String, dynamic>>> getTransaction(
       String month, String year) async {
     final url = Uri.parse(
-        'http://192.168.1.9:9001/transaction?month=$month&year=$year');
-
+        '${GetConstant().apiEndPoint}/transaction?month=$month&year=$year');
     try {
       // print(
       //     'User Metadata: ${userMetadata?['_id']}'); // In metadata để kiểm tra
