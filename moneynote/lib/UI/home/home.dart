@@ -54,7 +54,11 @@ class _moneynoteHome extends State<moneynoteHome> {
               // backgroundColor: Colors.green,
             ),
             tabBuilder: (BuildContext a, int index) {
-              return _tabs[index];
+              return SafeArea(child: CupertinoTabView(
+                builder: (BuildContext context) {
+                  return _tabs[index];
+                },
+              ));
             }));
   }
 }
