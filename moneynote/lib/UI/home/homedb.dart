@@ -238,6 +238,7 @@ class Category {
   String categoryIcon;
   String categoryType;
   String uid;
+  String categorycolor;
 
   Category({
     required this.id,
@@ -245,6 +246,7 @@ class Category {
     required this.categoryIcon,
     required this.categoryType,
     required this.uid,
+    required this.categorycolor
   });
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
@@ -253,6 +255,7 @@ class Category {
         categoryIcon: json["category_icon"],
         categoryType: json["category_type"],
         uid: json["uid"],
+        categorycolor:json["category_color"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -261,5 +264,52 @@ class Category {
         "category_icon": categoryIcon,
         "category_type": categoryType,
         "uid": uid,
+        "category": categorycolor
       };
+}
+
+List<Category2> category2FromJson(String str) => List<Category2>.from(json.decode(str).map((x) => Category2.fromJson(x)));
+
+String category2ToJson(List<Category2> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class Category2 {
+    String id;
+    String categoryName;
+    String categoryIcon;
+    String categoryType;
+    String uid;
+    String categoryColor;
+
+
+    Category2({
+        required this.id,
+        required this.categoryName,
+        required this.categoryIcon,
+        required this.categoryType,
+        required this.uid,
+        required this.categoryColor
+
+    });
+
+    factory Category2.fromJson(Map<String, dynamic> json) => Category2(
+        id: json["_id"],
+        categoryName: json["category_name"],
+        categoryIcon: json["category_icon"],
+        categoryType: json["category_type"],
+        uid: json["uid"],
+
+        categoryColor: json["category_color"],
+
+    );
+
+    Map<String, dynamic> toJson() => {
+        "_id": id,
+        "category_name": categoryName,
+        "category_icon": categoryIcon,
+        "category_type": categoryType,
+        "uid": uid,
+
+        "category_color": categoryColor,
+ 
+    };
 }

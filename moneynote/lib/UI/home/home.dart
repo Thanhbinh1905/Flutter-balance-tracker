@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:moneynote/UI/report/report.dart';
 import 'package:moneynote/UI/orther/orther.dart';
 import 'package:moneynote/UI/calendar/calendar.dart';
+import 'package:moneynote/constants/constant.dart';
+import 'package:moneynote/utils/color_convert.dart';
+import 'package:moneynote/utils/icon_convert.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'homedb.dart';
+import 'package:http/http.dart' as http;
 
 Map<String, dynamic>? userMetadata;
 
@@ -76,6 +82,17 @@ class _hometab extends State<hometab> {
   int KselectedIndex = 0;
   int selectedIndex = 0;
   int selectedIndex2 = 0;
+    List<Category2> categories = [];
+  bool isLoading = true;
+    List<Category> categories2 = [];
+  bool isLoading2 = true;
+  @override
+  void initState() {
+    super.initState();
+    getCategory();
+        getCategory2();
+    
+  }
 
   final List<String> labels = [
     'Ăn uống',
@@ -135,6 +152,64 @@ class _hometab extends State<hometab> {
       });
     }
   }
+
+
+Future<void> getCategory() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
+        headers: {'Content-Type': 'application/json','CLIENT_ID':userMetadata?['_id']},
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        setState(() {
+          categories = category2FromJson(response.body);
+          isLoading = false;
+        });
+      } else {
+        print('Failed to load data: ${response.statusCode}');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+ Future<void> getCategory2() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${GetConstant().apiEndPoint}/category?category_type=outcome'),
+        headers: {'Content-Type': 'application/json','CLIENT_ID':userMetadata?['_id']},
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        setState(() {
+          categories2 = categoryFromJson(response.body);
+          isLoading2 = false;
+        });
+      } else {
+        print('Failed to load data: ${response.statusCode}');
+        setState(() {
+          isLoading2 = false;
+        });
+      }
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        isLoading2 = false;
+      });
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -356,8 +431,9 @@ class _hometab extends State<hometab> {
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
                   ),
-                  itemCount: labels.length,
+                  itemCount: categories2.length,
                   itemBuilder: (context, index) {
+                     final category = categories2[index];
                     return GestureDetector(
                       onTap: () {
                         if (labels[index] == "Chỉnh sửa >") {
@@ -389,15 +465,16 @@ class _hometab extends State<hometab> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              icons[index],
-                              color: selectedIndex == index
-                                  ? Colors.green
-                                  : Colors.grey,
-                              size: 20,
+                                     IconConverter.getIconDataFromString(category.categoryIcon) ??
+                      Icons.error,
+                  color: selectedIndex == index
+                      ? ColorConverter.getColorFromString(category.categorycolor)
+                      : ColorConverter.getColorFromString(category.categorycolor),
+                  size: 20,
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              labels[index],
+                     category.categoryName,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: selectedIndex == index
@@ -581,8 +658,9 @@ class _hometab extends State<hometab> {
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
                   ),
-                  itemCount: labels2.length,
+                  itemCount: categories.length,
                   itemBuilder: (context, index) {
+                     final category = categories[index];
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -606,15 +684,16 @@ class _hometab extends State<hometab> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              icons[index],
-                              color: selectedIndex2 == index
-                                  ? const Color.fromARGB(255, 239, 113, 16)
-                                  : Colors.grey,
-                              size: 20,
-                            ),
+                  IconConverter.getIconDataFromString(category.categoryIcon) ??
+                      Icons.error,
+                  color: selectedIndex2 == index
+                      ? ColorConverter.getColorFromString(category.categoryColor)
+                      :ColorConverter.getColorFromString(category.categoryColor),
+                  size: 20,
+                ),
                             const SizedBox(height: 8),
                             Text(
-                              labels2[index],
+                              category.categoryName,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: selectedIndex2 == index
