@@ -53,8 +53,6 @@ class _CalendarScreenState extends State<calendar> {
     final url = Uri.parse(
         '${GetConstant().apiEndPoint}/transaction?month=$month&year=$year');
     try {
-      // print(
-      //     'User Metadata: ${userMetadata?['_id']}'); // In metadata để kiểm tra
       final response = await http.get(
         url,
         headers: {
@@ -62,13 +60,8 @@ class _CalendarScreenState extends State<calendar> {
           'CLIENT_ID': userMetadata?['_id'],
         },
       );
-
-      // print(
-      //    'Status Code: ${response.statusCode}'); // In mã trạng thái để kiểm tra
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        // print('Data: $data'); // In dữ liệu trả về để kiểm tra
-
         // Trả về dữ liệu
         return data.cast<Map<String, dynamic>>();
       } else {
