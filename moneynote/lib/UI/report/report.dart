@@ -16,6 +16,23 @@ class report extends StatefulWidget {
 
 class _ReportScreenState extends State<report> {
   int KselectedIndex = 0;
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        print(selectedDate);
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +100,57 @@ class _ReportScreenState extends State<report> {
                     KselectedIndex = index!;
                   });
                 },
+              ),
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 77, 199, 89),
+            ),
+            height: 45,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                color: const Color.fromARGB(255, 98, 196, 42),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedDate =
+                            selectedDate.subtract(const Duration(days: 1));
+                      });
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Icon(Icons.arrow_back_ios, color: Colors.white),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _selectDate(context),
+                    child: Text(
+                      "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          decoration: TextDecoration.none),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedDate =
+                            selectedDate.add(const Duration(days: 1));
+                      });
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Icon(Icons.arrow_forward_ios, color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

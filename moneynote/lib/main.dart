@@ -55,15 +55,20 @@ class _LoginFormState extends State<LoginForm> {
         // Kiểm tra phản hồi từ server
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
-          // print('Login successful: $responseData');
-
-          // Điều hướng đến HomeScreen và truyền dữ liệu
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => moneynoteHome(metadata: responseData),
-            ),
-          );
+          try {
+            if (responseData is Map<String, dynamic>) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => moneynoteHome(metadata: responseData),
+                ),
+              );
+            } else {
+              _showErrorDialog('Wrong username or password, please try again');
+            }
+          } catch (e) {
+            _showErrorDialog('Failed to parse response: $e');
+          }
         } else {
           // Hiển thị thông báo lỗi nếu đăng nhập thất bại
           _showErrorDialog('Login failed: ${response.statusCode}');

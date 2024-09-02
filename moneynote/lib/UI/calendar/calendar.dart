@@ -148,8 +148,8 @@ class _CalendarScreenState extends State<calendar> {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay;
 
-                  String formattedDate =
-                      DateFormat('yyyy-MM-dd').format(_selectedDay);
+                  // String formattedDate =
+                  //     DateFormat('yyyy-MM-dd').format(_selectedDay);
                 });
               },
               onPageChanged: (focusedDay) async {
@@ -414,7 +414,7 @@ class _CalendarScreenState extends State<calendar> {
                           padding: const EdgeInsets.only(right: 5, left: 5),
                           child: Text(
                             transaction['transaction_type'] == 'income'
-                                ? '${transaction['transaction_amount']}đ'
+                                ? '$transaction  đ'
                                 : '-${transaction['transaction_amount']}đ',
                             style: TextStyle(
                               color: transaction['transaction_type'] == 'income'
