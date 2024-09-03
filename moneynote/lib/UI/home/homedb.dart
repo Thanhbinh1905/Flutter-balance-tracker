@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:moneynote/constants/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:moneynote/UI/home/home.dart';
@@ -14,30 +14,32 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  List<Category> categories = [];
+  List<CategoryIncome> categoriesIncome = [];
   bool isLoading = true;
-    List<Category> categories2 = [];
+  List<CategoryOutcome> categoriesOutcome = [];
   bool isLoading2 = true;
-int KselectedIndex = 0;
+  int KselectedIndex = 0;
   @override
   void initState() {
     super.initState();
     getCategory();
-        getCategory2();
-    
+    getCategory2();
   }
 
   Future<void> getCategory() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.106:9001/category?category_type=income'),
-        headers: {'Content-Type': 'application/json','CLIENT_ID':userMetadata?['_id']},
+        Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id']
+        },
       );
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         setState(() {
-          categories = categoryFromJson(response.body);
+          categoriesIncome = categoryIncomeFromJson(response.body);
           isLoading = false;
         });
       } else {
@@ -54,18 +56,21 @@ int KselectedIndex = 0;
     }
   }
 
-
- Future<void> getCategory2() async {
+  Future<void> getCategory2() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.106:9001/category?category_type=outcome'),
-        headers: {'Content-Type': 'application/json','CLIENT_ID':userMetadata?['_id']},
+        Uri.parse(
+            '${GetConstant().apiEndPoint}/category?category_type=outcome'),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id']
+        },
       );
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         setState(() {
-          categories2 = categoryFromJson(response.body);
+          categoriesOutcome = categoryOutcomeFromJson(response.body);
           isLoading2 = false;
         });
       } else {
@@ -82,17 +87,14 @@ int KselectedIndex = 0;
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-body: Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
                     Color(0xFFDFE6DD),
@@ -105,26 +107,26 @@ body: Column(
               ),
               height: 130,
               width: double.infinity,
-              padding: EdgeInsets.only(top: 20.0),
+              padding: const EdgeInsets.only(top: 20.0),
               child: Align(
                 alignment: Alignment.center,
-                child: Container(
+                child: SizedBox(
                   width: 200,
                   height: 40,
                   child: ToggleSwitch(
                     minWidth: 110.0,
                     minHeight: 30,
                     cornerRadius: 10.0,
-                    activeBgColors: [
-                      [const Color.fromARGB(255, 64, 175, 0)],
-                      [const Color.fromARGB(255, 64, 175, 0)]
+                    activeBgColors: const [
+                      [Color.fromARGB(255, 64, 175, 0)],
+                      [Color.fromARGB(255, 64, 175, 0)]
                     ],
                     activeFgColor: Colors.white,
                     inactiveBgColor: Colors.grey,
                     inactiveFgColor: Colors.white,
                     initialLabelIndex: KselectedIndex,
                     totalSwitches: 2,
-                    labels: ['Tiền chi', 'Tiền thu'],
+                    labels: const ['Tiền chi', 'Tiền thu'],
                     customTextStyles: [
                       TextStyle(
                         fontSize: 16.0,
@@ -150,89 +152,81 @@ body: Column(
                   ),
                 ),
               )),
-          Expanded(
-            child: KselectedIndex == 0
-                ? _suaTienChiFrame()
-                : _suaTienThuFrame(),
-          ),
+          // Expanded(
+          //   child:
+          //       KselectedIndex == 0 ? _suaTienChiFrame() : _suaTienThuFrame(),
+          // ),
         ],
       ),
-      
-     
-     
     );
   }
-  Widget _suaTienChiFrame(){
-  return Scaffold( 
- body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return Container(
-                  height: 110,
-                  color: const Color.fromARGB(255, 29, 83, 110),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                  
-                    
-                      Text(
-                        'Name: ${category.categoryName}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        'Icon: ${category.categoryIcon}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    
-                    ],
-                  ),
-                );
-              },
-            ),
 
-  );
-  }
- Widget _suaTienThuFrame(){
-  return Scaffold( 
- body: isLoading2
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: categories2.length,
-              itemBuilder: (context, index) {
-                final category = categories2[index];
-                return Container(
-                  height: 100,
-                  color: const Color.fromARGB(255, 29, 83, 110),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                  
-                    
-                      Text(
-                        'Name: ${category.categoryName}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        'Icon: ${category.categoryIcon}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    
-                    ],
-                  ),
-                );
-              },
-            ),
+  // Widget _suaTienChiFrame() {
+  //   return Scaffold(
+  //     body: isLoading
+  //         ? const Center(child: CircularProgressIndicator())
+  //         : ListView.builder(
+  //             itemCount: categories.length,
+  //             itemBuilder: (context, index) {
+  //               final category = categories[index];
+  //               return Container(
+  //                 height: 110,
+  //                 color: const Color.fromARGB(255, 29, 83, 110),
+  //                 child: Column(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Text(
+  //                       'Name: ${category.categoryName}',
+  //                       style: const TextStyle(color: Colors.white),
+  //                     ),
+  //                     Text(
+  //                       'Icon: ${category.categoryIcon}',
+  //                       style: const TextStyle(color: Colors.white),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //   );
+  // }
 
-  );}
+  // Widget _suaTienThuFrame() {
+  //   return Scaffold(
+  //     body: isLoading2
+  //         ? const Center(child: CircularProgressIndicator())
+  //         : ListView.builder(
+  //             itemCount: categories2.length,
+  //             itemBuilder: (context, index) {
+  //               final category = categories2[index];
+  //               return Container(
+  //                 height: 100,
+  //                 color: const Color.fromARGB(255, 29, 83, 110),
+  //                 child: Column(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Text(
+  //                       'Name: ${category.categoryName}',
+  //                       style: const TextStyle(color: Colors.white),
+  //                     ),
+  //                     Text(
+  //                       'Icon: ${category.categoryIcon}',
+  //                       style: const TextStyle(color: Colors.white),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //   );
+  // }
 }
 
-List<Category> categoryFromJson(String str) => List<Category>.from(
-    json.decode(str).map((x) => Category.fromJson(x)));
+List<CategoryIncome> categoryIncomeFromJson(String str) =>
+    List<CategoryIncome>.from(
+        json.decode(str).map((x) => CategoryIncome.fromJson(x)));
 
-class Category {
+class CategoryIncome {
   String id;
   String categoryName;
   String categoryIcon;
@@ -240,23 +234,21 @@ class Category {
   String uid;
   String categorycolor;
 
-  Category({
-    required this.id,
-    required this.categoryName,
-    required this.categoryIcon,
-    required this.categoryType,
-    required this.uid,
-    required this.categorycolor
-  });
+  CategoryIncome(
+      {required this.id,
+      required this.categoryName,
+      required this.categoryIcon,
+      required this.categoryType,
+      required this.uid,
+      required this.categorycolor});
 
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-        id: json["_id"],
-        categoryName: json["category_name"],
-        categoryIcon: json["category_icon"],
-        categoryType: json["category_type"],
-        uid: json["uid"],
-        categorycolor:json["category_color"]
-      );
+  factory CategoryIncome.fromJson(Map<String, dynamic> json) => CategoryIncome(
+      id: json["_id"],
+      categoryName: json["category_name"],
+      categoryIcon: json["category_icon"],
+      categoryType: json["category_type"],
+      uid: json["uid"],
+      categorycolor: json["category_color"]);
 
   Map<String, dynamic> toJson() => {
         "_id": id,
@@ -268,48 +260,45 @@ class Category {
       };
 }
 
-List<Category2> category2FromJson(String str) => List<Category2>.from(json.decode(str).map((x) => Category2.fromJson(x)));
+List<CategoryOutcome> categoryOutcomeFromJson(String str) =>
+    List<CategoryOutcome>.from(
+        json.decode(str).map((x) => CategoryOutcome.fromJson(x)));
 
-String category2ToJson(List<Category2> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+// String categoryOutcomeToJson(List<CategoryOutcome> data) =>
+//     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Category2 {
-    String id;
-    String categoryName;
-    String categoryIcon;
-    String categoryType;
-    String uid;
-    String categoryColor;
+class CategoryOutcome {
+  String id;
+  String categoryName;
+  String categoryIcon;
+  String categoryType;
+  String uid;
+  String categoryColor;
 
+  CategoryOutcome(
+      {required this.id,
+      required this.categoryName,
+      required this.categoryIcon,
+      required this.categoryType,
+      required this.uid,
+      required this.categoryColor});
 
-    Category2({
-        required this.id,
-        required this.categoryName,
-        required this.categoryIcon,
-        required this.categoryType,
-        required this.uid,
-        required this.categoryColor
-
-    });
-
-    factory Category2.fromJson(Map<String, dynamic> json) => Category2(
+  factory CategoryOutcome.fromJson(Map<String, dynamic> json) =>
+      CategoryOutcome(
         id: json["_id"],
         categoryName: json["category_name"],
         categoryIcon: json["category_icon"],
         categoryType: json["category_type"],
         uid: json["uid"],
-
         categoryColor: json["category_color"],
+      );
 
-    );
-
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "_id": id,
         "category_name": categoryName,
         "category_icon": categoryIcon,
         "category_type": categoryType,
         "uid": uid,
-
         "category_color": categoryColor,
- 
-    };
+      };
 }

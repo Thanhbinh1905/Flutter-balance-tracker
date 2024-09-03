@@ -82,16 +82,13 @@ class _hometab extends State<hometab> {
   int KselectedIndex = 0;
   int selectedIndex = 0;
   int selectedIndex2 = 0;
-    List<Category2> categories = [];
-  bool isLoading = true;
-    List<Category> categories2 = [];
-  bool isLoading2 = true;
+  List<CategoryIncome> categoriesIncome = [];
+  List<CategoryOutcome> categoriesOutcome = [];
   @override
   void initState() {
     super.initState();
-    getCategory();
-        getCategory2();
-    
+    // getCategory();
+    // getCategory2();
   }
 
   final List<String> labels = [
@@ -124,7 +121,7 @@ class _hometab extends State<hometab> {
     Icons.local_gas_station,
     Icons.edit
   ];
-  final List<IconData > icons2 = [
+  final List<IconData> icons2 = [
     Icons.fastfood,
     Icons.shopping_basket,
     Icons.shopping_bag,
@@ -153,63 +150,56 @@ class _hometab extends State<hometab> {
     }
   }
 
-
-Future<void> getCategory() async {
+  Future<void> getCategoryIncome() async {
     try {
       final response = await http.get(
         Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
-        headers: {'Content-Type': 'application/json','CLIENT_ID':userMetadata?['_id']},
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id']
+        },
       );
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         setState(() {
-          categories = category2FromJson(response.body);
-          isLoading = false;
+          categoriesIncome = categoryIncomeFromJson(response.body);
         });
       } else {
         print('Failed to load data: ${response.statusCode}');
-        setState(() {
-          isLoading = false;
-        });
+        setState(() {});
       }
     } catch (e) {
       print('Error: $e');
-      setState(() {
-        isLoading = false;
-      });
+      setState(() {});
     }
   }
 
-
- Future<void> getCategory2() async {
+  Future<void> getCategoryOutcome() async {
     try {
       final response = await http.get(
-        Uri.parse('${GetConstant().apiEndPoint}/category?category_type=outcome'),
-        headers: {'Content-Type': 'application/json','CLIENT_ID':userMetadata?['_id']},
+        Uri.parse(
+            '${GetConstant().apiEndPoint}/category?category_type=outcome'),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id']
+        },
       );
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         setState(() {
-          categories2 = categoryFromJson(response.body);
-          isLoading2 = false;
+          categoriesOutcome = categoryOutcomeFromJson(response.body);
         });
       } else {
         print('Failed to load data: ${response.statusCode}');
-        setState(() {
-          isLoading2 = false;
-        });
+        setState(() {});
       }
     } catch (e) {
       print('Error: $e');
-      setState(() {
-        isLoading2 = false;
-      });
+      setState(() {});
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +346,7 @@ Future<void> getCategory() async {
               Expanded(
                 child: CupertinoTextField(
                   controller: noteController,
-                  placeholder: "Nhập ghi chú ${userMetadata?['username']}",
+                  placeholder: "Nhập ghi chú",
                   padding: const EdgeInsets.symmetric(
                       vertical: 12.0, horizontal: 12.0),
                   decoration: BoxDecoration(
@@ -431,9 +421,9 @@ Future<void> getCategory() async {
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
                   ),
-                  itemCount: categories2.length,
+                  itemCount: categoriesIncome.length,
                   itemBuilder: (context, index) {
-                     final category = categories2[index];
+                    final category = categoriesIncome[index];
                     return GestureDetector(
                       onTap: () {
                         if (labels[index] == "Chỉnh sửa >") {
@@ -465,16 +455,19 @@ Future<void> getCategory() async {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                                     IconConverter.getIconDataFromString(category.categoryIcon) ??
-                      Icons.error,
-                  color: selectedIndex == index
-                      ? ColorConverter.getColorFromString(category.categorycolor)
-                      : ColorConverter.getColorFromString(category.categorycolor),
-                  size: 20,
+                              IconConverter.getIconDataFromString(
+                                      category.categoryIcon) ??
+                                  Icons.error,
+                              color: selectedIndex == index
+                                  ? ColorConverter.getColorFromString(
+                                      category.categorycolor)
+                                  : ColorConverter.getColorFromString(
+                                      category.categorycolor),
+                              size: 20,
                             ),
                             const SizedBox(height: 8),
                             Text(
-                     category.categoryName,
+                              category.categoryName,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: selectedIndex == index
@@ -658,9 +651,9 @@ Future<void> getCategory() async {
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
                   ),
-                  itemCount: categories.length,
+                  itemCount: categoriesOutcome.length,
                   itemBuilder: (context, index) {
-                     final category = categories[index];
+                    final category = categoriesOutcome[index];
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -684,13 +677,16 @@ Future<void> getCategory() async {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                  IconConverter.getIconDataFromString(category.categoryIcon) ??
-                      Icons.error,
-                  color: selectedIndex2 == index
-                      ? ColorConverter.getColorFromString(category.categoryColor)
-                      :ColorConverter.getColorFromString(category.categoryColor),
-                  size: 20,
-                ),
+                              IconConverter.getIconDataFromString(
+                                      category.categoryIcon) ??
+                                  Icons.error,
+                              color: selectedIndex2 == index
+                                  ? ColorConverter.getColorFromString(
+                                      category.categoryColor)
+                                  : ColorConverter.getColorFromString(
+                                      category.categoryColor),
+                              size: 20,
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               category.categoryName,
@@ -733,9 +729,9 @@ Future<void> getCategory() async {
     );
   }
 }
+
 class ChinhSuaTienChi extends StatefulWidget {
   const ChinhSuaTienChi({super.key});
-
 
   @override
   State<ChinhSuaTienChi> createState() => _ChinhSuaTienChiState();
@@ -744,13 +740,9 @@ class ChinhSuaTienChi extends StatefulWidget {
 class _ChinhSuaTienChiState extends State<ChinhSuaTienChi> {
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-      appBar: AppBar( title: const Text('AppBar Demo')),
-body: CategoryScreen(),
-      );
-
+    return Scaffold(
+      appBar: AppBar(title: const Text('AppBar Demo')),
+      body: const CategoryScreen(),
+    );
   }
-  }
-
-
- 
+}

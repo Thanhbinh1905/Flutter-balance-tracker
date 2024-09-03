@@ -42,8 +42,8 @@ class _ReportScreenState extends State<report> {
     'November',
     'December'
   ];
-  bool isExpenseSelected =
-      true; // hoặc false tùy vào trạng thái mặc định của bạn
+  bool isExpenseSelected = true; // hoặc false tùy vào trạng thái
+
   int kSelectedIndex = 0;
   DateTime selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, 1);
@@ -149,6 +149,7 @@ class _ReportScreenState extends State<report> {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         // Trả về dữ liệu
+        // print(data);
         return data.cast<Map<String, dynamic>>();
       } else {
         throw Exception('Failed to load data');
@@ -161,47 +162,72 @@ class _ReportScreenState extends State<report> {
 
   List<PieChartSectionData> showingSections(bool isExpenseSelected) {
     final String transactionType = isExpenseSelected ? 'outcome' : 'income';
-    double total = 0.0;
+    final Map<String, double> totals = {};
 
-    // Tính tổng số tiền cho loại giao dịch đã chọn
+    // Tính tổng số tiền cho từng loại giao dịch
     for (var transaction in dataTransaction) {
-      if (transaction['transaction_type'] == transactionType) {
-        total += transaction['transaction_amount'];
+      String type = transaction['transaction_type'];
+      if (totals.containsKey(type)) {
+        totals[type] = totals[type]! +
+            (transaction['transaction_amount'] as num).toDouble();
+      } else {
+        totals[type] = (transaction['transaction_amount'] as num).toDouble();
       }
     }
+    // Tính tổng số tiền của tất cả các giao dịch
+    final totalAmount =
+        totals.isNotEmpty ? totals.values.reduce((a, b) => a + b) : 0.0;
 
     final List<PieChartSectionData> sections = [];
     int index = 0;
+    // print(totals[transactionType] == null);
+    // Nếu không có giao dịch nào, thêm một phần mặc định
+    if (dataTransaction.isEmpty || totals[transactionType] == null) {
+      sections.add(
+        PieChartSectionData(
+          color: Colors.grey,
+          value: 100,
+          radius: 50.0,
+          showTitle: false,
+        ),
+      );
+    } else {
+      // Tạo danh sách các phần cho biểu đồ tròn
+      for (var transaction in dataTransaction) {
+        if (transaction['transaction_type'] == transactionType) {
+          final isTouched = index == touchedIndex;
+          final fontSize = isTouched ? 25.0 : 16.0;
+          final radius = isTouched ? 60.0 : 50.0;
+          const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
 
-    // Tạo danh sách các phần cho biểu đồ tròn
-    for (var transaction in dataTransaction) {
-      if (transaction['transaction_type'] == transactionType) {
-        final isTouched = index == touchedIndex;
-        final fontSize = isTouched ? 25.0 : 16.0;
-        final radius = isTouched ? 60.0 : 50.0;
-        const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
-        String color = transaction['category']['category_color'];
-        Color? colorData = ColorConverter.getColorFromString(color);
+          // Chuyển đổi màu từ chuỗi sang Color
+          String color = transaction['category']['category_color'];
+          Color? colorData = ColorConverter.getColorFromString(color);
 
-        sections.add(
-          PieChartSectionData(
-            color: colorData,
-            value: (transaction['transaction_amount'] as num).toDouble(),
-            title:
-                '${(((transaction['transaction_amount'] as num).toDouble() / total) * 100).toStringAsFixed(1)}%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              shadows: shadows,
+          // Tính phần trăm của từng giao dịch so với tổng
+          double percentage =
+              ((transaction['transaction_amount'] as num).toDouble() /
+                      totalAmount) *
+                  100;
+          String Cate = transaction['category']['category_name'];
+          sections.add(
+            PieChartSectionData(
+              color: colorData,
+              value: (transaction['transaction_amount'] as num).toDouble(),
+              title: Cate,
+              radius: radius,
+              titleStyle: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: shadows,
+              ),
             ),
-          ),
-        );
-        index++;
+          );
+          index++;
+        }
       }
     }
-
     return sections;
   }
 
@@ -419,13 +445,12 @@ class _ReportScreenState extends State<report> {
                       ),
                       const SizedBox(height: 4),
                       AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        height: 2,
-                        width: !isExpenseSelected ? 150 : 0,
-                        color: isExpenseSelected
-                            ? Colors.green
-                            : const Color(0xFFCFDFC6),
-                      ),
+                          duration: const Duration(milliseconds: 300),
+                          height: 2,
+                          width: !isExpenseSelected ? 150 : 0,
+                          color: isExpenseSelected
+                              ? const Color(0xFFCFDFC6)
+                              : Colors.green),
                     ],
                   ),
                 ),
@@ -549,43 +574,6 @@ class _ReportScreenState extends State<report> {
                 ? _monthlyReportFrame
                 : _yearlyReportFrame, // Hiển thị widget tương ứng dựa trên chỉ số được chọn
           ),
-          // Expanded(
-          //   child: isExpenseSelected
-          //       ? PieChart(
-          //           // Biểu đồ tròn cho "Chi tiêu"
-          //           PieChartData(
-          //             sections: [
-          //               PieChartSectionData(
-          //                 value: 40,
-          //                 title: '40%',
-          //                 color: Colors.green,
-          //               ),
-          //               PieChartSectionData(
-          //                 value: 60,
-          //                 title: '60%',
-          //                 color: Colors.red,
-          //               ),
-          //             ],
-          //           ),
-          //         )
-          //       : PieChart(
-          //           // Biểu đồ tròn cho "Thu nhập"
-          //           PieChartData(
-          //             sections: [
-          //               PieChartSectionData(
-          //                 value: 70,
-          //                 title: '70%',
-          //                 color: Colors.blue,
-          //               ),
-          //               PieChartSectionData(
-          //                 value: 30,
-          //                 title: '30%',
-          //                 color: Colors.orange,
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          // ),
         ],
       ),
     );
