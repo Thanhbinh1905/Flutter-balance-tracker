@@ -4,6 +4,8 @@ import 'package:moneynote/constants/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:moneynote/UI/home/home.dart';
+import 'package:moneynote/utils/color_convert.dart';
+import 'package:moneynote/utils/icon_convert.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -15,18 +17,19 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   List<CategoryIncome> categoriesIncome = [];
-  bool isLoading = true;
+
   List<CategoryOutcome> categoriesOutcome = [];
-  bool isLoading2 = true;
+int selectedIndex2 = 0;
+int selectedIndex = 0;
   int KselectedIndex = 0;
   @override
   void initState() {
     super.initState();
-    getCategory();
-    getCategory2();
+    getCategoryIncome();
+    getCategoryOutcome();
   }
 
-  Future<void> getCategory() async {
+   Future<void> getCategoryIncome() async {
     try {
       final response = await http.get(
         Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
@@ -38,25 +41,21 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
+            print(responseData);
         setState(() {
           categoriesIncome = categoryIncomeFromJson(response.body);
-          isLoading = false;
         });
       } else {
         print('Failed to load data: ${response.statusCode}');
-        setState(() {
-          isLoading = false;
-        });
+        setState(() {});
       }
     } catch (e) {
       print('Error: $e');
-      setState(() {
-        isLoading = false;
-      });
+      setState(() {});
     }
   }
 
-  Future<void> getCategory2() async {
+  Future<void> getCategoryOutcome() async {
     try {
       final response = await http.get(
         Uri.parse(
@@ -69,158 +68,332 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
+        print(responseData);
         setState(() {
           categoriesOutcome = categoryOutcomeFromJson(response.body);
-          isLoading2 = false;
         });
       } else {
         print('Failed to load data: ${response.statusCode}');
-        setState(() {
-          isLoading2 = false;
-        });
+        setState(() {});
       }
     } catch (e) {
       print('Error: $e');
-      setState(() {
-        isLoading2 = false;
-      });
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFFDFE6DD),
-                    Color(0xFFFFFFFF),
-                  ], // Các màu của gradient
-                  stops: [0.05, 1], // Các điểm dừng của gradient
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+  return Scaffold(
+    body: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFDFE6DD),
+                Color(0xFFFFFFFF),
+              ],
+              stops: [0.05, 1],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+          height: 90,
+          width: double.infinity,
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context); // Navigates back to the previous screen
+                },
+              ),
+              SizedBox(
+                width: 200,
+                height: 40,
+                child: ToggleSwitch(
+                  minWidth: 110.0,
+                  minHeight: 30,
+                  cornerRadius: 10.0,
+                  activeBgColors: const [
+                    [Color.fromARGB(255, 64, 175, 0)],
+                    [Color.fromARGB(255, 64, 175, 0)]
+                  ],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  initialLabelIndex: KselectedIndex,
+                  totalSwitches: 2,
+                  labels: const ['Tiền chi', 'Tiền thu'],
+                  customTextStyles: [
+                    TextStyle(
+                      fontSize: 16.0,
+                      decoration: TextDecoration.none,
+                      color: KselectedIndex == 0
+                          ? Colors.white
+                          : Colors.green[800],
+                    ),
+                    TextStyle(
+                      fontSize: 16.0,
+                      decoration: TextDecoration.none,
+                      color: KselectedIndex == 1
+                          ? Colors.white
+                          : Colors.green[800],
+                    ),
+                  ],
+                  radiusStyle: true,
+                  onToggle: (index) {
+                    setState(() {
+                      KselectedIndex = index!;
+                    });
+                  },
                 ),
               ),
-              height: 130,
-              width: double.infinity,
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: 200,
-                  height: 40,
-                  child: ToggleSwitch(
-                    minWidth: 110.0,
-                    minHeight: 30,
-                    cornerRadius: 10.0,
-                    activeBgColors: const [
-                      [Color.fromARGB(255, 64, 175, 0)],
-                      [Color.fromARGB(255, 64, 175, 0)]
-                    ],
-                    activeFgColor: Colors.white,
-                    inactiveBgColor: Colors.grey,
-                    inactiveFgColor: Colors.white,
-                    initialLabelIndex: KselectedIndex,
-                    totalSwitches: 2,
-                    labels: const ['Tiền chi', 'Tiền thu'],
-                    customTextStyles: [
-                      TextStyle(
-                        fontSize: 16.0,
-                        decoration: TextDecoration.none,
-                        color: KselectedIndex == 0
-                            ? Colors.white
-                            : Colors.green[800],
-                      ),
-                      TextStyle(
-                        fontSize: 12.0,
-                        decoration: TextDecoration.none,
-                        color: KselectedIndex == 1
-                            ? Colors.white
-                            : Colors.green[800],
-                      ),
-                    ],
-                    radiusStyle: true,
-                    onToggle: (index) {
-                      setState(() {
-                        KselectedIndex = index!;
-                      });
-                    },
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCategory (), // Replace with your target page
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: KselectedIndex == 0 ? _suaTienChiFrame() : _suaTienThuFrame(),
+        ),
+      ],
+    ),
+  );
+}
+Widget AddCategory() {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Another Page'),
+   
+    
+    ),
+    body: Center(
+      child: Text(
+        'This is Another Page',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
+Widget _suaTienChiFrame() {
+  return Scaffold(
+    
+    body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: categoriesOutcome.length + 1,
+        itemBuilder: (context, index) {
+          if (index == categoriesOutcome.length) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddCategory(), 
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    "Thêm danh mục",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-              )),
-          // Expanded(
-          //   child:
-          //       KselectedIndex == 0 ? _suaTienChiFrame() : _suaTienThuFrame(),
-          // ),
-        ],
+              ),
+            );
+          } else {
+            final category = categoriesOutcome[index];
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex2 = index;
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                decoration: BoxDecoration(
+                  color: selectedIndex2 == index
+                      ? Colors.green[50]
+                      : Colors.white,
+                  border: Border.all(
+                    color: selectedIndex2 == index
+                        ? const Color.fromARGB(255, 101, 180, 104)
+                        : Colors.grey,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        IconConverter.getIconDataFromString(category.categoryIcon) ??
+                            Icons.error,
+                        color: ColorConverter.getColorFromString(category.categoryColor),
+                        size: 30,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        category.categoryName,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: selectedIndex2 == index
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        },
       ),
-    );
-  }
-
-  // Widget _suaTienChiFrame() {
-  //   return Scaffold(
-  //     body: isLoading
-  //         ? const Center(child: CircularProgressIndicator())
-  //         : ListView.builder(
-  //             itemCount: categories.length,
-  //             itemBuilder: (context, index) {
-  //               final category = categories[index];
-  //               return Container(
-  //                 height: 110,
-  //                 color: const Color.fromARGB(255, 29, 83, 110),
-  //                 child: Column(
-  //                   mainAxisAlignment: MainAxisAlignment.center,
-  //                   children: [
-  //                     Text(
-  //                       'Name: ${category.categoryName}',
-  //                       style: const TextStyle(color: Colors.white),
-  //                     ),
-  //                     Text(
-  //                       'Icon: ${category.categoryIcon}',
-  //                       style: const TextStyle(color: Colors.white),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               );
-  //             },
-  //           ),
-  //   );
-  // }
-
-  // Widget _suaTienThuFrame() {
-  //   return Scaffold(
-  //     body: isLoading2
-  //         ? const Center(child: CircularProgressIndicator())
-  //         : ListView.builder(
-  //             itemCount: categories2.length,
-  //             itemBuilder: (context, index) {
-  //               final category = categories2[index];
-  //               return Container(
-  //                 height: 100,
-  //                 color: const Color.fromARGB(255, 29, 83, 110),
-  //                 child: Column(
-  //                   mainAxisAlignment: MainAxisAlignment.center,
-  //                   children: [
-  //                     Text(
-  //                       'Name: ${category.categoryName}',
-  //                       style: const TextStyle(color: Colors.white),
-  //                     ),
-  //                     Text(
-  //                       'Icon: ${category.categoryIcon}',
-  //                       style: const TextStyle(color: Colors.white),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               );
-  //             },
-  //           ),
-  //   );
-  // }
+    ),
+  );
 }
+
+
+ 
+Widget _suaTienThuFrame() {
+  return Scaffold(
+    
+    body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: categoriesIncome.length + 1,
+        itemBuilder: (context, index) {
+          if (index == categoriesIncome.length) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddCategory(), 
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    "Thêm danh mục",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          } else {
+            final category = categoriesIncome[index];
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex2 = index;
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                decoration: BoxDecoration(
+                  color: selectedIndex2 == index
+                      ? Colors.green[50]
+                      : Colors.white,
+                  border: Border.all(
+                    color: selectedIndex2 == index
+                        ? const Color.fromARGB(255, 101, 180, 104)
+                        : Colors.grey,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        IconConverter.getIconDataFromString(category.categoryIcon) ??
+                            Icons.error,
+                        color: ColorConverter.getColorFromString(category.categorycolor),
+                        size: 30,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        category.categoryName,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: selectedIndex2 == index
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    ),
+  );
+}
+
+}
+
+
+  
 
 List<CategoryIncome> categoryIncomeFromJson(String str) =>
     List<CategoryIncome>.from(
@@ -264,8 +437,8 @@ List<CategoryOutcome> categoryOutcomeFromJson(String str) =>
     List<CategoryOutcome>.from(
         json.decode(str).map((x) => CategoryOutcome.fromJson(x)));
 
-// String categoryOutcomeToJson(List<CategoryOutcome> data) =>
-//     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String categoryOutcomeToJson(List<CategoryOutcome> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class CategoryOutcome {
   String id;
