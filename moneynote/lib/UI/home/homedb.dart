@@ -239,6 +239,14 @@ Widget _suaTienChiFrame() {
                 setState(() {
                   selectedIndex2 = index;
                 });
+                      Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditCate(
+                      categoryOutcome: category,
+                    ),
+                  ),
+                );
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -340,6 +348,14 @@ Widget _suaTienThuFrame() {
                 setState(() {
                   selectedIndex2 = index;
                 });
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditCate(
+                      categoryIncome: category,
+                    ),
+                  ),
+                );
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -392,6 +408,70 @@ Widget _suaTienThuFrame() {
 
 }
 
+class EditCate extends StatelessWidget {
+  final CategoryIncome? categoryIncome;
+  final CategoryOutcome? categoryOutcome;
+
+  const EditCate({Key? key, this.categoryIncome, this.categoryOutcome}) : super(key: key);
+   Future<void> _deleteCategory(BuildContext context) async {
+    final categoryId = categoryIncome != null ? categoryIncome!.id : categoryOutcome!.id;
+
+    try {
+      final response = await http.delete(
+        Uri.parse('${GetConstant().apiEndPoint}/category/${categoryId}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id']
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Successfully deleted
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Category deleted successfully')),
+        );
+        Navigator.pop(context); // Navigate back after deletion
+      } else {
+        // Error occurred
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete category')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(categoryIncome != null ? categoryIncome!.categoryName : 
+                      categoryOutcome != null ? categoryOutcome!.categoryName : 
+                      'Add Category'),
+                      actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () => _deleteCategory(context),
+          ),
+        ],
+      ),
+      body: Center(
+        child: Text(
+          categoryIncome != null 
+            ? 'Category Income: ${categoryIncome!.categoryName}' 
+            : categoryOutcome != null 
+              ? 'Category Outcome: ${categoryOutcome!.categoryName}' 
+              : 'No Category Selected',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
 
   
 
