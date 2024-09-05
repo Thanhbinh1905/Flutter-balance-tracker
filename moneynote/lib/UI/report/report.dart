@@ -66,7 +66,8 @@ class _ReportScreenState extends State<report> {
   void initState() {
     super.initState();
     // print(years);
-    userMetadata = widget.metadata["metadata"];
+    userMetadata = widget.metadata;
+    print(userMetadata);
   }
 
   void _showMonthYearPicker(BuildContext context) {
@@ -88,7 +89,7 @@ class _ReportScreenState extends State<report> {
                       selectedDate = DateTime(selectedDate.year, index + 1);
                     });
                     try {
-                      dataTransaction = await getTransaction(
+                      dataTransaction = await getTransactionByCategory(
                           selectedDate.month.toString(),
                           selectedDate.year.toString());
                       setState(() {});
@@ -112,7 +113,7 @@ class _ReportScreenState extends State<report> {
                       selectedDate = DateTime(years[index], selectedDate.month);
                     });
                     try {
-                      dataTransaction = await getTransaction(
+                      dataTransaction = await getTransactionByCategory(
                           selectedDate.month.toString(),
                           selectedDate.year.toString());
                       setState(() {});
@@ -134,11 +135,12 @@ class _ReportScreenState extends State<report> {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getTransaction(
+  Future<List<Map<String, dynamic>>> getTransactionByCategory(
       String month, String year) async {
     final url = Uri.parse(
-        '${GetConstant().apiEndPoint}/transaction?month=$month&year=$year');
+        '${GetConstant().apiEndPoint}/transaction/cate?month=$month&year=$year');
     try {
+      print(userMetadata?['_id']);
       final response = await http.get(
         url,
         headers: {
@@ -147,16 +149,16 @@ class _ReportScreenState extends State<report> {
         },
       );
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final List<dynamic> data = json.decode(response.body)['metadata'];
         // Trả về dữ liệu
-        // print(data);
+        print(data);
         return data.cast<Map<String, dynamic>>();
       } else {
         throw Exception('Failed to load data');
       }
     } catch (e) {
       print('Error: $e');
-      throw Exception('Error occurred while fetching data');
+      throw Exception('Error occurred while fetching data1');
     }
   }
 
@@ -187,7 +189,7 @@ class _ReportScreenState extends State<report> {
         PieChartSectionData(
           color: Colors.grey,
           value: 100,
-          radius: 50.0,
+          radius: 100.0,
           showTitle: false,
         ),
       );
@@ -255,7 +257,7 @@ class _ReportScreenState extends State<report> {
                           DateTime(selectedDate.year, selectedDate.month - 1);
                     });
                     try {
-                      dataTransaction = await getTransaction(
+                      dataTransaction = await getTransactionByCategory(
                           selectedDate.month.toString(),
                           selectedDate.year.toString());
                       setState(() {});
@@ -285,7 +287,7 @@ class _ReportScreenState extends State<report> {
                           DateTime(selectedDate.year, selectedDate.month + 1);
                     });
                     try {
-                      dataTransaction = await getTransaction(
+                      dataTransaction = await getTransactionByCategory(
                           selectedDate.month.toString(),
                           selectedDate.year.toString());
                       setState(() {});
@@ -394,6 +396,7 @@ class _ReportScreenState extends State<report> {
           ),
         ),
         Container(
+          // decoration: BoxDecoration(border: Border.all(width: 2)),
           padding: const EdgeInsets.all(8),
           child: Row(
             children: [
@@ -458,38 +461,44 @@ class _ReportScreenState extends State<report> {
             ],
           ),
         ),
-        const SizedBox(
-          height: 18,
-        ),
-        Expanded(
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: PieChart(
-              PieChartData(
-                pieTouchData: PieTouchData(
-                  touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                    setState(() {
-                      if (!event.isInterestedForInteractions ||
-                          pieTouchResponse == null ||
-                          pieTouchResponse.touchedSection == null) {
-                        touchedIndex = -1;
-                        return;
-                      }
-                      touchedIndex =
-                          pieTouchResponse.touchedSection!.touchedSectionIndex;
-                    });
-                  },
-                ),
-                borderData: FlBorderData(
-                  show: false,
-                ),
-                sectionsSpace: 0,
-                centerSpaceRadius: 40,
-                sections: showingSections(isExpenseSelected),
-              ),
+        Flexible(
+          child: PieChart(
+            PieChartData(
+              // pieTouchData: PieTouchData(
+              //   touchCallback: (FlTouchEvent event, pieTouchResponse) {
+              //     setState(() {
+              //       if (!event.isInterestedForInteractions ||
+              //           pieTouchResponse == null ||
+              //           pieTouchResponse.touchedSection == null) {
+              //         touchedIndex = -1;
+              //         return;
+              //       }
+              //       touchedIndex = pieTouchResponse
+              //           .touchedSection!.touchedSectionIndex;
+              //     });
+              //   },
+              // ),
+              // borderData: FlBorderData(
+              //   show: false,
+              // ),
+              // sectionsSpace: 0,
+              centerSpaceRadius: 40,
+              sections: showingSections(isExpenseSelected),
             ),
           ),
         ),
+        // Expanded(
+        //     child: ListView(
+        //   children: const <Widget>[
+        //     ListTile(
+        //       title: Text('Item 1'),
+        //     ),
+        //     ListTile(
+        //       title: Text('Item 2'),
+        //     ),
+        //     // Thêm nhiều ListTile hoặc widget khác
+        //   ],
+        // ))
       ],
     );
   }
