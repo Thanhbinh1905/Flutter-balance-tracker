@@ -34,7 +34,7 @@ class _CalendarScreenState extends State<calendar> {
     super.initState();
     _selectedDay = DateTime.now();
     _focusedDay = DateTime.now();
-    userMetadata = widget.metadata['metadata'];
+    userMetadata = widget.metadata;
     currentMonth = DateFormat('MM').format(_focusedDay);
     currentYear = DateFormat('yyyy').format(_focusedDay);
 
@@ -61,7 +61,8 @@ class _CalendarScreenState extends State<calendar> {
         },
       );
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        // print(json.decode(response.body)['metadata']);
+        final List<dynamic> data = json.decode(response.body)['metadata'];
         // Trả về dữ liệu
         return data.cast<Map<String, dynamic>>();
       } else {
@@ -136,15 +137,15 @@ class _CalendarScreenState extends State<calendar> {
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);
               },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
+              // onDaySelected: (selectedDay, focusedDay) {
+              //   setState(() {
+              //     _selectedDay = selectedDay;
+              //     _focusedDay = focusedDay;
 
-                  // String formattedDate =
-                  //     DateFormat('yyyy-MM-dd').format(_selectedDay);
-                });
-              },
+              //     // String formattedDate =
+              //     //     DateFormat('yyyy-MM-dd').format(_selectedDay);
+              //   });
+              // },
               onPageChanged: (focusedDay) async {
                 setState(() {
                   _focusedDay = focusedDay;
@@ -407,11 +408,11 @@ class _CalendarScreenState extends State<calendar> {
                           padding: const EdgeInsets.only(right: 5, left: 5),
                           child: Text(
                             transaction['transaction_type'] == 'income'
-                                ? '$transaction  đ'
+                                ? '${transaction['transaction_amount']}đ'
                                 : '-${transaction['transaction_amount']}đ',
                             style: TextStyle(
                               color: transaction['transaction_type'] == 'income'
-                                  ? greenbgcolor
+                                  ? Colors.green
                                   : Colors.red,
                               fontSize: 12.0,
                             ),
