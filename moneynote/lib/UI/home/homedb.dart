@@ -22,6 +22,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 int selectedIndex2 = 0;
 int selectedIndex = 0;
   int KselectedIndex = 0;
+  final String uid = userMetadata?['_id'] ?? '';
   @override
   void initState() {
     super.initState();
@@ -30,58 +31,68 @@ int selectedIndex = 0;
   }
 
    Future<void> getCategoryIncome() async {
-    try {
-      final response = await http.get(
-        Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id']
-        },
-      );
+  try {
+    final response = await http.get(
+      Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
+      headers: {
+        'Content-Type': 'application/json',
+        'CLIENT_ID': userMetadata?['_id'],
+      },
+    );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-            print(responseData);
-        setState(() {
-          categoriesIncome = categoryIncomeFromJson(response.body);
-        });
-      } else {
-        print('Failed to load data: ${response.statusCode}');
-        setState(() {});
-      }
-    } catch (e) {
-      print('Error: $e');
+    if (response.statusCode == 200) {
+      // Decode the entire response as a Map<String, dynamic>
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      print(responseData);  // This will print the full response object
+
+      // Extract the metadata field which is the list of categories
+      final List<dynamic> metadata = responseData['metadata'];
+
+      // Map the metadata list to CategoryIncome objects
+      setState(() {
+        categoriesIncome = metadata.map((item) => CategoryIncome.fromJson(item)).toList();
+      });
+    } else {
+      print('Failed to load data: ${response.statusCode}');
       setState(() {});
     }
+  } catch (e) {
+    print('Error: $e');
+    setState(() {});
   }
+}
 
   Future<void> getCategoryOutcome() async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-            '${GetConstant().apiEndPoint}/category?category_type=outcome'),
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id']
-        },
-      );
+  try {
+    final response = await http.get(
+      Uri.parse('${GetConstant().apiEndPoint}/category?category_type=outcome'),
+      headers: {
+        'Content-Type': 'application/json',
+        'CLIENT_ID': userMetadata?['_id'],
+      },
+    );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print(responseData);
-        setState(() {
-          categoriesOutcome = categoryOutcomeFromJson(response.body);
-        });
-      } else {
-        print('Failed to load data: ${response.statusCode}');
-        setState(() {});
-      }
-    } catch (e) {
-      print('Error: $e');
+    if (response.statusCode == 200) {
+      // Decode the entire response as a Map<String, dynamic>
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      print(responseData);  // This will print the full response object
+
+      // Extract the metadata field which is the list of categories
+      final List<dynamic> metadata = responseData['metadata'];
+
+      // Map the metadata list to CategoryIncome objects
+      setState(() {
+        categoriesOutcome = metadata.map((item) => CategoryOutcome.fromJson(item)).toList();
+      });
+    } else {
+      print('Failed to load data: ${response.statusCode}');
       setState(() {});
     }
+  } catch (e) {
+    print('Error: $e');
+    setState(() {});
   }
-
+}
   @override
   Widget build(BuildContext context) {
   return Scaffold(
@@ -159,9 +170,15 @@ int selectedIndex = 0;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddCategory (), // Replace with your target page
+                      builder: (context) => AddCategory(),
                     ),
-                  );
+                  ).then((result) {
+                    if (result == true) {
+                      // Refresh both income and outcome categories
+                      getCategoryIncome();
+                      getCategoryOutcome();
+                    }
+                  });
                 },
               ),
             ],
@@ -174,23 +191,16 @@ int selectedIndex = 0;
     ),
   );
 }
+// Replace the existing AddCategory widget with this:
 Widget AddCategory() {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Another Page'),
-   
-    
-    ),
-    body: Center(
-      child: Text(
-        'This is Another Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-  );
+  return AddCategoryScreen(categoryType: KselectedIndex == 0 ? 'outcome' : 'income');
 }
 
 Widget _suaTienChiFrame() {
+   final filteredCategoriesOutcome = categoriesOutcome
+        .where((category) =>
+            category.categoryName != 'null' && category.categoryIcon != 'null')
+        .toList();
   return Scaffold(
     
     body: Padding(
@@ -198,9 +208,9 @@ Widget _suaTienChiFrame() {
       child: ListView.builder(
         shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: categoriesOutcome.length + 1,
+        itemCount: filteredCategoriesOutcome.length + 1,
         itemBuilder: (context, index) {
-          if (index == categoriesOutcome.length) {
+          if (index == filteredCategoriesOutcome.length) {
             return GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -233,7 +243,7 @@ Widget _suaTienChiFrame() {
               ),
             );
           } else {
-            final category = categoriesOutcome[index];
+            final category = filteredCategoriesOutcome[index];
             return GestureDetector(
               onTap: () {
                 setState(() {
@@ -242,11 +252,15 @@ Widget _suaTienChiFrame() {
                       Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditCate(
+                    builder: (context) => DeleCate(
                       categoryOutcome: category,
                     ),
                   ),
-                );
+                  
+                ).then((result) {
+                    if (result == true) {
+                      getCategoryIncome(); // Làm mới danh sách
+                    }});
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -300,6 +314,11 @@ Widget _suaTienChiFrame() {
 
  
 Widget _suaTienThuFrame() {
+       final filteredCategoriesIncome= categoriesIncome
+        .where((category) =>
+            category.categoryName != 'null' && category.categoryIcon != 'null')
+        .toList();
+
   return Scaffold(
     
     body: Padding(
@@ -307,9 +326,9 @@ Widget _suaTienThuFrame() {
       child: ListView.builder(
         shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: categoriesIncome.length + 1,
+        itemCount: filteredCategoriesIncome.length + 1,
         itemBuilder: (context, index) {
-          if (index == categoriesIncome.length) {
+          if (index == filteredCategoriesIncome.length) {
             return GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -342,7 +361,7 @@ Widget _suaTienThuFrame() {
               ),
             );
           } else {
-            final category = categoriesIncome[index];
+            final category = filteredCategoriesIncome[index];
             return GestureDetector(
               onTap: () {
                 setState(() {
@@ -351,11 +370,14 @@ Widget _suaTienThuFrame() {
                   Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditCate(
+                    builder: (context) => DeleCate(
                       categoryIncome: category,
                     ),
                   ),
-                );
+                ).then((result) {
+                    if (result == true) {
+                      getCategoryIncome(); // Làm mới danh sách
+                    }});
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -408,41 +430,230 @@ Widget _suaTienThuFrame() {
 
 }
 
-class EditCate extends StatelessWidget {
-  final CategoryIncome? categoryIncome;
-  final CategoryOutcome? categoryOutcome;
 
-  const EditCate({Key? key, this.categoryIncome, this.categoryOutcome}) : super(key: key);
-   Future<void> _deleteCategory(BuildContext context) async {
-    final categoryId = categoryIncome != null ? categoryIncome!.id : categoryOutcome!.id;
 
+class AddCategoryScreen extends StatefulWidget {
+  final String categoryType;
+
+  const AddCategoryScreen({Key? key, required this.categoryType}) : super(key: key);
+
+  @override
+  _AddCategoryScreenState createState() => _AddCategoryScreenState();
+}
+
+class _AddCategoryScreenState extends State<AddCategoryScreen> {
+  String _categoryName = '';
+  String _selectedIcon = 'star';
+  String _selectedColor = 'blue';
+
+  Future<void> _addCategory() async {
+    if (_categoryName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a category name')),
+      );
+      return;
+    }
+
+    final apiEndpoint = '${GetConstant().apiEndPoint}/category';
     try {
-      final response = await http.delete(
-        Uri.parse('${GetConstant().apiEndPoint}/category/${categoryId}'),
+      final response = await http.post(
+        Uri.parse(apiEndpoint),
         headers: {
           'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id']
+          'CLIENT_ID': userMetadata?['_id'] ?? '',
         },
+        body: jsonEncode({
+          'category_name': _categoryName,
+          'category_icon': _selectedIcon,
+          'category_color': _selectedColor,
+          'category_type': widget.categoryType,
+        }),
       );
 
-      if (response.statusCode == 200) {
-        // Successfully deleted
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Category deleted successfully')),
-        );
-        Navigator.pop(context); // Navigate back after deletion
+      if (response.statusCode == 201) {
+        Navigator.pop(context, true);
       } else {
-        // Error occurred
+        final errorMessage = jsonDecode(response.body)['message'];
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete category')),
+          SnackBar(content: Text(errorMessage)),
         );
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred')),
+        SnackBar(content: Text('An error occurred. Please try again.')),
       );
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add ${widget.categoryType.capitalize()} Category'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Category Name',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _categoryName = value;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              Text('Icon', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
+              Container(
+                height: 200, // Adjust this height as needed
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4, // Number of icons per row
+                    childAspectRatio: 1, // Square shape for each item
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: IconConverter.outcomeIconMap.length,
+                  itemBuilder: (context, index) {
+                    String iconKey = IconConverter.outcomeIconMap.keys.elementAt(index);
+                    IconData iconData = IconConverter.outcomeIconMap.values.elementAt(index);
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedIcon = iconKey;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: _selectedIcon == iconKey ? Colors.blue : Colors.grey,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(iconData),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 20),
+              Text('Color', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
+              Container(
+                height: 150, // Adjust this height as needed
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4, // Number of colors per row
+                    childAspectRatio: 1, // Square shape for each item
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: ColorConverter.colorMap.length,
+                  itemBuilder: (context, index) {
+                    String colorKey = ColorConverter.colorMap.keys.elementAt(index);
+                    Color color = ColorConverter.colorMap.values.elementAt(index);
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedColor = colorKey;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: color,
+                          border: Border.all(
+                            color: _selectedColor == colorKey ? Colors.black : Colors.transparent,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _addCategory,
+                  child: Text('Add Category'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Add this extension method to capitalize the first letter of a string
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
+  }
+}
+
+
+class DeleCate extends StatelessWidget {
+  final CategoryIncome? categoryIncome;
+  final CategoryOutcome? categoryOutcome;
+
+  const DeleCate({Key? key, this.categoryIncome, this.categoryOutcome}) : super(key: key);
+   Future<void> _deleteCategory(BuildContext context) async {
+   final categoryId = categoryIncome != null ? categoryIncome!.id : categoryOutcome!.id;
+   final apiEndpoint = '${GetConstant().apiEndPoint}/category?category_id=$categoryId';
+   print(apiEndpoint);
+    try {
+      final response = await http.delete(
+        Uri.parse(apiEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'] ?? '',
+        },
+      );
+
+      if (response.statusCode == 200) {
+
+        Navigator.pop(context);
+ 
+      } else {
+
+        final errorMessage = jsonDecode(response.body)['message'];
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Error'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      
+    }
+
+   
   }
 
   @override

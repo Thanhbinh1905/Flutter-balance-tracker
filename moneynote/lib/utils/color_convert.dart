@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ColorConverter {
+  static Map<String, Color> get colorMap => _colorMap;
+
   static final Map<String, Color> _colorMap = {
     'red': Colors.red,
     'blue': Colors.blue,

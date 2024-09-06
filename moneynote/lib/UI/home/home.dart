@@ -37,7 +37,7 @@ class _moneynoteHome extends State<moneynoteHome> {
       report(metadata: widget.metadata),
       orther(metadata: widget.metadata),
     ];
-    userMetadata = widget.metadata['metadata'];
+    userMetadata = widget.metadata;
   }
 
   @override
@@ -84,6 +84,7 @@ class _hometab extends State<hometab> {
   int selectedIndex2 = 0;
   List<CategoryIncome> categoriesIncome = [];
   List<CategoryOutcome> categoriesOutcome = [];
+
   @override
   void initState() {
     super.initState();
@@ -110,60 +111,69 @@ class _hometab extends State<hometab> {
       });
     }
   }
+Future<void> getCategoryIncome() async {
+  try {
+    final response = await http.get(
+      Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
+      headers: {
+        'Content-Type': 'application/json',
+        'CLIENT_ID': userMetadata?['_id'],
+      },
+    );
 
-  Future<void> getCategoryIncome() async {
-    try {
-      final response = await http.get(
-        Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id']
-        },
-      );
+    if (response.statusCode == 200) {
+      // Decode the entire response as a Map<String, dynamic>
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-            print(responseData);
-        setState(() {
-          categoriesIncome = categoryIncomeFromJson(response.body);
-        });
-      } else {
-        print('Failed to load data: ${response.statusCode}');
-        setState(() {});
-      }
-    } catch (e) {
-      print('Error: $e');
+
+      // Extract the metadata field which is the list of categories
+      final List<dynamic> metadata = responseData['metadata'];
+
+      // Map the metadata list to CategoryIncome objects
+      setState(() {
+        categoriesIncome = metadata.map((item) => CategoryIncome.fromJson(item)).toList();
+      });
+    } else {
+      print('Failed to load data: ${response.statusCode}');
       setState(() {});
     }
+  } catch (e) {
+    print('Error: $e');
+    setState(() {});
   }
+}
 
   Future<void> getCategoryOutcome() async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-            '${GetConstant().apiEndPoint}/category?category_type=outcome'),
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id']
-        },
-      );
+  try {
+    final response = await http.get(
+      Uri.parse('${GetConstant().apiEndPoint}/category?category_type=outcome'),
+      headers: {
+        'Content-Type': 'application/json',
+        'CLIENT_ID': userMetadata?['_id'],
+      },
+    );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print(responseData);
-        setState(() {
-          categoriesOutcome = categoryOutcomeFromJson(response.body);
-        });
-      } else {
-        print('Failed to load data: ${response.statusCode}');
-        setState(() {});
-      }
-    } catch (e) {
-      print('Error: $e');
+    if (response.statusCode == 200) {
+      // Decode the entire response as a Map<String, dynamic>
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+
+      // Extract the metadata field which is the list of categories
+      final List<dynamic> metadata = responseData['metadata'];
+
+      // Map the metadata list to CategoryIncome objects
+      setState(() {
+        categoriesOutcome = metadata.map((item) => CategoryOutcome.fromJson(item)).toList();
+      });
+    } else {
+      print('Failed to load data: ${response.statusCode}');
       setState(() {});
     }
+  } catch (e) {
+    print('Error: $e');
+    setState(() {});
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -239,7 +249,20 @@ class _hometab extends State<hometab> {
     );
   }
 
+
+
+
+
+
+
+
+
+
   Widget _buildTienChiFrame() {
+    final filteredCategoriesOutcome = categoriesOutcome
+        .where((category) =>
+            category.categoryName != 'null' && category.categoryIcon != 'null')
+        .toList();
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,9 +406,9 @@ Padding(
       crossAxisSpacing: 15,
       mainAxisSpacing: 15,
     ),
-    itemCount: categoriesOutcome.length + 1, 
+    itemCount: filteredCategoriesOutcome.length + 1, 
     itemBuilder: (context, index) {
-      if (index == categoriesOutcome.length) {
+      if (index == filteredCategoriesOutcome.length) {
       
         return GestureDetector(
           onTap: () {
@@ -408,7 +431,7 @@ Padding(
             ),
             child: Center(
               child: Text(
-                "Khanh",
+                "Chỉnh sửa >",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
@@ -419,7 +442,7 @@ Padding(
           ),
         );
       } else {
-        final category = categoriesOutcome[index];
+        final category = filteredCategoriesOutcome[index];
         return GestureDetector(
           onTap: () {
             setState(() {
@@ -495,7 +518,20 @@ Padding(
     );
   }
 
+
+
+
+
+
+
+
+
   Widget _buildTienThuFrame() {
+     final filteredCategoriesIncome= categoriesIncome
+        .where((category) =>
+            category.categoryName != 'null' && category.categoryIcon != 'null')
+        .toList();
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -640,9 +676,9 @@ Padding(
       crossAxisSpacing: 15,
       mainAxisSpacing: 15,
     ),
-    itemCount: categoriesIncome.length + 1, 
+    itemCount: filteredCategoriesIncome.length + 1, 
     itemBuilder: (context, index) {
-      if (index == categoriesIncome.length) {
+      if (index == filteredCategoriesIncome.length) {
       
         return GestureDetector(
           onTap: () {
@@ -665,7 +701,7 @@ Padding(
             ),
             child: Center(
               child: Text(
-                "Khanh",
+                "Chỉnh sửa",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
@@ -676,7 +712,8 @@ Padding(
           ),
         );
       } else {
-        final category = categoriesIncome[index];
+        final category = filteredCategoriesIncome[index];
+        
         return GestureDetector(
           onTap: () {
             setState(() {

@@ -1,6 +1,51 @@
 import 'package:flutter/material.dart';
 
 class IconConverter {
+  static final Map<String, IconData> outcomeIconMap = {
+    'shopping_cart': Icons.shopping_cart,
+    'fastfood': Icons.fastfood,
+    'star': Icons.star,
+    'wifi': Icons.wifi, // Mạng
+    'brush': Icons.brush, // Mỹ phẩm
+    'restaurant': Icons.restaurant, // Ăn uống
+    'flight_takeoff': Icons.flight_takeoff, // Du lịch
+    'medical_services': Icons.medical_services, // Y tế
+    'house': Icons.house,
+    'celebration': Icons.celebration,
+    'local_dining': Icons.local_dining,
+    'local_phone': Icons.local_phone,
+    'phone_iphone': Icons.phone_iphone,
+
+    'directions_car': Icons.directions_car, // Phương tiện đi lại
+    'school': Icons.school, // Giáo dục
+    'work': Icons.work, // Công việc
+    'local_grocery_store': Icons.local_grocery_store, // Tạp hóa
+    'pets': Icons.pets, // Thú cưng
+    'fitness_center': Icons.fitness_center, // Thể hình
+    'movie': Icons.movie, // Phim ảnh
+    'music_note': Icons.music_note, // Âm nhạc
+    'book': Icons.book, // Sách
+    'camera_alt': Icons.camera_alt, // Máy ảnh
+    'directions_bus': Icons.directions_bus, // Xe buýt
+    'local_florist': Icons.local_florist, // Cây cối, hoa
+    'local_drink': Icons.local_drink, // Đồ uống
+    'hotel': Icons.hotel, // Khách sạn
+    'gamepad': Icons.gamepad, // Trò chơi
+    'coffee': Icons.local_cafe, // Cà phê
+    'local_bar': Icons.local_bar, // Quán bar
+    'home_repair_service': Icons.home_repair_service, // Dịch vụ sửa nhà
+    'child_care': Icons.child_care, // Chăm sóc trẻ em
+    'spa': Icons.spa, // Thư giãn, spa
+    'haircut': Icons.content_cut, // Cắt tóc
+    'laundry': Icons.local_laundry_service, // Giặt ủi
+    'electric_car': Icons.electric_car, // Xe điện
+
+    'gas_station': Icons.local_gas_station, // Xăng dầu
+    'payment': Icons.payment, // Thanh toán
+    'attach_money': Icons.attach_money, // Tài chính
+    // Add more icons as needed
+  };
+
   static final Map<String, IconData> _outcomeIconMap = {
     'star': Icons.star,
     'wifi': Icons.wifi, // Mạng
@@ -86,6 +131,8 @@ class IconConverter {
       return null;
     }
   }
+
+
 }
   // Ví dụ sử dụng
   // String iconString = 'Icons.wifi';
