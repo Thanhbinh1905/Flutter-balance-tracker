@@ -37,7 +37,7 @@ class _moneynoteHome extends State<moneynoteHome> {
       report(metadata: widget.metadata),
       orther(metadata: widget.metadata),
     ];
-    userMetadata = widget.metadata['metadata'];
+    userMetadata = widget.metadata;
   }
 
   @override
@@ -89,9 +89,7 @@ class _hometab extends State<hometab> {
     super.initState();
     getCategoryIncome();
     getCategoryOutcome();
-     
   }
-
 
   TextEditingController noteController = TextEditingController();
   TextEditingController amountController = TextEditingController();
@@ -113,6 +111,7 @@ class _hometab extends State<hometab> {
 
   Future<void> getCategoryIncome() async {
     try {
+      // print(userMetadata);
       final response = await http.get(
         Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
         headers: {
@@ -123,7 +122,7 @@ class _hometab extends State<hometab> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-            print(responseData);
+        // print("Income: $responseData");
         setState(() {
           categoriesIncome = categoryIncomeFromJson(response.body);
         });
@@ -150,7 +149,6 @@ class _hometab extends State<hometab> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        print(responseData);
         setState(() {
           categoriesOutcome = categoryOutcomeFromJson(response.body);
         });
@@ -203,7 +201,7 @@ class _hometab extends State<hometab> {
                     inactiveFgColor: Colors.white,
                     initialLabelIndex: KselectedIndex,
                     totalSwitches: 2,
-                    labels: const ['Tiền chi', 'Tiền thu'],
+                    labels: const ['Tiền chi', 'Tiền thu'],
                     customTextStyles: [
                       TextStyle(
                         fontSize: 16.0,
@@ -224,6 +222,11 @@ class _hometab extends State<hometab> {
                     onToggle: (index) {
                       setState(() {
                         KselectedIndex = index!;
+                        if (KselectedIndex == 0) {
+                          getCategoryOutcome();
+                        } else {
+                          getCategoryIncome();
+                        }
                       });
                     },
                   ),
@@ -372,104 +375,105 @@ class _hometab extends State<hometab> {
                   decoration: TextDecoration.none),
             ),
           ),
-Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-  child: GridView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 3,
-      childAspectRatio: 1.6,
-      crossAxisSpacing: 15,
-      mainAxisSpacing: 15,
-    ),
-    itemCount: categoriesOutcome.length + 1, 
-    itemBuilder: (context, index) {
-      if (index == categoriesOutcome.length) {
-      
-        return GestureDetector(
-          onTap: () {
-           
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChinhSuaTienChi(), 
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 1.6,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
               ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(
-                color: Colors.grey,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Text(
-                "Khanh",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 10,
-                ),
-              ),
+              itemCount: categoriesOutcome.length + 1,
+              itemBuilder: (context, index) {
+                if (index == categoriesOutcome.length) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ChinhSuaTienChi(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "Khanh",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  final category = categoriesOutcome[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex2 = index;
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: selectedIndex2 == index
+                            ? Colors.green[50]
+                            : Colors.white,
+                        border: Border.all(
+                          color: selectedIndex2 == index
+                              ? const Color.fromARGB(255, 101, 180, 104)
+                              : Colors.grey,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            IconConverter.getIconDataFromString(
+                                    category.categoryIcon) ??
+                                Icons.error,
+                            color: selectedIndex2 == index
+                                ? ColorConverter.getColorFromString(
+                                    category.categoryColor)
+                                : ColorConverter.getColorFromString(
+                                    category.categoryColor),
+                            size: 20,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            category.categoryName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: selectedIndex2 == index
+                                  ? const Color.fromARGB(255, 0, 0, 0)
+                                  : Colors.black,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ),
-        );
-      } else {
-        final category = categoriesOutcome[index];
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedIndex2 = index;
-            });
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: selectedIndex2 == index
-                  ? Colors.green[50]
-                  : Colors.white,
-              border: Border.all(
-                color: selectedIndex2 == index
-                    ? const Color.fromARGB(255, 101, 180, 104)
-                    : Colors.grey,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  IconConverter.getIconDataFromString(category.categoryIcon) ??
-                      Icons.error,
-                  color: selectedIndex2 == index
-                      ? ColorConverter.getColorFromString(category.categoryColor)
-                      : ColorConverter.getColorFromString(category.categoryColor),
-                  size: 20,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  category.categoryName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: selectedIndex2 == index
-                        ? const Color.fromARGB(255, 0, 0, 0)
-                        : Colors.black,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-    },
-  ),
-)
-                     ,const SizedBox(height: 8),
+          const SizedBox(height: 8),
           Center(
               child: SizedBox(
                   width: 284,
@@ -628,106 +632,105 @@ Padding(
                   decoration: TextDecoration.none),
             ),
           ),
-         
-Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-  child: GridView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 3,
-      childAspectRatio: 1.6,
-      crossAxisSpacing: 15,
-      mainAxisSpacing: 15,
-    ),
-    itemCount: categoriesIncome.length + 1, 
-    itemBuilder: (context, index) {
-      if (index == categoriesIncome.length) {
-      
-        return GestureDetector(
-          onTap: () {
-           
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChinhSuaTienChi(), 
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 1.6,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
               ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(
-                color: Colors.grey,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Text(
-                "Khanh",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 10,
-                ),
-              ),
+              itemCount: categoriesIncome.length + 1,
+              itemBuilder: (context, index) {
+                if (index == categoriesIncome.length) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ChinhSuaTienChi(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "Khanh",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  final category = categoriesIncome[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex2 = index;
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: selectedIndex2 == index
+                            ? Colors.green[50]
+                            : Colors.white,
+                        border: Border.all(
+                          color: selectedIndex2 == index
+                              ? const Color.fromARGB(255, 101, 180, 104)
+                              : Colors.grey,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            IconConverter.getIconDataFromString(
+                                    category.categoryIcon) ??
+                                Icons.error,
+                            color: selectedIndex2 == index
+                                ? ColorConverter.getColorFromString(
+                                    category.categorycolor)
+                                : ColorConverter.getColorFromString(
+                                    category.categorycolor),
+                            size: 20,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            category.categoryName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: selectedIndex2 == index
+                                  ? const Color.fromARGB(255, 0, 0, 0)
+                                  : Colors.black,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ),
-        );
-      } else {
-        final category = categoriesIncome[index];
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedIndex2 = index;
-            });
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: selectedIndex2 == index
-                  ? Colors.green[50]
-                  : Colors.white,
-              border: Border.all(
-                color: selectedIndex2 == index
-                    ? const Color.fromARGB(255, 101, 180, 104)
-                    : Colors.grey,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  IconConverter.getIconDataFromString(category.categoryIcon) ??
-                      Icons.error,
-                  color: selectedIndex2 == index
-                      ? ColorConverter.getColorFromString(category.categorycolor)
-                      : ColorConverter.getColorFromString(category.categorycolor),
-                  size: 20,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  category.categoryName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: selectedIndex2 == index
-                        ? const Color.fromARGB(255, 0, 0, 0)
-                        : Colors.black,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-    },
-  ),
-)
-,
-   const SizedBox(height: 8),
+          const SizedBox(height: 8),
           Center(
               child: SizedBox(
                   width: 284,
@@ -764,9 +767,8 @@ class ChinhSuaTienChi extends StatefulWidget {
 class _ChinhSuaTienChiState extends State<ChinhSuaTienChi> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-      body: const CategoryScreen(),
+    return const Scaffold(
+      body: CategoryScreen(),
     );
   }
 }
