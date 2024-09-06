@@ -41,14 +41,12 @@ int selectedIndex = 0;
     );
 
     if (response.statusCode == 200) {
-      // Decode the entire response as a Map<String, dynamic>
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
-      print(responseData);  // This will print the full response object
 
-      // Extract the metadata field which is the list of categories
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
       final List<dynamic> metadata = responseData['metadata'];
 
-      // Map the metadata list to CategoryIncome objects
+
       setState(() {
         categoriesIncome = metadata.map((item) => CategoryIncome.fromJson(item)).toList();
       });
@@ -73,11 +71,10 @@ int selectedIndex = 0;
     );
 
     if (response.statusCode == 200) {
-      // Decode the entire response as a Map<String, dynamic>
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
-      print(responseData);  // This will print the full response object
 
-      // Extract the metadata field which is the list of categories
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+
       final List<dynamic> metadata = responseData['metadata'];
 
       // Map the metadata list to CategoryIncome objects
@@ -170,15 +167,9 @@ int selectedIndex = 0;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddCategory(),
+                      builder: (context) => AddCategory (), // Replace with your target page
                     ),
-                  ).then((result) {
-                    if (result == true) {
-                      // Refresh both income and outcome categories
-                      getCategoryIncome();
-                      getCategoryOutcome();
-                    }
-                  });
+                  );
                 },
               ),
             ],
@@ -490,7 +481,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add ${widget.categoryType.capitalize()} Category'),
+        title: Text('Tạo mới'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -498,10 +489,16 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+               Text(
+                'Tên',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Category Name',
+                  hintText: 'Vui lòng nhập vào tên đề mục',
                   border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -510,16 +507,16 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 },
               ),
               SizedBox(height: 20),
-              Text('Icon', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('Biểu tượng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               Container(
-                height: 200, // Adjust this height as needed
+                height: 150, // Set a fixed height for the icon grid
                 child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: AlwaysScrollableScrollPhysics(), // Allow scrolling
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4, // Number of icons per row
-                    childAspectRatio: 1, // Square shape for each item
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
+                    crossAxisCount: 4,
+                    childAspectRatio: 1.5,
                   ),
                   itemCount: IconConverter.outcomeIconMap.length,
                   itemBuilder: (context, index) {
@@ -532,6 +529,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         });
                       },
                       child: Container(
+                        margin: EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: _selectedIcon == iconKey ? Colors.blue : Colors.grey,
@@ -546,16 +544,16 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              Text('Color', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('Màu sắc', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               Container(
-                height: 150, // Adjust this height as needed
+                height: 100, // Set a fixed height for the color grid
                 child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: AlwaysScrollableScrollPhysics(), // Allow scrolling
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4, // Number of colors per row
-                    childAspectRatio: 1, // Square shape for each item
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
+                    crossAxisCount: 5,
+                    childAspectRatio: 1.5,
                   ),
                   itemCount: ColorConverter.colorMap.length,
                   itemBuilder: (context, index) {
@@ -568,6 +566,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         });
                       },
                       child: Container(
+                        margin: EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: color,
                           border: Border.all(
@@ -586,10 +585,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _addCategory,
-                  child: Text('Add Category'),
+                  child: Text('Lưu',style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 10),
                   ),
                 ),
               ),
@@ -609,15 +608,77 @@ extension StringExtension on String {
 }
 
 
-class DeleCate extends StatelessWidget {
+class DeleCate extends StatefulWidget {
   final CategoryIncome? categoryIncome;
   final CategoryOutcome? categoryOutcome;
 
   const DeleCate({Key? key, this.categoryIncome, this.categoryOutcome}) : super(key: key);
-   Future<void> _deleteCategory(BuildContext context) async {
-   final categoryId = categoryIncome != null ? categoryIncome!.id : categoryOutcome!.id;
-   final apiEndpoint = '${GetConstant().apiEndPoint}/category?category_id=$categoryId';
-   print(apiEndpoint);
+
+  @override
+  _DeleCateState createState() => _DeleCateState();
+}
+
+class _DeleCateState extends State<DeleCate> {
+  late TextEditingController _nameController;
+  late String _selectedIcon;
+  late String _selectedColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.categoryIncome?.categoryName ?? widget.categoryOutcome?.categoryName ?? '');
+    _selectedIcon = widget.categoryIncome?.categoryIcon ?? widget.categoryOutcome?.categoryIcon ?? 'restaurant';
+    _selectedColor = widget.categoryIncome?.categorycolor ?? widget.categoryOutcome?.categoryColor ?? 'blue';
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _updateCategory() async {
+    final categoryId = widget.categoryIncome?.id ?? widget.categoryOutcome?.id;
+    final apiEndpoint = '${GetConstant().apiEndPoint}/category?category_id=$categoryId';
+
+    try {
+      final payload = {
+        'category_name': _nameController.text,
+        'category_icon': _selectedIcon,
+        'category_color': _selectedColor,
+      };
+
+      final response = await http.put(
+        Uri.parse(apiEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'] ?? '',
+        },
+        body: jsonEncode(payload),
+        
+      );
+print('Payload: ${jsonEncode(payload)}');
+print('Response status code: ${response.statusCode}');
+print('Response body: ${response.body}');
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Category updated successfully')),
+        );
+        Navigator.pop(context, true);
+      } else {
+        final errorMessage = jsonDecode(response.body)['message'] ?? 'An error occurred';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred')));
+    }
+  }
+
+  Future<void> _deleteCategory() async {
+    final categoryId = widget.categoryIncome?.id ?? widget.categoryOutcome?.id;
+    final apiEndpoint = '${GetConstant().apiEndPoint}/category?category_id=$categoryId';
+
     try {
       final response = await http.delete(
         Uri.parse(apiEndpoint),
@@ -628,56 +689,142 @@ class DeleCate extends StatelessWidget {
       );
 
       if (response.statusCode == 200) {
-
-        Navigator.pop(context);
- 
+        Navigator.pop(context, true);
       } else {
-
-        final errorMessage = jsonDecode(response.body)['message'];
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Error'),
-            content: Text(errorMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
+        final errorMessage = jsonDecode(response.body)['message'] ?? 'An error occurred';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     } catch (e) {
       print('Error: $e');
-      
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred')));
     }
-
-   
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(categoryIncome != null ? categoryIncome!.categoryName : 
-                      categoryOutcome != null ? categoryOutcome!.categoryName : 
-                      'Add Category'),
-                      actions: [
+        title: Text(_nameController.text),
+        actions: [
           IconButton(
             icon: Icon(Icons.delete),
-            onPressed: () => _deleteCategory(context),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Xác nhận xóa'),
+                    content: Text('Bạn có chắc chắn muốn xóa danh mục này?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Hủy'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Xóa'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _deleteCategory();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          categoryIncome != null 
-            ? 'Category Income: ${categoryIncome!.categoryName}' 
-            : categoryOutcome != null 
-              ? 'Category Outcome: ${categoryOutcome!.categoryName}' 
-              : 'No Category Selected',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Tên', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                hintText: 'Nhập tên danh mục',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text('Biểu tượng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10),
+            Container(
+              height: 150,
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: 1.5,
+                ),
+                itemCount: IconConverter.outcomeIconMap.length,
+                itemBuilder: (context, index) {
+                  String iconKey = IconConverter.outcomeIconMap.keys.elementAt(index);
+                  IconData iconData = IconConverter.outcomeIconMap.values.elementAt(index);
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedIcon = iconKey),
+                    child: Container(
+                      margin: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _selectedIcon == iconKey ? Colors.blue : Colors.grey,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(iconData),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20),
+            Text('Màu sắc', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10),
+            Container(
+              height: 100,
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  childAspectRatio: 1.5,
+                ),
+                itemCount: ColorConverter.colorMap.length,
+                itemBuilder: (context, index) {
+                  String colorKey = ColorConverter.colorMap.keys.elementAt(index);
+                  Color color = ColorConverter.colorMap.values.elementAt(index);
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedColor = colorKey),
+                    child: Container(
+                      margin: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: color,
+                        border: Border.all(
+                          color: _selectedColor == colorKey ? Colors.black : Colors.transparent,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _updateCategory,
+                child: Text('Lưu', style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
