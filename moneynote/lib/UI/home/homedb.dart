@@ -673,8 +673,11 @@ class _DeleCateState extends State<DeleCate> {
           'CLIENT_ID': userMetadata?['_id'] ?? '',
         },
         body: jsonEncode(payload),
+        
       );
-
+  print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      print(payload);
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Category updated successfully')),
