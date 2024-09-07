@@ -132,9 +132,41 @@ class IconConverter {
     }
   }
 
+  static Map<String, IconData> incomeIconMap = {
+    'salary': Icons.attach_money,
+    'investment': Icons.trending_up,
+    'gift': Icons.card_giftcard,
+        'add': Icons.add, // Thêm tiền
+    'remove': Icons
+        .remove, // Trừ tiền (có thể sử dụng cho các trường hợp hoàn trả hoặc điều chỉnh)
+    'attach_money': Icons.attach_money, // Tiền mặt
+    'account_balance': Icons.account_balance, // Tài khoản ngân hàng
+    'credit_card': Icons.credit_card, // Thẻ tín dụng
+    'money': Icons.money, // Tiền giấy
+    'savings': Icons.savings, // Tiết kiệm
+    'business_center': Icons.business_center, // Kinh doanh
+    'work': Icons.work, // Công việc
+    'trending_up': Icons.trending_up, // Tăng trưởng
+    'euro_symbol': Icons.euro_symbol, // Euro
+    'monetization_on': Icons.monetization_on, // Tiền xu
+    'account_balance_wallet': Icons.account_balance_wallet, // Ví tiền
+    'store': Icons.store, // Cửa hàng
+    'real_estate_agent': Icons.real_estate_agent, // Bất động sản
+    'shopping_bag': Icons.shopping_bag, // Mua bán
+    'paid': Icons.paid, // Thanh toán thành công
+    'redeem': Icons.redeem, // Mã khuyến mãi, quà tặng
+    'trending_flat': Icons.trending_flat, // Dòng tiền ổn định
+    'local_atm': Icons.local_atm, // Máy ATM
+    'thumb_up': Icons.thumb_up, // Đầu tư thành công
+    'card_giftcard': Icons.card_giftcard, // Quà tặng, nhận quà
+    'auto_awesome': Icons.auto_awesome, // Thưởng
+    'flight_land':
+        Icons.flight_land, // Dòng tiền trở về (như sau một chuyến công tác)
+    // ... add more as needed ...
+  };
 
-}
   // Ví dụ sử dụng
   // String iconString = 'Icons.wifi';
   // IconData? iconData = IconConverter.getIconDataFromString(iconString);
   // Icon(iconData ?? Icons.error) // Hiển thị biểu tượng mặc định nếu không tìm thấy
+}

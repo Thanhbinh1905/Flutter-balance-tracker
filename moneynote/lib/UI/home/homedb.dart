@@ -167,9 +167,13 @@ int selectedIndex = 0;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddCategory (), // Replace with your target page
+                      builder: (context) => AddCategory(),
                     ),
-                  );
+                  ).then((_) {
+                    // Refresh data after adding a new category
+                    getCategoryIncome();
+                    getCategoryOutcome();
+                  });
                 },
               ),
             ],
@@ -250,7 +254,7 @@ Widget _suaTienChiFrame() {
                   
                 ).then((result) {
                     if (result == true) {
-                      getCategoryIncome(); // Làm mới danh sách
+                      getCategoryOutcome(); // Làm mới danh sách
                     }});
               },
               child: Container(
@@ -437,6 +441,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   String _selectedIcon = 'star';
   String _selectedColor = 'blue';
 
+  Map<String, IconData> get _iconMap {
+    return widget.categoryType == 'outcome' 
+        ? IconConverter.outcomeIconMap 
+        : IconConverter.incomeIconMap;
+  }
+
   Future<void> _addCategory() async {
     if (_categoryName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -510,18 +520,18 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
               Text('Biểu tượng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               Container(
-                height: 150, // Set a fixed height for the icon grid
+                height: 150,
                 child: GridView.builder(
                   shrinkWrap: true,
-                  physics: AlwaysScrollableScrollPhysics(), // Allow scrolling
+                  physics: AlwaysScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
                     childAspectRatio: 1.5,
                   ),
-                  itemCount: IconConverter.outcomeIconMap.length,
+                  itemCount: _iconMap.length,
                   itemBuilder: (context, index) {
-                    String iconKey = IconConverter.outcomeIconMap.keys.elementAt(index);
-                    IconData iconData = IconConverter.outcomeIconMap.values.elementAt(index);
+                    String iconKey = _iconMap.keys.elementAt(index);
+                    IconData iconData = _iconMap.values.elementAt(index);
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -547,10 +557,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
               Text('Màu sắc', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               Container(
-                height: 100, // Set a fixed height for the color grid
+                height: 100,
                 child: GridView.builder(
                   shrinkWrap: true,
-                  physics: AlwaysScrollableScrollPhysics(), // Allow scrolling
+                  physics: AlwaysScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 5,
                     childAspectRatio: 1.5,
@@ -559,6 +569,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   itemBuilder: (context, index) {
                     String colorKey = ColorConverter.colorMap.keys.elementAt(index);
                     Color color = ColorConverter.colorMap.values.elementAt(index);
+                    
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -622,6 +633,12 @@ class _DeleCateState extends State<DeleCate> {
   late TextEditingController _nameController;
   late String _selectedIcon;
   late String _selectedColor;
+  String get _categoryType => widget.categoryIncome != null ? 'income' : 'outcome';
+   Map<String, IconData> get _iconMap {
+    return _categoryType == 'outcome' 
+        ? IconConverter.outcomeIconMap 
+        : IconConverter.incomeIconMap;
+  }
 
   @override
   void initState() {
@@ -646,6 +663,7 @@ class _DeleCateState extends State<DeleCate> {
         'category_name': _nameController.text,
         'category_icon': _selectedIcon,
         'category_color': _selectedColor,
+        
       };
 
       final response = await http.put(
@@ -655,11 +673,8 @@ class _DeleCateState extends State<DeleCate> {
           'CLIENT_ID': userMetadata?['_id'] ?? '',
         },
         body: jsonEncode(payload),
-        
       );
-print('Payload: ${jsonEncode(payload)}');
-print('Response status code: ${response.statusCode}');
-print('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Category updated successfully')),
@@ -760,10 +775,10 @@ print('Response body: ${response.body}');
                   crossAxisCount: 4,
                   childAspectRatio: 1.5,
                 ),
-                itemCount: IconConverter.outcomeIconMap.length,
+                itemCount: _iconMap.length,
                 itemBuilder: (context, index) {
-                  String iconKey = IconConverter.outcomeIconMap.keys.elementAt(index);
-                  IconData iconData = IconConverter.outcomeIconMap.values.elementAt(index);
+                  String iconKey = _iconMap.keys.elementAt(index);
+                  IconData iconData = _iconMap.values.elementAt(index);
                   return GestureDetector(
                     onTap: () => setState(() => _selectedIcon = iconKey),
                     child: Container(
@@ -830,8 +845,6 @@ print('Response body: ${response.body}');
     );
   }
 }
-
-  
 
 List<CategoryIncome> categoryIncomeFromJson(String str) =>
     List<CategoryIncome>.from(

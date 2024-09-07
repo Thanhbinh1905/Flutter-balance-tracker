@@ -421,7 +421,7 @@ class _hometab extends State<hometab> {
                       ),
                       child: const Center(
                         child: Text(
-                          "Khanh",
+                          "Chỉnh sửa >",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.black,
@@ -683,7 +683,7 @@ class _hometab extends State<hometab> {
                       ),
                       child: const Center(
                         child: Text(
-                          "Khanh",
+                          "Chỉnh sửa >",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.black,
