@@ -185,14 +185,14 @@ class _LoginFormState extends State<LoginForm> {
                   onPressed: _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(40),
                     ),
                   ),
                   child: const Text(
                     'Đăng nhập',
-                    style: TextStyle(fontSize: 18,color: Colors.white),
+                    style: TextStyle(fontSize: 16,color: Colors.white),
                   ),
                 ),
               ),

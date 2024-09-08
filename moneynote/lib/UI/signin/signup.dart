@@ -49,7 +49,7 @@ class SignUpScreen extends StatelessWidget {
                   onPressed: () {
                     // Xử lý đăng ký
                   },
-                  child: Text('Đăng ký',style: TextStyle(color: Colors.white),),
+                  child: Text('Đăng ký',style: TextStyle(color: Colors.white, fontSize: 15),),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     padding: EdgeInsets.symmetric(vertical: 15),
