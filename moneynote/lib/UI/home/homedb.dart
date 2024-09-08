@@ -132,24 +132,26 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       [Color.fromARGB(255, 64, 175, 0)],
                       [Color.fromARGB(255, 64, 175, 0)]
                     ],
-                    inactiveBgColor: Colors.white,
+                    activeFgColor: Colors.white,
+                    inactiveBgColor: Colors.grey,
+                    inactiveFgColor: Colors.white,
                     initialLabelIndex: KselectedIndex,
                     totalSwitches: 2,
                     labels: const ['Tiền chi', 'Tiền thu'],
                     customTextStyles: [
                       TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 16.0,
                         decoration: TextDecoration.none,
                         color: KselectedIndex == 0
                             ? Colors.white
-                            : const Color(0xff62C42A),
+                            : Colors.green[800],
                       ),
                       TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 16.0,
                         decoration: TextDecoration.none,
                         color: KselectedIndex == 1
                             ? Colors.white
-                            : const Color(0xff62C42A),
+                            : Colors.green[800],
                       ),
                     ],
                     radiusStyle: true,
@@ -796,111 +798,99 @@ class _DeleCateState extends State<DeleCate> {
           ),
         ],
       ),
-      body: Container(
-          padding: const EdgeInsets.all(16),
-          child: Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Tên',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                TextField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Nhập tên danh mục',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 15),
-                const Text('Biểu tượng',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 150,
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      childAspectRatio: 1.5,
-                    ),
-                    itemCount: _iconMap.length,
-                    itemBuilder: (context, index) {
-                      String iconKey = _iconMap.keys.elementAt(index);
-                      IconData iconData = _iconMap.values.elementAt(index);
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedIcon = iconKey),
-                        child: Container(
-                          margin: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _selectedIcon == iconKey
-                                  ? Colors.blue
-                                  : Colors.grey,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(iconData),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const Text('Màu sắc',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 100,
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      childAspectRatio: 1.5,
-                    ),
-                    itemCount: ColorConverter.colorMap.length,
-                    itemBuilder: (context, index) {
-                      String colorKey =
-                          ColorConverter.colorMap.keys.elementAt(index);
-                      Color color =
-                          ColorConverter.colorMap.values.elementAt(index);
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedColor = colorKey),
-                        child: Container(
-                          margin: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: color,
-                            border: Border.all(
-                              color: _selectedColor == colorKey
-                                  ? Colors.black
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _updateCategory,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text('Lưu',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-              ],
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text('Tên',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              hintText: 'Nhập tên danh mục',
+              border: OutlineInputBorder(),
             ),
-          )),
+          ),
+          const SizedBox(height: 16),
+          const Text('Biểu tượng',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 150,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 1.5,
+              ),
+              itemCount: _iconMap.length,
+              itemBuilder: (context, index) {
+                String iconKey = _iconMap.keys.elementAt(index);
+                IconData iconData = _iconMap.values.elementAt(index);
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedIcon = iconKey),
+                  child: Container(
+                    margin: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedIcon == iconKey ? Colors.blue : Colors.grey,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(iconData),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text('Màu sắc',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 100,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5,
+                childAspectRatio: 1.5,
+              ),
+              itemCount: ColorConverter.colorMap.length,
+              itemBuilder: (context, index) {
+                String colorKey = ColorConverter.colorMap.keys.elementAt(index);
+                Color color = ColorConverter.colorMap.values.elementAt(index);
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedColor = colorKey),
+                  child: Container(
+                    margin: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: color,
+                      border: Border.all(
+                        color: _selectedColor == colorKey ? Colors.black : Colors.transparent,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _updateCategory,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Text('Lưu', style: TextStyle(color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
