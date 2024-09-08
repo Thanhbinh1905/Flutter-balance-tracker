@@ -174,76 +174,82 @@ class _hometab extends State<hometab> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFFDFE6DD),
-                    Color(0xFFFFFFFF),
-                  ], // Các màu của gradient
-                  stops: [0.05, 1], // Các điểm dừng của gradient
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFDFE6DD),
+                  Color(0xFFFFFFFF),
+                ], // Các màu của gradient
+                stops: [0.05, 1], // Các điểm dừng của gradient
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+            height: 90,
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: 200,
+                height: 40,
+                child: ToggleSwitch(
+                  minWidth: 110.0,
+                  minHeight: 30,
+                  cornerRadius: 10.0,
+                  activeBgColors: const [
+                    [Color.fromARGB(255, 64, 175, 0)],
+                    [Color.fromARGB(255, 64, 175, 0)]
+                  ],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  initialLabelIndex: KselectedIndex,
+                  totalSwitches: 2,
+                  labels: const ['Tiền chi', 'Tiền thu'],
+                  customTextStyles: [
+                    TextStyle(
+                      fontSize: 16.0,
+                      decoration: TextDecoration.none,
+                      color: KselectedIndex == 0
+                          ? Colors.white
+                          : Colors.green[800],
+                    ),
+                    TextStyle(
+                      fontSize: 16.0,
+                      decoration: TextDecoration.none,
+                      color: KselectedIndex == 1
+                          ? Colors.white
+                          : Colors.green[800],
+                    ),
+                  ],
+                  radiusStyle: true,
+                  onToggle: (index) {
+                    setState(() {
+                      KselectedIndex = index!;
+                      if (KselectedIndex == 0) {
+                        getCategoryOutcome();
+                      } else {
+                        getCategoryIncome();
+                      }
+                    });
+                  },
                 ),
               ),
-              height: 90,
-              width: double.infinity,
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: 200,
-                  height: 40,
-                  child: ToggleSwitch(
-                    minWidth: 110.0,
-                    minHeight: 30,
-                    cornerRadius: 10.0,
-                    activeBgColors: const [
-                      [Color.fromARGB(255, 64, 175, 0)],
-                      [Color.fromARGB(255, 64, 175, 0)]
-                    ],
-                    activeFgColor: Colors.white,
-                    inactiveBgColor: Colors.grey,
-                    inactiveFgColor: Colors.white,
-                    initialLabelIndex: KselectedIndex,
-                    totalSwitches: 2,
-                    labels: const ['Tiền chi', 'Tiền thu'],
-                    customTextStyles: [
-                      TextStyle(
-                        fontSize: 16.0,
-                        decoration: TextDecoration.none,
-                        color: KselectedIndex == 0
-                            ? Colors.white
-                            : Colors.green[800],
-                      ),
-                      TextStyle(
-                        fontSize: 16.0,
-                        decoration: TextDecoration.none,
-                        color: KselectedIndex == 1
-                            ? Colors.white
-                            : Colors.green[800],
-                      ),
-                    ],
-                    radiusStyle: true,
-                    onToggle: (index) {
-                      setState(() {
-                        KselectedIndex = index!;
-                        if (KselectedIndex == 0) {
-                          getCategoryOutcome();
-                        } else {
-                          getCategoryIncome();
-                        }
-                      });
-                    },
-                  ),
-                ),
-              )),
+            ),
+          ),
           Expanded(
-            child: KselectedIndex == 0
-                ? _buildTienChiFrame()
-                : _buildTienThuFrame(),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  KselectedIndex == 0
+                      ? _buildTienChiFrame()
+                      : _buildTienThuFrame(),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -251,525 +257,518 @@ class _hometab extends State<hometab> {
   }
 
   Widget _buildTienChiFrame() {
-        final filteredCategoriesOutcome = categoriesOutcome
+    final filteredCategoriesOutcome = categoriesOutcome
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
         .toList();
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 77, 199, 89),
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 77, 199, 89),
+          ),
+          height: 45,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              color: const Color.fromARGB(255, 98, 196, 42),
             ),
-            height: 45,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: const Color.fromARGB(255, 98, 196, 42),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedDate =
-                            selectedDate.subtract(const Duration(days: 1));
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(Icons.arrow_back_ios, color: Colors.white),
-                    ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedDate =
+                          selectedDate.subtract(const Duration(days: 1));
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Icon(Icons.arrow_back_ios, color: Colors.white),
                   ),
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
-                    child: Text(
-                      "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          decoration: TextDecoration.none),
-                    ),
+                ),
+                GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: Text(
+                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        decoration: TextDecoration.none),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedDate =
-                            selectedDate.add(const Duration(days: 1));
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(Icons.arrow_forward_ios, color: Colors.white),
-                    ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedDate =
+                          selectedDate.add(const Duration(days: 1));
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.white),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Row(
+        ),
+        Row(
+          children: [
+            const SizedBox(width: 16.0),
+            const Text(
+              "Ghi chú",
+              style: TextStyle(
+                  fontSize: 14.0,
+                  color: CupertinoColors.black,
+                  decoration: TextDecoration.none),
+            ),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: CupertinoTextField(
+                controller: noteController,
+                placeholder: "Nhập ghi chú",
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12.0, horizontal: 12.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Container(
+          padding:
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 98, 196, 24),
+          ),
+          height: 45,
+          child: Row(
             children: [
-              const SizedBox(width: 16.0),
               const Text(
-                "Ghi chú",
+                "Tiền chi",
                 style: TextStyle(
                     fontSize: 14.0,
-                    color: CupertinoColors.black,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 255, 255, 255),
                     decoration: TextDecoration.none),
               ),
               const SizedBox(width: 10.0),
               Expanded(
                 child: CupertinoTextField(
-                  controller: noteController,
-                  placeholder: "Nhập ghi chú",
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
                   padding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 12.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
+                      horizontal: 10.0, vertical: 0.0),
+                  placeholder: "0",
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: CupertinoColors.white,
                   ),
+                  decoration: null,
                 ),
+              ),
+              const Text(
+                "Đ",
+                style: TextStyle(
+                    fontSize: 16.0,
+                    color: CupertinoColors.white,
+                    decoration: TextDecoration.none),
               ),
             ],
           ),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 98, 196, 24),
-            ),
-            height: 45,
-            child: Row(
-              children: [
-                const Text(
-                  "Tiền chi",
-                  style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      decoration: TextDecoration.none),
-                ),
-                const SizedBox(width: 10.0),
-                Expanded(
-                  child: CupertinoTextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 0.0),
-                    placeholder: "0",
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: CupertinoColors.white,
+        ),
+        const SizedBox(height: 10.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            "Danh sách",
+            style: TextStyle(
+                fontSize: 16.0,
+                color: Color.fromARGB(255, 0, 0, 0),
+                decoration: TextDecoration.none),
+          ),
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1.6,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+          ),
+          itemCount: filteredCategoriesOutcome.length + 1,
+          itemBuilder: (context, index) {
+            if (index == filteredCategoriesOutcome.length) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChinhSuaTienChi(),
                     ),
-                    decoration: null,
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Chỉnh sửa >",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 10,
+                      ),
+                    ),
                   ),
                 ),
-                const Text(
-                  "Đ",
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      color: CupertinoColors.white,
-                      decoration: TextDecoration.none),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              "Danh sách",
-              style: TextStyle(
-                  fontSize: 16.0,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  decoration: TextDecoration.none),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 1.6,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 15,
-              ),
-              itemCount: filteredCategoriesOutcome.length + 1,
-              itemBuilder: (context, index) {
-                if (index == filteredCategoriesOutcome.length) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ChinhSuaTienChi(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Chỉnh sửa >",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
+              );
+            } else {
+              final category = filteredCategoriesOutcome[index];
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex2 = index;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: selectedIndex2 == index
+                        ? Colors.green[50]
+                        : Colors.white,
+                    border: Border.all(
+                      color: selectedIndex2 == index
+                          ? const Color.fromARGB(255, 101, 180, 104)
+                          : Colors.grey,
+                      width: 2,
                     ),
-                  );
-                } else {
-                  final category = filteredCategoriesOutcome[index];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedIndex2 = index;
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        IconConverter.getIconDataFromString(
+                                category.categoryIcon) ??
+                            Icons.error,
                         color: selectedIndex2 == index
-                            ? Colors.green[50]
-                            : Colors.white,
-                        border: Border.all(
+                            ? ColorConverter.getColorFromString(
+                                category.categoryColor)
+                            : ColorConverter.getColorFromString(
+                                category.categoryColor),
+                        size: 20,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        category.categoryName,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
                           color: selectedIndex2 == index
-                              ? const Color.fromARGB(255, 101, 180, 104)
-                              : Colors.grey,
-                          width: 2,
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Colors.black,
+                          fontSize: 10,
                         ),
-                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            IconConverter.getIconDataFromString(
-                                    category.categoryIcon) ??
-                                Icons.error,
-                            color: selectedIndex2 == index
-                                ? ColorConverter.getColorFromString(
-                                    category.categoryColor)
-                                : ColorConverter.getColorFromString(
-                                    category.categoryColor),
-                            size: 20,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            category.categoryName,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: selectedIndex2 == index
-                                  ? const Color.fromARGB(255, 0, 0, 0)
-                                  : Colors.black,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+        const SizedBox(height: 8),
+        Center(
+            child: SizedBox(
+                width: 284,
+                height: 40,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 74, 175, 0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  );
-                }
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-              child: SizedBox(
-                  width: 284,
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 74, 175, 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                  ),
+                  onPressed: () {},
+                  child: const Text(
+                    "Nhập tiền chi",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Nhập tiền chi",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )))
-        ],
-      ),
+                  ),
+                )))
+      ],
     );
   }
 
   Widget _buildTienThuFrame() {
-        final filteredCategoriesIncome= categoriesIncome
+    final filteredCategoriesIncome = categoriesIncome
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
         .toList();
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 77, 199, 89),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 77, 199, 89),
+          ),
+          height: 45,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              color: const Color.fromARGB(255, 98, 196, 42),
             ),
-            height: 45,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: const Color.fromARGB(255, 98, 196, 42),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedDate =
-                            selectedDate.subtract(const Duration(days: 1));
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(Icons.arrow_back_ios, color: Colors.white),
-                    ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedDate =
+                          selectedDate.subtract(const Duration(days: 1));
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Icon(Icons.arrow_back_ios, color: Colors.white),
                   ),
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
-                    child: Text(
-                      "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          decoration: TextDecoration.none),
-                    ),
+                ),
+                GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: Text(
+                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        decoration: TextDecoration.none),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedDate =
-                            selectedDate.add(const Duration(days: 1));
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(Icons.arrow_forward_ios, color: Colors.white),
-                    ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedDate =
+                          selectedDate.add(const Duration(days: 1));
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.white),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Row(
+        ),
+        Row(
+          children: [
+            const SizedBox(width: 16.0),
+            const Text(
+              "Ghi chú",
+              style: TextStyle(
+                  fontSize: 14.0,
+                  color: CupertinoColors.black,
+                  decoration: TextDecoration.none),
+            ),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: CupertinoTextField(
+                controller: noteController,
+                placeholder: "Nhập ghi chú",
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12.0, horizontal: 12.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Container(
+          padding:
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 98, 196, 24),
+          ),
+          height: 45,
+          child: Row(
             children: [
-              const SizedBox(width: 16.0),
               const Text(
-                "Ghi chú",
+                "Tiền thu",
                 style: TextStyle(
                     fontSize: 14.0,
-                    color: CupertinoColors.black,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 255, 255, 255),
                     decoration: TextDecoration.none),
               ),
               const SizedBox(width: 10.0),
               Expanded(
                 child: CupertinoTextField(
-                  controller: noteController,
-                  placeholder: "Nhập ghi chú",
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
                   padding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 12.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
+                      horizontal: 10.0, vertical: 0.0),
+                  placeholder: "0",
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: CupertinoColors.white,
                   ),
+                  decoration: null,
                 ),
+              ),
+              const Text(
+                "Đ",
+                style: TextStyle(
+                    fontSize: 16.0,
+                    color: CupertinoColors.white,
+                    decoration: TextDecoration.none),
               ),
             ],
           ),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 98, 196, 24),
-            ),
-            height: 45,
-            child: Row(
-              children: [
-                const Text(
-                  "Tiền thu",
-                  style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      decoration: TextDecoration.none),
-                ),
-                const SizedBox(width: 10.0),
-                Expanded(
-                  child: CupertinoTextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 0.0),
-                    placeholder: "0",
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: CupertinoColors.white,
+        ),
+        const SizedBox(height: 10.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            "Danh sách",
+            style: TextStyle(
+                fontSize: 16.0,
+                color: Color.fromARGB(255, 0, 0, 0),
+                decoration: TextDecoration.none),
+          ),
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1.6,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+          ),
+          itemCount: filteredCategoriesIncome.length + 1,
+          itemBuilder: (context, index) {
+            if (index == filteredCategoriesIncome.length) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChinhSuaTienChi(),
                     ),
-                    decoration: null,
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Chỉnh sửa >",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 10,
+                      ),
+                    ),
                   ),
                 ),
-                const Text(
-                  "Đ",
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      color: CupertinoColors.white,
-                      decoration: TextDecoration.none),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              "Danh sách",
-              style: TextStyle(
-                  fontSize: 16.0,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  decoration: TextDecoration.none),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 1.6,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 15,
-              ),
-              itemCount: filteredCategoriesIncome.length + 1,
-              itemBuilder: (context, index) {
-                if (index == filteredCategoriesIncome.length) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ChinhSuaTienChi(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Chỉnh sửa >",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
+              );
+            } else {
+              final category = filteredCategoriesIncome[index];
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex2 = index;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: selectedIndex2 == index
+                        ? Colors.green[50]
+                        : Colors.white,
+                    border: Border.all(
+                      color: selectedIndex2 == index
+                          ? const Color.fromARGB(255, 101, 180, 104)
+                          : Colors.grey,
+                      width: 2,
                     ),
-                  );
-                } else {
-                  final category = filteredCategoriesIncome[index];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedIndex2 = index;
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        IconConverter.getIconDataFromString(
+                                category.categoryIcon) ??
+                            Icons.error,
                         color: selectedIndex2 == index
-                            ? Colors.green[50]
-                            : Colors.white,
-                        border: Border.all(
+                            ? ColorConverter.getColorFromString(
+                                category.categorycolor)
+                            : ColorConverter.getColorFromString(
+                                category.categorycolor),
+                        size: 20,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        category.categoryName,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
                           color: selectedIndex2 == index
-                              ? const Color.fromARGB(255, 101, 180, 104)
-                              : Colors.grey,
-                          width: 2,
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Colors.black,
+                          fontSize: 10,
                         ),
-                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            IconConverter.getIconDataFromString(
-                                    category.categoryIcon) ??
-                                Icons.error,
-                            color: selectedIndex2 == index
-                                ? ColorConverter.getColorFromString(
-                                    category.categorycolor)
-                                : ColorConverter.getColorFromString(
-                                    category.categorycolor),
-                            size: 20,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            category.categoryName,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: selectedIndex2 == index
-                                  ? const Color.fromARGB(255, 0, 0, 0)
-                                  : Colors.black,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+        const SizedBox(height: 8),
+        Center(
+            child: SizedBox(
+                width: 284,
+                height: 40,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 74, 175, 0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  );
-                }
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-              child: SizedBox(
-                  width: 284,
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 74, 175, 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                  ),
+                  onPressed: () {},
+                  child: const Text(
+                    "Nhập tiền thu",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Nhập tiền thu",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )))
-        ],
-      ),
+                  ),
+                )))
+      ],
     );
   }
 }
