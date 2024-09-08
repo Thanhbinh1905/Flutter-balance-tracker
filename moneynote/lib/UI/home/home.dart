@@ -26,14 +26,23 @@ class moneynoteHome extends StatefulWidget {
 
 class _moneynoteHome extends State<moneynoteHome> {
   late final List<Widget> _tabs;
+  String selectedAmount = '';
+  String selectedNote = '';
+
+  void updateTransactionDetails(Map<String, dynamic> transaction) {
+    setState(() {
+      selectedAmount = transaction['transaction_amount'].toString();
+      selectedNote = transaction['transaction_description'];
+      // Update other relevant fields
+    });
+  }
 
   @override
   void initState() {
-    // print("Metadata hehehehe: ${widget.metadata}");
     super.initState();
     _tabs = [
       hometab(metadata: widget.metadata),
-      calendar(metadata: widget.metadata),
+      calendar(metadata:widget.metadata), 
       report(metadata: widget.metadata),
       orther(metadata: widget.metadata),
     ];
@@ -166,6 +175,57 @@ class _hometab extends State<hometab> {
     } catch (e) {
       print('Error: $e');
       setState(() {});
+    }
+  }
+
+  Future<void> createTransaction() async {
+    if (amountController.text.isEmpty || selectedIndex2 == -1) {
+      // Show an error message if amount is empty or no category is selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter an amount and select a category')),
+      );
+      return;
+    }
+
+    final category = KselectedIndex == 0 
+        ? categoriesOutcome[selectedIndex2] 
+        : categoriesIncome[selectedIndex2];
+
+    final transactionData = {
+      'transaction_amount': int.parse(amountController.text),
+      'transaction_type': KselectedIndex == 0 ? 'outcome' : 'income',
+      'transaction_date': selectedDate.toIso8601String(),
+      'transaction_description': noteController.text,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('${GetConstant().apiEndPoint}/transaction'),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'],
+        },
+        body: jsonEncode(transactionData),
+      );
+
+      if (response.statusCode == 201) {
+        // Transaction created successfully
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaction created successfully')),
+        );
+        // Clear input fields
+        amountController.clear();
+        noteController.clear();
+        setState(() {
+          selectedIndex2 = -1;
+        });
+      } else {
+        throw Exception('Failed to create transaction');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
@@ -497,7 +557,7 @@ class _hometab extends State<hometab> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: createTransaction,
                   child: const Text(
                     "Nhập tiền chi",
                     style: TextStyle(
@@ -655,8 +715,8 @@ class _hometab extends State<hometab> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               childAspectRatio: 1.6,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
+              crossAxisSpacing: 15,
+              mainAxisSpacing: 15,
             ),
             itemCount: filteredCategoriesIncome.length + 1,
             itemBuilder: (context, index) {
@@ -761,7 +821,7 @@ class _hometab extends State<hometab> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: createTransaction,
                   child: const Text(
                     "Nhập tiền thu",
                     style: TextStyle(
