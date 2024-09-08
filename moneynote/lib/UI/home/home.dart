@@ -393,101 +393,104 @@ class _hometab extends State<hometab> {
                 decoration: TextDecoration.none),
           ),
         ),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            childAspectRatio: 1.6,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-          ),
-          itemCount: filteredCategoriesOutcome.length + 1,
-          itemBuilder: (context, index) {
-            if (index == filteredCategoriesOutcome.length) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChinhSuaTienChi(),
-                    ),
-                  );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "Chỉnh sửa >",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 10,
+        Container(
+          height: 200, // Đặt chiều cao phù hợp cho container
+          child: GridView.builder(
+            shrinkWrap: false, // Thay đổi thành false
+            physics: const AlwaysScrollableScrollPhysics(), // Cho phép cuộn
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 1.6,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: filteredCategoriesOutcome.length + 1,
+            itemBuilder: (context, index) {
+              if (index == filteredCategoriesOutcome.length) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChinhSuaTienChi(),
                       ),
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              final category = filteredCategoriesOutcome[index];
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex2 = index;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: selectedIndex2 == index
-                        ? Colors.green[50]
-                        : Colors.white,
-                    border: Border.all(
-                      color: selectedIndex2 == index
-                          ? const Color.fromARGB(255, 101, 180, 104)
-                          : Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        IconConverter.getIconDataFromString(
-                                category.categoryIcon) ??
-                            Icons.error,
-                        color: selectedIndex2 == index
-                            ? ColorConverter.getColorFromString(
-                                category.categoryColor)
-                            : ColorConverter.getColorFromString(
-                                category.categoryColor),
-                        size: 20,
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 2,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        category.categoryName,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Chỉnh sửa >",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: selectedIndex2 == index
-                              ? const Color.fromARGB(255, 0, 0, 0)
-                              : Colors.black,
+                          color: Colors.black,
                           fontSize: 10,
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            }
-          },
+                );
+              } else {
+                final category = filteredCategoriesOutcome[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex2 = index;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: selectedIndex2 == index
+                          ? Colors.green[50]
+                          : Colors.white,
+                      border: Border.all(
+                        color: selectedIndex2 == index
+                            ? const Color.fromARGB(255, 101, 180, 104)
+                            : Colors.grey,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          IconConverter.getIconDataFromString(
+                                  category.categoryIcon) ??
+                              Icons.error,
+                          color: selectedIndex2 == index
+                              ? ColorConverter.getColorFromString(
+                                  category.categoryColor)
+                              : ColorConverter.getColorFromString(
+                                  category.categoryColor),
+                          size: 20,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          category.categoryName,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: selectedIndex2 == index
+                                ? const Color.fromARGB(255, 0, 0, 0)
+                                : Colors.black,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
         ),
         const SizedBox(height: 8),
         Center(
@@ -651,101 +654,104 @@ class _hometab extends State<hometab> {
                 decoration: TextDecoration.none),
           ),
         ),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            childAspectRatio: 1.6,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-          ),
-          itemCount: filteredCategoriesIncome.length + 1,
-          itemBuilder: (context, index) {
-            if (index == filteredCategoriesIncome.length) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChinhSuaTienChi(),
-                    ),
-                  );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "Chỉnh sửa >",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 10,
+        Container(
+          height: 200, // Đặt chiều cao phù hợp cho container
+          child: GridView.builder(
+            shrinkWrap: false, // Thay đổi thành false
+            physics: const AlwaysScrollableScrollPhysics(), // Cho phép cuộn
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 1.6,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: filteredCategoriesIncome.length + 1,
+            itemBuilder: (context, index) {
+              if (index == filteredCategoriesIncome.length) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChinhSuaTienChi(),
                       ),
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              final category = filteredCategoriesIncome[index];
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex2 = index;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: selectedIndex2 == index
-                        ? Colors.green[50]
-                        : Colors.white,
-                    border: Border.all(
-                      color: selectedIndex2 == index
-                          ? const Color.fromARGB(255, 101, 180, 104)
-                          : Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        IconConverter.getIconDataFromString(
-                                category.categoryIcon) ??
-                            Icons.error,
-                        color: selectedIndex2 == index
-                            ? ColorConverter.getColorFromString(
-                                category.categorycolor)
-                            : ColorConverter.getColorFromString(
-                                category.categorycolor),
-                        size: 20,
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 2,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        category.categoryName,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Chỉnh sửa >",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: selectedIndex2 == index
-                              ? const Color.fromARGB(255, 0, 0, 0)
-                              : Colors.black,
+                          color: Colors.black,
                           fontSize: 10,
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            }
-          },
+                );
+              } else {
+                final category = filteredCategoriesIncome[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex2 = index;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: selectedIndex2 == index
+                          ? Colors.green[50]
+                          : Colors.white,
+                      border: Border.all(
+                        color: selectedIndex2 == index
+                            ? const Color.fromARGB(255, 101, 180, 104)
+                            : Colors.grey,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          IconConverter.getIconDataFromString(
+                                  category.categoryIcon) ??
+                              Icons.error,
+                          color: selectedIndex2 == index
+                              ? ColorConverter.getColorFromString(
+                                  category.categorycolor)
+                              : ColorConverter.getColorFromString(
+                                  category.categorycolor),
+                          size: 20,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          category.categoryName,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: selectedIndex2 == index
+                                ? const Color.fromARGB(255, 0, 0, 0)
+                                : Colors.black,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
         ),
         const SizedBox(height: 8),
         Center(
