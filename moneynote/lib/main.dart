@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của bạn
 import 'package:moneynote/constants/constant.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -165,7 +164,7 @@ class _LoginFormState extends State<LoginForm> {
                   const Text('Bạn chưa có tài khoản? '),
                   TextButton(
                     onPressed: () {
-                       Navigator.push(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => SignUpScreen()),
                       );
@@ -192,7 +191,7 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                   child: const Text(
                     'Đăng nhập',
-                    style: TextStyle(fontSize: 16,color: Colors.white),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),

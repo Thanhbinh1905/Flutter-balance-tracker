@@ -109,134 +109,128 @@ class _hometab extends State<hometab> {
     }
   }
 
-    Future<void> getCategoryIncome() async {
-  try {
-    final response = await http.get(
-      Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
-      headers: {
-        'Content-Type': 'application/json',
-        'CLIENT_ID': userMetadata?['_id'],
-      },
-    );
+  Future<void> getCategoryIncome() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${GetConstant().apiEndPoint}/category?category_type=income'),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'],
+        },
+      );
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final List<dynamic> metadata = responseData['metadata'];
 
-      final List<dynamic> metadata = responseData['metadata'];
-
-
-      setState(() {
-        categoriesIncome = metadata.map((item) => CategoryIncome.fromJson(item)).toList();
-      });
-    } else {
-      print('Failed to load data: ${response.statusCode}');
+        setState(() {
+          categoriesIncome =
+              metadata.map((item) => CategoryIncome.fromJson(item)).toList();
+        });
+      } else {
+        print('Failed to load data: ${response.statusCode}');
+        setState(() {});
+      }
+    } catch (e) {
+      print('Error: $e');
       setState(() {});
     }
-  } catch (e) {
-    print('Error: $e');
-    setState(() {});
   }
-}
 
   Future<void> getCategoryOutcome() async {
-  try {
-    final response = await http.get(
-      Uri.parse('${GetConstant().apiEndPoint}/category?category_type=outcome'),
-      headers: {
-        'Content-Type': 'application/json',
-        'CLIENT_ID': userMetadata?['_id'],
-      },
-    );
+    try {
+      final response = await http.get(
+        Uri.parse(
+            '${GetConstant().apiEndPoint}/category?category_type=outcome'),
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'],
+        },
+      );
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final List<dynamic> metadata = responseData['metadata'];
 
-
-      final List<dynamic> metadata = responseData['metadata'];
-
-      // Map the metadata list to CategoryIncome objects
-      setState(() {
-        categoriesOutcome = metadata.map((item) => CategoryOutcome.fromJson(item)).toList();
-      });
-    } else {
-      print('Failed to load data: ${response.statusCode}');
+        // Map the metadata list to CategoryIncome objects
+        setState(() {
+          categoriesOutcome =
+              metadata.map((item) => CategoryOutcome.fromJson(item)).toList();
+        });
+      } else {
+        print('Failed to load data: ${response.statusCode}');
+        setState(() {});
+      }
+    } catch (e) {
+      print('Error: $e');
       setState(() {});
     }
-  } catch (e) {
-    print('Error: $e');
-    setState(() {});
   }
-}
 
   @override
   Widget build(BuildContext context) {
+    final srcHeight = MediaQuery.of(context).size.height;
+    final srcWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Column(
         children: [
           Container(
+            height: srcHeight / 12,
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color(0xFFDFE6DD),
-                  Color(0xFFFFFFFF),
-                ], // Các màu của gradient
-                stops: [0.05, 1], // Các điểm dừng của gradient
+                colors: [Color(0xFFDFE6DD), Color(0xFFFFFFFF)],
+                stops: [0.05, 1],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
             ),
-            height: 90,
-            width: double.infinity,
-            padding: const EdgeInsets.only(top: 20.0),
             child: Align(
               alignment: Alignment.center,
-              child: SizedBox(
-                width: 200,
-                height: 40,
-                child: ToggleSwitch(
-                  minWidth: 110.0,
-                  minHeight: 30,
-                  cornerRadius: 10.0,
-                  activeBgColors: const [
-                    [Color.fromARGB(255, 64, 175, 0)],
-                    [Color.fromARGB(255, 64, 175, 0)]
-                  ],
-                  activeFgColor: Colors.white,
-                  inactiveBgColor: Colors.grey,
-                  inactiveFgColor: Colors.white,
-                  initialLabelIndex: KselectedIndex,
-                  totalSwitches: 2,
-                  labels: const ['Tiền chi', 'Tiền thu'],
-                  customTextStyles: [
-                    TextStyle(
-                      fontSize: 16.0,
-                      decoration: TextDecoration.none,
-                      color: KselectedIndex == 0
-                          ? Colors.white
-                          : Colors.green[800],
-                    ),
-                    TextStyle(
-                      fontSize: 16.0,
-                      decoration: TextDecoration.none,
-                      color: KselectedIndex == 1
-                          ? Colors.white
-                          : Colors.green[800],
-                    ),
-                  ],
-                  radiusStyle: true,
-                  onToggle: (index) {
-                    setState(() {
-                      KselectedIndex = index!;
-                      if (KselectedIndex == 0) {
-                        getCategoryOutcome();
-                      } else {
-                        getCategoryIncome();
-                      }
-                    });
-                  },
-                ),
+              child: ToggleSwitch(
+                minWidth: 110.0,
+                minHeight: 30,
+                cornerRadius: 10.0,
+                activeBgColors: const [
+                  [Color.fromARGB(255, 64, 175, 0)],
+                  [Color.fromARGB(255, 64, 175, 0)]
+                ],
+                // activeFgColor: Colors.white,
+                inactiveBgColor: Colors.white,
+                // inactiveFgColor: Colors.white,
+                initialLabelIndex: KselectedIndex,
+                totalSwitches: 2,
+                labels: const ['Tiền chi', 'Tiền thu'],
+                customTextStyles: [
+                  TextStyle(
+                    fontSize: 12.0,
+                    decoration: TextDecoration.none,
+                    color: KselectedIndex == 0
+                        ? Colors.white
+                        : const Color(0xff62C42A),
+                  ),
+                  TextStyle(
+                    fontSize: 12.0,
+                    decoration: TextDecoration.none,
+                    color: KselectedIndex == 1
+                        ? Colors.white
+                        : const Color(0xff62C42A),
+                  ),
+                ],
+                radiusStyle: true,
+                onToggle: (index) {
+                  setState(() {
+                    KselectedIndex = index!;
+                    if (KselectedIndex == 0) {
+                      getCategoryOutcome();
+                    } else {
+                      getCategoryIncome();
+                    }
+                  });
+                },
               ),
             ),
           ),
@@ -303,8 +297,7 @@ class _hometab extends State<hometab> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedDate =
-                          selectedDate.add(const Duration(days: 1));
+                      selectedDate = selectedDate.add(const Duration(days: 1));
                     });
                   },
                   child: const Padding(
@@ -341,8 +334,7 @@ class _hometab extends State<hometab> {
           ],
         ),
         Container(
-          padding:
-              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
           decoration: const BoxDecoration(
             color: Color.fromARGB(255, 98, 196, 24),
           ),
@@ -393,12 +385,13 @@ class _hometab extends State<hometab> {
                 decoration: TextDecoration.none),
           ),
         ),
-        Container(
-          height: 200, // Đặt chiều cao phù hợp cho container
+        SizedBox(
+          height: 230, // Đặt chiều cao phù hợp cho container
           child: GridView.builder(
             shrinkWrap: false, // Thay đổi thành false
             physics: const AlwaysScrollableScrollPhysics(), // Cho phép cuộn
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               childAspectRatio: 1.6,
@@ -420,10 +413,10 @@ class _hometab extends State<hometab> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 2,
-                      ),
+                      // border: Border.all(
+                      //   // color: Colors.grey,
+                      //   width: 2,
+                      // ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Center(
@@ -453,9 +446,9 @@ class _hometab extends State<hometab> {
                           : Colors.white,
                       border: Border.all(
                         color: selectedIndex2 == index
-                            ? const Color.fromARGB(255, 101, 180, 104)
-                            : Colors.grey,
-                        width: 2,
+                            ? const Color(0xFF40AF00)
+                            : Colors.white,
+                        width: 1.3,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -564,8 +557,7 @@ class _hometab extends State<hometab> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedDate =
-                          selectedDate.add(const Duration(days: 1));
+                      selectedDate = selectedDate.add(const Duration(days: 1));
                     });
                   },
                   child: const Padding(
@@ -602,8 +594,7 @@ class _hometab extends State<hometab> {
           ],
         ),
         Container(
-          padding:
-              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
           decoration: const BoxDecoration(
             color: Color.fromARGB(255, 98, 196, 24),
           ),
@@ -654,12 +645,13 @@ class _hometab extends State<hometab> {
                 decoration: TextDecoration.none),
           ),
         ),
-        Container(
-          height: 200, // Đặt chiều cao phù hợp cho container
+        SizedBox(
+          height: 230, // Đặt chiều cao phù hợp cho container
           child: GridView.builder(
             shrinkWrap: false, // Thay đổi thành false
             physics: const AlwaysScrollableScrollPhysics(), // Cho phép cuộn
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               childAspectRatio: 1.6,
@@ -680,10 +672,14 @@ class _hometab extends State<hometab> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: selectedIndex2 == index
+                          ? Colors.green[50]
+                          : Colors.white,
                       border: Border.all(
-                        color: Colors.grey,
-                        width: 2,
+                        color: selectedIndex2 == index
+                            ? const Color(0xFF40AF00)
+                            : Colors.white,
+                        width: 1.3,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -714,9 +710,9 @@ class _hometab extends State<hometab> {
                           : Colors.white,
                       border: Border.all(
                         color: selectedIndex2 == index
-                            ? const Color.fromARGB(255, 101, 180, 104)
-                            : Colors.grey,
-                        width: 2,
+                            ? const Color(0xFF40AF00)
+                            : Colors.white,
+                        width: 1.3,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),

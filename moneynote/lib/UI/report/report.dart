@@ -11,8 +11,6 @@ import 'package:moneynote/utils/color_convert.dart';
 import 'package:moneynote/utils/icon_convert.dart';
 
 Map<String, dynamic>? userMetadata;
-const greybgcolor = Color(0xFFDFE6DD);
-const greenbgcolor = Color(0xFF62C42A);
 
 class report extends StatefulWidget {
   final Map<String, dynamic> metadata;
@@ -71,7 +69,8 @@ class _ReportScreenState extends State<report> {
             selectedDate.month.toString(), selectedDate.year.toString())
         .then((data) {
       setState(() {
-        dataTransaction = data; // Cập nhật dataTransaction với dữ liệu mới
+        print("hehehehe $data");
+        dataTransaction = data;
       });
     }).catchError((error) {
       print('Error fetching transaction data: $error');
@@ -527,11 +526,15 @@ class _ReportScreenState extends State<report> {
                                         alignment: Alignment
                                             .centerRight, // Căn chỉnh nội dung bên phải
                                         child: Text(
-                                          '$totalOutcomeđ', // Hiển thị tổng chi tiêu
+                                          '-$totalOutcomeđ', // Hiển thị tổng chi tiêu
                                           overflow: TextOverflow
                                               .ellipsis, // Cắt bớt nếu quá dài
                                           maxLines: 1,
-                                          style: const TextStyle(fontSize: 12),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: -totalOutcome > 0
+                                                  ? Colors.green
+                                                  : Colors.red),
                                         ),
                                       );
                                     } else {
@@ -605,7 +608,11 @@ class _ReportScreenState extends State<report> {
                                           overflow: TextOverflow
                                               .ellipsis, // Cắt bớt nếu quá dài
                                           maxLines: 1,
-                                          style: const TextStyle(fontSize: 12),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: totalOutcome > 0
+                                                  ? Colors.green
+                                                  : Colors.red),
                                         ),
                                       );
                                     } else {
@@ -666,6 +673,10 @@ class _ReportScreenState extends State<report> {
                                 return Text(
                                   '$totalđ', // Hiển thị tổng thu nhập và chi tiêu
                                   textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      color: total > 0
+                                          ? Colors.green
+                                          : Colors.red),
                                 );
                               } else {
                                 return const Text(
@@ -883,10 +894,8 @@ class _ReportScreenState extends State<report> {
                                 flex:
                                     2, // Cung cấp nhiều không gian hơn cho số tiền
                                 child: FutureBuilder<Map<String, double>>(
-                                  future: getTotalMonthly(
-                                      selectedDate.month.toString(),
-                                      selectedDate.year
-                                          .toString()), // Gọi hàm khôngồng bộ
+                                  future: getTotalYearly(selectedDate.year
+                                      .toString()), // Gọi hàm khôngồng bộ
                                   builder: (context, snapshot) {
                                     if (snapshot.hasError) {
                                       return Align(
@@ -907,11 +916,15 @@ class _ReportScreenState extends State<report> {
                                         alignment: Alignment
                                             .centerRight, // Căn chỉnh nội dung bên phải
                                         child: Text(
-                                          '$totalOutcomeđ', // Hiển thị tổng chi tiêu
+                                          '-$totalOutcome', // Hiển thị tổng chi tiêu
                                           overflow: TextOverflow
                                               .ellipsis, // Cắt bớt nếu quá dài
                                           maxLines: 1,
-                                          style: const TextStyle(fontSize: 12),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: -totalOutcome > 0
+                                                  ? Colors.green
+                                                  : Colors.red),
                                         ),
                                       );
                                     } else {
@@ -957,10 +970,8 @@ class _ReportScreenState extends State<report> {
                                 flex:
                                     2, // Cung cấp nhiều không gian hơn cho số tiền
                                 child: FutureBuilder<Map<String, double>>(
-                                  future: getTotalMonthly(
-                                      selectedDate.month.toString(),
-                                      selectedDate.year
-                                          .toString()), // Gọi hàm không đồng bộ
+                                  future: getTotalYearly(selectedDate.year
+                                      .toString()), // Gọi hàm không đồng bộ
                                   builder: (context, snapshot) {
                                     if (snapshot.hasError) {
                                       return Align(
@@ -985,7 +996,11 @@ class _ReportScreenState extends State<report> {
                                           overflow: TextOverflow
                                               .ellipsis, // Cắt bớt nếu quá dài
                                           maxLines: 1,
-                                          style: const TextStyle(fontSize: 12),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: totalOutcome > 0
+                                                  ? Colors.green
+                                                  : Colors.red),
                                         ),
                                       );
                                     } else {
@@ -1026,10 +1041,8 @@ class _ReportScreenState extends State<report> {
                         ),
                         Expanded(
                           child: FutureBuilder<Map<String, double>>(
-                            future: getTotalMonthly(
-                                selectedDate.month.toString(),
-                                selectedDate.year
-                                    .toString()), // Gọi hàm không đồng bộ
+                            future: getTotalYearly(selectedDate.year
+                                .toString()), // Gọi hàm không đồng bộ
                             builder: (context, snapshot) {
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}',
@@ -1046,6 +1059,10 @@ class _ReportScreenState extends State<report> {
                                 return Text(
                                   '$totalđ', // Hiển thị tổng thu nhập và chi tiêu
                                   textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      color: total > 0
+                                          ? Colors.green
+                                          : Colors.red),
                                 );
                               } else {
                                 return const Text(
@@ -1163,7 +1180,6 @@ class _ReportScreenState extends State<report> {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       body: Column(
         children: [
