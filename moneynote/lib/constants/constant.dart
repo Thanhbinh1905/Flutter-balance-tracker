@@ -1,3 +1,3 @@
 class GetConstant {
-  final String apiEndPoint = "http://192.168.1.9:9001";
+  final String apiEndPoint = "https://node-express-vercel-hc2j.onrender.com";
 }

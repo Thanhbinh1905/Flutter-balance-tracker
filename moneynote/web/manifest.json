@@ -1,6 +1,6 @@
 {
-    "name": "moneynote",
-    "short_name": "moneynote",
+    "name": "BalanceTracker",
+    "short_name": "BalanceTracker",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

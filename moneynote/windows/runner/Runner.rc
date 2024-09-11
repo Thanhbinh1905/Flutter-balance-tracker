@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "moneynote" "\0"
+            VALUE "FileDescription", "BalanceTracker" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "moneynote" "\0"
+            VALUE "InternalName", "BalanceTracker" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "moneynote.exe" "\0"
-            VALUE "ProductName", "moneynote" "\0"
+            VALUE "OriginalFilename", "BalanceTracker.exe" "\0"
+            VALUE "ProductName", "BalanceTracker" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

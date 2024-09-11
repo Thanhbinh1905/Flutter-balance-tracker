@@ -3,28 +3,28 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:moneynote/UI/report/report.dart';
-import 'package:moneynote/UI/orther/orther.dart';
-import 'package:moneynote/UI/calendar/calendar.dart';
-import 'package:moneynote/constants/constant.dart';
-import 'package:moneynote/utils/color_convert.dart';
-import 'package:moneynote/utils/icon_convert.dart';
+import 'package:BalanceTracker/UI/report/report.dart';
+import 'package:BalanceTracker/UI/orther/orther.dart';
+import 'package:BalanceTracker/UI/calendar/calendar.dart';
+import 'package:BalanceTracker/constants/constant.dart';
+import 'package:BalanceTracker/utils/color_convert.dart';
+import 'package:BalanceTracker/utils/icon_convert.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'homedb.dart';
 import 'package:http/http.dart' as http;
 
 Map<String, dynamic>? userMetadata;
 
-class moneynoteHome extends StatefulWidget {
+class BalanceTrackerHome extends StatefulWidget {
   final Map<String, dynamic> metadata;
 
-  const moneynoteHome({super.key, required this.metadata});
+  const BalanceTrackerHome({super.key, required this.metadata});
 
   @override
-  State<moneynoteHome> createState() => _moneynoteHome();
+  State<BalanceTrackerHome> createState() => _BalanceTrackerHome();
 }
 
-class _moneynoteHome extends State<moneynoteHome> {
+class _BalanceTrackerHome extends State<BalanceTrackerHome> {
   late final List<Widget> _tabs;
   String selectedAmount = '';
   String selectedNote = '';
@@ -42,7 +42,7 @@ class _moneynoteHome extends State<moneynoteHome> {
     super.initState();
     _tabs = [
       hometab(metadata: widget.metadata),
-      calendar(metadata:widget.metadata), 
+      calendar(metadata: widget.metadata),
       report(metadata: widget.metadata),
       orther(metadata: widget.metadata),
     ];
@@ -182,13 +182,14 @@ class _hometab extends State<hometab> {
     if (amountController.text.isEmpty || selectedIndex2 == -1) {
       // Show an error message if amount is empty or no category is selected
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter an amount and select a category')),
+        const SnackBar(
+            content: Text('Please enter an amount and select a category')),
       );
       return;
     }
 
-    final category = KselectedIndex == 0 
-        ? categoriesOutcome[selectedIndex2] 
+    final category = KselectedIndex == 0
+        ? categoriesOutcome[selectedIndex2]
         : categoriesIncome[selectedIndex2];
 
     final transactionData = {

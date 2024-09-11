@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:moneynote/UI/signin/signup.dart';
+import 'package:BalanceTracker/UI/signin/signup.dart';
 import 'dart:convert';
 import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của bạn
-import 'package:moneynote/constants/constant.dart';
+import 'package:BalanceTracker/constants/constant.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,7 +61,8 @@ class _LoginFormState extends State<LoginForm> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => moneynoteHome(metadata: responseData),
+                  builder: (context) =>
+                      BalanceTrackerHome(metadata: responseData),
                 ),
               );
             } else {

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:moneynote/constants/constant.dart';
+import 'package:BalanceTracker/constants/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:moneynote/UI/home/home.dart';
-import 'package:moneynote/utils/color_convert.dart';
-import 'package:moneynote/utils/icon_convert.dart';
+import 'package:BalanceTracker/UI/home/home.dart';
+import 'package:BalanceTracker/utils/color_convert.dart';
+import 'package:BalanceTracker/utils/icon_convert.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -92,25 +92,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final srcHeight = MediaQuery.of(context).size.height;
+    final srcWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
+            height: srcHeight / 12,
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color(0xFFDFE6DD),
-                  Color(0xFFFFFFFF),
-                ],
+                colors: [Color(0xFFDFE6DD), Color(0xFFFFFFFF)],
                 stops: [0.05, 1],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
             ),
-            height: 90,
-            width: double.infinity,
-            padding: const EdgeInsets.only(top: 20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -121,46 +120,42 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         context); // Navigates back to the previous screen
                   },
                 ),
-                SizedBox(
-                  width: 200,
-                  height: 40,
-                  child: ToggleSwitch(
-                    minWidth: 110.0,
-                    minHeight: 30,
-                    cornerRadius: 10.0,
-                    activeBgColors: const [
-                      [Color.fromARGB(255, 64, 175, 0)],
-                      [Color.fromARGB(255, 64, 175, 0)]
-                    ],
-                    activeFgColor: Colors.white,
-                    inactiveBgColor: Colors.grey,
-                    inactiveFgColor: Colors.white,
-                    initialLabelIndex: KselectedIndex,
-                    totalSwitches: 2,
-                    labels: const ['Tiền chi', 'Tiền thu'],
-                    customTextStyles: [
-                      TextStyle(
-                        fontSize: 16.0,
-                        decoration: TextDecoration.none,
-                        color: KselectedIndex == 0
-                            ? Colors.white
-                            : Colors.green[800],
-                      ),
-                      TextStyle(
-                        fontSize: 16.0,
-                        decoration: TextDecoration.none,
-                        color: KselectedIndex == 1
-                            ? Colors.white
-                            : Colors.green[800],
-                      ),
-                    ],
-                    radiusStyle: true,
-                    onToggle: (index) {
-                      setState(() {
-                        KselectedIndex = index!;
-                      });
-                    },
-                  ),
+                ToggleSwitch(
+                  minWidth: 110.0,
+                  minHeight: 30,
+                  cornerRadius: 10.0,
+                  activeBgColors: const [
+                    [Color.fromARGB(255, 64, 175, 0)],
+                    [Color.fromARGB(255, 64, 175, 0)]
+                  ],
+                  // activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.white,
+                  // inactiveFgColor: Colors.white,
+                  initialLabelIndex: KselectedIndex,
+                  totalSwitches: 2,
+                  labels: const ['Tiền chi', 'Tiền thu'],
+                  customTextStyles: [
+                    TextStyle(
+                      fontSize: 12.0,
+                      decoration: TextDecoration.none,
+                      color: KselectedIndex == 0
+                          ? Colors.white
+                          : const Color(0xff62C42A),
+                    ),
+                    TextStyle(
+                      fontSize: 12.0,
+                      decoration: TextDecoration.none,
+                      color: KselectedIndex == 1
+                          ? Colors.white
+                          : const Color(0xff62C42A),
+                    ),
+                  ],
+                  radiusStyle: true,
+                  onToggle: (index) {
+                    setState(() {
+                      KselectedIndex = index!;
+                    });
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),
@@ -180,7 +175,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ],
             ),
           ),
-          Expanded(
+          Flexible(
             child:
                 KselectedIndex == 0 ? _suaTienChiFrame() : _suaTienThuFrame(),
           ),
@@ -200,14 +195,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
         .toList();
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+        decoration: const BoxDecoration(color: Color(0xEECFDFC6)),
         child: ListView.builder(
-          shrinkWrap: true,
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: filteredCategoriesOutcome.length + 1,
+          itemCount: filteredCategoriesOutcome.length +
+              1, // Thêm 1 cho nút "Thêm danh mục"
           itemBuilder: (context, index) {
+            // Kiểm tra nếu là phần tử cuối (nút "Thêm danh mục")
             if (index == filteredCategoriesOutcome.length) {
               return GestureDetector(
                 onTap: () {
@@ -219,13 +216,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   );
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.all(4),
+                  margin: const EdgeInsets.symmetric(vertical: 16.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2,
-                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Center(
@@ -234,77 +228,71 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     ),
-                  ),
-                ),
-              );
-            } else {
-              final category = filteredCategoriesOutcome[index];
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex2 = index;
-                  });
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DeleCate(
-                        categoryOutcome: category,
-                      ),
-                    ),
-                  ).then((result) {
-                    if (result == true) {
-                      getCategoryOutcome(); // Làm mới danh sách
-                    }
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  decoration: BoxDecoration(
-                    color: selectedIndex2 == index
-                        ? Colors.green[50]
-                        : Colors.white,
-                    border: Border.all(
-                      color: selectedIndex2 == index
-                          ? const Color.fromARGB(255, 101, 180, 104)
-                          : Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          IconConverter.getIconDataFromString(
-                                  category.categoryIcon) ??
-                              Icons.error,
-                          color: ColorConverter.getColorFromString(
-                              category.categoryColor),
-                          size: 30,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          category.categoryName,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: selectedIndex2 == index
-                                ? const Color.fromARGB(255, 0, 0, 0)
-                                : Colors.black,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               );
             }
+
+            // Đây là phần tử danh sách các danh mục
+            final category = filteredCategoriesOutcome[index];
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex2 = index;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DeleCate(
+                      categoryOutcome: category,
+                    ),
+                  ),
+                ).then((result) {
+                  if (result == true) {
+                    getCategoryOutcome(); // Làm mới danh sách
+                  }
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 1.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color:
+                      selectedIndex2 == index ? Colors.green[50] : Colors.white,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: Icon(
+                        IconConverter.getIconDataFromString(
+                                category.categoryIcon) ??
+                            Icons.error,
+                        color: ColorConverter.getColorFromString(
+                            category.categoryColor),
+                        size: 25,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        category.categoryName,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: selectedIndex2 == index
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -316,15 +304,15 @@ class _CategoryScreenState extends State<CategoryScreen> {
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
         .toList();
-
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+        decoration: const BoxDecoration(color: Color(0xEECFDFC6)),
         child: ListView.builder(
-          shrinkWrap: true,
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: filteredCategoriesIncome.length + 1,
+          itemCount: filteredCategoriesIncome.length +
+              1, // Thêm 1 cho nút "Thêm danh mục"
           itemBuilder: (context, index) {
+            // Kiểm tra nếu là phần tử cuối (nút "Thêm danh mục")
             if (index == filteredCategoriesIncome.length) {
               return GestureDetector(
                 onTap: () {
@@ -336,13 +324,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   );
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.all(4),
+                  margin: const EdgeInsets.symmetric(vertical: 16.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2,
-                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Center(
@@ -351,77 +336,71 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     ),
-                  ),
-                ),
-              );
-            } else {
-              final category = filteredCategoriesIncome[index];
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex2 = index;
-                  });
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DeleCate(
-                        categoryIncome: category,
-                      ),
-                    ),
-                  ).then((result) {
-                    if (result == true) {
-                      getCategoryIncome(); // Làm mới danh sách
-                    }
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  decoration: BoxDecoration(
-                    color: selectedIndex2 == index
-                        ? Colors.green[50]
-                        : Colors.white,
-                    border: Border.all(
-                      color: selectedIndex2 == index
-                          ? const Color.fromARGB(255, 101, 180, 104)
-                          : Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          IconConverter.getIconDataFromString(
-                                  category.categoryIcon) ??
-                              Icons.error,
-                          color: ColorConverter.getColorFromString(
-                              category.categorycolor),
-                          size: 30,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          category.categoryName,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: selectedIndex2 == index
-                                ? const Color.fromARGB(255, 0, 0, 0)
-                                : Colors.black,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               );
             }
+
+            // Đây là phần tử danh sách các danh mục
+            final category = filteredCategoriesIncome[index];
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex2 = index;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DeleCate(
+                      categoryIncome: category,
+                    ),
+                  ),
+                ).then((result) {
+                  if (result == true) {
+                    getCategoryIncome(); // Làm mới danh sách
+                  }
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 1.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color:
+                      selectedIndex2 == index ? Colors.green[50] : Colors.white,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: Icon(
+                        IconConverter.getIconDataFromString(
+                                category.categoryIcon) ??
+                            Icons.error,
+                        color: ColorConverter.getColorFromString(
+                            category.categorycolor),
+                        size: 25,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        category.categoryName,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: selectedIndex2 == index
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -474,12 +453,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
       );
 
       if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Category created successfully')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Category created successfully')),
+        );
         Navigator.pop(context, true);
-        
-    
       } else {
         final errorMessage = jsonDecode(response.body)['message'];
         ScaffoldMessenger.of(context).showSnackBar(
@@ -696,9 +673,8 @@ class _DeleCateState extends State<DeleCate> {
           'CLIENT_ID': userMetadata?['_id'] ?? '',
         },
         body: jsonEncode(payload),
-        
       );
-  print('Response status: ${response.statusCode}');
+      print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       print(payload);
       if (response.statusCode == 200) {
@@ -833,7 +809,9 @@ class _DeleCateState extends State<DeleCate> {
                     margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: _selectedIcon == iconKey ? Colors.blue : Colors.grey,
+                        color: _selectedIcon == iconKey
+                            ? Colors.blue
+                            : Colors.grey,
                         width: 2,
                       ),
                       borderRadius: BorderRadius.circular(8),
@@ -867,7 +845,9 @@ class _DeleCateState extends State<DeleCate> {
                     decoration: BoxDecoration(
                       color: color,
                       border: Border.all(
-                        color: _selectedColor == colorKey ? Colors.black : Colors.transparent,
+                        color: _selectedColor == colorKey
+                            ? Colors.black
+                            : Colors.transparent,
                         width: 2,
                       ),
                       borderRadius: BorderRadius.circular(8),
@@ -917,7 +897,6 @@ class CategoryIncome {
 
   factory CategoryIncome.fromJson(Map<String, dynamic> json) => CategoryIncome(
       id: json["_id"],
-      
       categoryName: json["category_name"],
       categoryIcon: json["category_icon"],
       categoryType: json["category_type"],
