@@ -467,8 +467,12 @@ class _hometab extends State<hometab> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const ChinhSuaTienChi(),
-                      ),
-                    );
+                      )
+                    ).then((_) {
+                      // Refresh data after adding a new category
+                      getCategoryIncome();
+                      getCategoryOutcome();
+                    });
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -728,7 +732,11 @@ class _hometab extends State<hometab> {
                       MaterialPageRoute(
                         builder: (context) => const ChinhSuaTienChi(),
                       ),
-                    );
+                    ).then((_) {
+                      // Refresh data after adding a new category
+                      getCategoryIncome();
+                      getCategoryOutcome();
+                    });
                   },
                   child: Container(
                     decoration: BoxDecoration(

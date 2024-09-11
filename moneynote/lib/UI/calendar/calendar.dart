@@ -29,6 +29,9 @@ class _CalendarScreenState extends State<calendar> {
   late String currentYear;
   late List<Map<String, dynamic>> dataTransaction = [];
 
+  bool _isEditDeleteFrameVisible = false;
+  Map<String, dynamic>? _selectedTransaction;
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +75,45 @@ class _CalendarScreenState extends State<calendar> {
       print('Error: $e');
       throw Exception('Error occurred while fetching data');
     }
+  }
+
+  Future<void> deleteTransaction(String transactionId) async {
+    final url = Uri.parse('${GetConstant().apiEndPoint}/transaction?transaction_id=$transactionId');
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'],
+        },
+      );
+      if (response.statusCode == 200) {
+        // Successfully deleted
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaction deleted successfully')),
+        );
+        // Refresh the transaction list
+        refreshTransactions();
+      } else {
+        throw Exception('Failed to delete transaction');
+      }
+    } catch (e) {
+      print('Error deleting transaction: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete transaction')),
+      );
+    }
+  }
+
+  void refreshTransactions() {
+    getTransaction(currentMonth, currentYear).then((data) {
+      setState(() {
+        dataTransaction = data;
+        _isEditDeleteFrameVisible = false;
+      });
+    }).catchError((error) {
+      print('Error fetching transaction data: $error');
+    });
   }
 
   @override
@@ -306,23 +348,21 @@ class _CalendarScreenState extends State<calendar> {
 
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-        // padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0), // Tạo bo góc
+          borderRadius: BorderRadius.circular(8.0),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 4,
-              offset: const Offset(0, 3), // Đổ bóng
+              offset: const Offset(0, 3),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Ngày giao dịch
             Container(
               padding: const EdgeInsets.only(top: 5, left: 8, bottom: 5),
               child: Text(
@@ -333,39 +373,25 @@ class _CalendarScreenState extends State<calendar> {
                 ),
               ),
             ),
-            // Danh sách giao dịch
             ...transactionsForDate.map((transaction) {
               String icon = transaction['category']['category_icon'];
               IconData? iconData = IconConverter.getIconDataFromString(icon);
               String color = transaction['category']['category_color'];
               Color? colorData = ColorConverter.getColorFromString(color);
               String tranDes = transaction['transaction_description'];
-              return Container(
-                // margin: const EdgeInsets.only(top: 8.0),
-                child: Material(
-                  color: Colors
-                      .transparent, // Để gợn sóng hiển thị trên nền Container
-                  child: InkWell(
-                    onTap: () {
-                      // In thông tin khi bấm vào Container
-                      print('Transaction Details:');
-                      print(
-                          'Category: ${transaction['category']['category_name']}');
-                      print(
-                          'Description: ${transaction['transaction_description']}');
-                      print('Date: ${transaction['transaction_date']}');
-                      print('Amount: ${transaction['transaction_amount']}');
-                      print('Type: ${transaction['transaction_type']}');
-                    },
-                    splashColor:
-                        Colors.grey.withOpacity(0.3), // Màu hiệu ứng gợn sóng
-                    highlightColor:
-                        Colors.grey.withOpacity(0.1), // Màu khi nhấn xuống
-                    child: Row(
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isEditDeleteFrameVisible = !_isEditDeleteFrameVisible;
+                    _selectedTransaction = transaction;
+                  });
+                },
+                child: Column(
+                  children: [
+                    Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(
-                              left: 12, top: 8, bottom: 8),
+                          padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8),
                           child: Icon(
                             iconData ?? Icons.error,
                             color: colorData,
@@ -373,8 +399,7 @@ class _CalendarScreenState extends State<calendar> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -382,16 +407,12 @@ class _CalendarScreenState extends State<calendar> {
                                   text: TextSpan(
                                     children: <TextSpan>[
                                       TextSpan(
-                                        text: transaction['category']
-                                            ['category_name'],
-                                        style: const TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.black),
+                                        text: transaction['category']['category_name'],
+                                        style: const TextStyle(fontSize: 12.0, color: Colors.black),
                                       ),
                                       TextSpan(
                                         text: ' ($tranDes)',
-                                        style: const TextStyle(
-                                            fontSize: 10.0, color: Colors.grey),
+                                        style: const TextStyle(fontSize: 10.0, color: Colors.grey),
                                       ),
                                     ],
                                   ),
@@ -427,13 +448,56 @@ class _CalendarScreenState extends State<calendar> {
                         )
                       ],
                     ),
-                  ),
+                    if (_isEditDeleteFrameVisible && _selectedTransaction == transaction)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                      TextButton(
+  onPressed: () {
+    // Show a confirmation dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Text('Are you sure you want to delete this transaction?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                deleteTransaction(transaction['_id']);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  },
+  child: const Text('Delete'),
+),
+                     TextButton(
+  onPressed: () {
+   
+  },
+  child: const Text('Edit'),
+),
+                        ],
+                      ),
+                  ],
                 ),
               );
-            }),
+            }).toList(),
           ],
         ),
       );
     }).toList();
   }
 }
+

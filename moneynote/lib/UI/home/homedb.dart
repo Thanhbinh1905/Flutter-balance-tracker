@@ -174,6 +174,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       // Refresh data after adding a new category
                       getCategoryIncome();
                       getCategoryOutcome();
+                      
                     });
                   },
                 ),
@@ -477,7 +478,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Category created successfully')),
       );
-        Navigator.pop(context, true);
+           Navigator.of(context).pop();
+      Navigator.of(context).pop();
         
     
       } else {
