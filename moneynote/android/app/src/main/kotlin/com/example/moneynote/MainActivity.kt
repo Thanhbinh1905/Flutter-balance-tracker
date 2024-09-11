@@ -1,4 +1,4 @@
-package com.example.moneynote
+package com.balance.tracker
 
 import io.flutter.embedding.android.FlutterActivity
 

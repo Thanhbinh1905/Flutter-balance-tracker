@@ -4,11 +4,11 @@ import 'package:fl_chart/fl_chart.dart';
 // import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:moneynote/constants/constant.dart';
+import 'package:BalanceTracker/constants/constant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:moneynote/utils/color_convert.dart';
-import 'package:moneynote/utils/icon_convert.dart';
+import 'package:BalanceTracker/utils/color_convert.dart';
+import 'package:BalanceTracker/utils/icon_convert.dart';
 
 Map<String, dynamic>? userMetadata;
 

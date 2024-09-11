@@ -1,4 +1,4 @@
-# moneynote
+# BalanceTracker
 
 A new Flutter project.
 

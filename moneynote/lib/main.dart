@@ -1,24 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:moneynote/UI/signin/signup.dart';
 import 'dart:convert';
 import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của bạn
-import 'package:moneynote/constants/constant.dart';
+import 'package:BalanceTracker/constants/constant.dart';
+import 'package:BalanceTracker/UI/signin/signup.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Login Demo',
-      debugShowCheckedModeBanner: false,
-      home: LoginForm(),
+    return MaterialApp(
+      home: _checkLoginStatus(),
     );
+  }
+
+  Widget _checkLoginStatus() {
+    // Implement actual login status check
+    return FutureBuilder<bool>(
+      future: _getLoginStatus(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return snapshot.data == true ? const BalanceTrackerHome(metadata: {}) : const LoginForm();
+        }
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
+  Future<bool> _getLoginStatus() async {
+    // TODO: Implement actual login status check
+    // For example, check if a token exists in secure storage
+    await Future.delayed(Duration(seconds: 1)); // Simulating async operation
+    return false; // Return true if logged in, false otherwise
   }
 }
 
@@ -39,49 +57,40 @@ class _LoginFormState extends State<LoginForm> {
       final username = _usernameController.text;
       final password = _passwordController.text;
 
-      // Tạo dữ liệu yêu cầu
       final Map<String, String> data = {
         'username': username,
         'password': password,
       };
 
       try {
-        // Gửi yêu cầu POST đến API
         final response = await http.post(
           Uri.parse('${GetConstant().apiEndPoint}/login'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(data),
         );
 
-        // Kiểm tra phản hồi từ server
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
-          try {
-            if (responseData is Map<String, dynamic>) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => moneynoteHome(metadata: responseData),
-                ),
-              );
-            } else {
-              _showErrorDialog('Wrong username or password, please try again');
-            }
-          } catch (e) {
-            _showErrorDialog('Failed to parse response: $e');
+          if (responseData is Map<String, dynamic>) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    BalanceTrackerHome(metadata: responseData),
+              ),
+            );
+          } else {
+            _showErrorDialog('Wrong username or password, please try again');
           }
         } else {
-          // Hiển thị thông báo lỗi nếu đăng nhập thất bại
           _showErrorDialog('Login failed: ${response.statusCode}');
         }
       } catch (e) {
-        // Hiển thị thông báo lỗi khi có lỗi
-        _showErrorDialog('Error: $e');
+        _showErrorDialog('Error: ${e.toString()}');
       }
     }
   }
 
-  // Hàm hiển thị thông báo lỗi
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -112,7 +121,6 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Pig icon placeholder
               const SizedBox(height: 20),
               const Text(
                 'Đăng nhập',
@@ -166,7 +174,8 @@ class _LoginFormState extends State<LoginForm> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignUpScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpScreen()),
                       );
                       // TODO: Implement registration logic
                     },

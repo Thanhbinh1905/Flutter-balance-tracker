@@ -1,30 +1,31 @@
 import 'dart:convert';
 
+import 'package:BalanceTracker/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:moneynote/UI/report/report.dart';
-import 'package:moneynote/UI/orther/orther.dart';
-import 'package:moneynote/UI/calendar/calendar.dart';
-import 'package:moneynote/constants/constant.dart';
-import 'package:moneynote/utils/color_convert.dart';
-import 'package:moneynote/utils/icon_convert.dart';
+import 'package:BalanceTracker/UI/report/report.dart';
+import 'package:BalanceTracker/UI/orther/orther.dart';
+import 'package:BalanceTracker/UI/calendar/calendar.dart';
+import 'package:BalanceTracker/constants/constant.dart';
+import 'package:BalanceTracker/utils/color_convert.dart';
+import 'package:BalanceTracker/utils/icon_convert.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'homedb.dart';
 import 'package:http/http.dart' as http;
 
 Map<String, dynamic>? userMetadata;
 
-class moneynoteHome extends StatefulWidget {
+class BalanceTrackerHome extends StatefulWidget {
   final Map<String, dynamic> metadata;
 
-  const moneynoteHome({super.key, required this.metadata});
+  const BalanceTrackerHome({super.key, required this.metadata});
 
   @override
-  State<moneynoteHome> createState() => _moneynoteHome();
+  State<BalanceTrackerHome> createState() => _BalanceTrackerHome();
 }
 
-class _moneynoteHome extends State<moneynoteHome> {
+class _BalanceTrackerHome extends State<BalanceTrackerHome> {
   late final List<Widget> _tabs;
   String selectedAmount = '';
   String selectedNote = '';
@@ -36,15 +37,22 @@ class _moneynoteHome extends State<moneynoteHome> {
       // Update other relevant fields
     });
   }
+    void _handleLogout() {
+ 
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const MyApp()),
+      (Route<dynamic> route) => false,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     _tabs = [
       hometab(metadata: widget.metadata),
-      calendar(metadata:widget.metadata), 
+      calendar(metadata: widget.metadata),
       report(metadata: widget.metadata),
-      orther(metadata: widget.metadata),
+      orther(metadata: widget.metadata,onLogout: _handleLogout,),
     ];
     userMetadata = widget.metadata;
   }
@@ -177,27 +185,35 @@ class _hometab extends State<hometab> {
       setState(() {});
     }
   }
-
-  Future<void> createTransaction() async {
-    if (amountController.text.isEmpty || selectedIndex2 == -1) {
-      // Show an error message if amount is empty or no category is selected
+Future<void> createTransaction() async {
+    // Kiểm tra xem đã chọn danh mục chưa
+    if (selectedIndex2 < 0 || selectedIndex2 >= categoriesOutcome.length) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter an amount and select a category')),
+        const SnackBar(content: Text('Vui lòng chọn danh mục')),
       );
       return;
     }
 
-    final category = KselectedIndex == 0 
-        ? categoriesOutcome[selectedIndex2] 
-        : categoriesIncome[selectedIndex2];
+    // Lấy danh mục đã chọn
+    final selectedCategory = categoriesOutcome[selectedIndex2];
+
+    // Lấy số tiền từ trường nhập liệu
+    final amount = double.tryParse(amountController.text);
+    if (amount == null || amount <= 0 || amount > 1000000000) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng nhập số tiền hợp lệ (tối đa 1 tỷ)')),
+      );
+      return;
+    }
 
     final transactionData = {
-      'transaction_amount': int.parse(amountController.text),
-      'transaction_type': KselectedIndex == 0 ? 'outcome' : 'income',
-      'transaction_date': selectedDate.toIso8601String(),
+      'transaction_amount': amount,
       'transaction_description': noteController.text,
-    };
-
+      'transaction_date': selectedDate.toIso8601String(),
+      'category': selectedCategory.id,
+'transaction_type': KselectedIndex == 0 ? 'outcome' : 'income',
+  };
+print(transactionData); 
     try {
       final response = await http.post(
         Uri.parse('${GetConstant().apiEndPoint}/transaction'),
@@ -208,23 +224,28 @@ class _hometab extends State<hometab> {
         body: jsonEncode(transactionData),
       );
 
-      if (response.statusCode == 201) {
-        // Transaction created successfully
+      if (response.statusCode == 200) {
+        // Giao dịch được tạo thành công
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Transaction created successfully')),
+          const SnackBar(content: Text('Tạo thành công')),
         );
-        // Clear input fields
-        amountController.clear();
-        noteController.clear();
+        
+        // Reset các trường nhập liệu
         setState(() {
-          selectedIndex2 = -1;
+          amountController.clear();
+          noteController.clear();
+          selectedIndex2 = -1; // Reset danh mục đã chọn
         });
       } else {
-        throw Exception('Failed to create transaction');
-      }
-    } catch (e) {
+      // Xử lý lỗi
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text('Lỗi: ${response.statusCode} - ${response.body}')),
+      );
+    }
+    } catch (e) {
+      // Xử lý lỗi kết nối
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi kết nối: $e')),
       );
     }
   }

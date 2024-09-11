@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:moneynote/UI/home/homedb.dart';
+import 'package:BalanceTracker/UI/home/homedb.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:moneynote/utils/color_convert.dart';
-import 'package:moneynote/utils/icon_convert.dart';
-import 'package:moneynote/constants/constant.dart';
+import 'package:BalanceTracker/utils/color_convert.dart';
+import 'package:BalanceTracker/utils/icon_convert.dart';
+import 'package:BalanceTracker/constants/constant.dart';
 
 Map<String, dynamic>? userMetadata;
 const greybgcolor = Color(0xFFDFE6DD);
