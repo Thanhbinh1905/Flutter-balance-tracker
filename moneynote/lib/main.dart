@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:BalanceTracker/UI/signin/signup.dart';
 import 'dart:convert';
 import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của bạn
 import 'package:BalanceTracker/constants/constant.dart';
+import 'package:BalanceTracker/UI/signin/signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,50 +39,40 @@ class _LoginFormState extends State<LoginForm> {
       final username = _usernameController.text;
       final password = _passwordController.text;
 
-      // Tạo dữ liệu yêu cầu
       final Map<String, String> data = {
         'username': username,
         'password': password,
       };
 
       try {
-        // Gửi yêu cầu POST đến API
         final response = await http.post(
           Uri.parse('${GetConstant().apiEndPoint}/login'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(data),
         );
 
-        // Kiểm tra phản hồi từ server
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
-          try {
-            if (responseData is Map<String, dynamic>) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      BalanceTrackerHome(metadata: responseData),
-                ),
-              );
-            } else {
-              _showErrorDialog('Wrong username or password, please try again');
-            }
-          } catch (e) {
-            _showErrorDialog('Failed to parse response: $e');
+          if (responseData is Map<String, dynamic>) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    BalanceTrackerHome(metadata: responseData),
+              ),
+            );
+          } else {
+            _showErrorDialog('Wrong username or password, please try again');
           }
         } else {
-          // Hiển thị thông báo lỗi nếu đăng nhập thất bại
           _showErrorDialog('Login failed: ${response.statusCode}');
         }
       } catch (e) {
-        // Hiển thị thông báo lỗi khi có lỗi
-        _showErrorDialog('Error: $e');
+        _showErrorDialog('Error: ${e.toString()}');
       }
     }
   }
 
-  // Hàm hiển thị thông báo lỗi
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -113,7 +103,6 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Pig icon placeholder
               const SizedBox(height: 20),
               const Text(
                 'Đăng nhập',
@@ -167,7 +156,8 @@ class _LoginFormState extends State<LoginForm> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignUpScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpScreen()),
                       );
                       // TODO: Implement registration logic
                     },
