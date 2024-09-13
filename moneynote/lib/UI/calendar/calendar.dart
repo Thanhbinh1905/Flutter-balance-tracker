@@ -78,7 +78,8 @@ class _CalendarScreenState extends State<calendar> {
   }
 
   Future<void> deleteTransaction(String transactionId) async {
-    final url = Uri.parse('${GetConstant().apiEndPoint}/transaction?transaction_id=$transactionId');
+    final url = Uri.parse(
+        '${GetConstant().apiEndPoint}/transaction?transaction_id=$transactionId');
     try {
       final response = await http.delete(
         url,
@@ -379,19 +380,21 @@ class _CalendarScreenState extends State<calendar> {
               String color = transaction['category']['category_color'];
               Color? colorData = ColorConverter.getColorFromString(color);
               String tranDes = transaction['transaction_description'];
-              return GestureDetector(
+              return InkWell(
                 onTap: () {
                   setState(() {
                     _isEditDeleteFrameVisible = !_isEditDeleteFrameVisible;
                     _selectedTransaction = transaction;
                   });
                 },
+                splashColor: Colors.grey.withOpacity(0.3), // Màu gợn sóng
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8),
+                          padding: const EdgeInsets.only(
+                              left: 12, top: 8, bottom: 8),
                           child: Icon(
                             iconData ?? Icons.error,
                             color: colorData,
@@ -399,7 +402,8 @@ class _CalendarScreenState extends State<calendar> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -407,12 +411,16 @@ class _CalendarScreenState extends State<calendar> {
                                   text: TextSpan(
                                     children: <TextSpan>[
                                       TextSpan(
-                                        text: transaction['category']['category_name'],
-                                        style: const TextStyle(fontSize: 12.0, color: Colors.black),
+                                        text: transaction['category']
+                                            ['category_name'],
+                                        style: const TextStyle(
+                                            fontSize: 12.0,
+                                            color: Colors.black),
                                       ),
                                       TextSpan(
                                         text: ' ($tranDes)',
-                                        style: const TextStyle(fontSize: 10.0, color: Colors.grey),
+                                        style: const TextStyle(
+                                            fontSize: 10.0, color: Colors.grey),
                                       ),
                                     ],
                                   ),
@@ -448,56 +456,55 @@ class _CalendarScreenState extends State<calendar> {
                         )
                       ],
                     ),
-                    if (_isEditDeleteFrameVisible && _selectedTransaction == transaction)
+                    if (_isEditDeleteFrameVisible &&
+                        _selectedTransaction == transaction)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                      TextButton(
-  onPressed: () {
-    // Show a confirmation dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Deletion'),
-          content: const Text('Are you sure you want to delete this transaction?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Delete'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                deleteTransaction(transaction['_id']);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  },
-  child: const Text('Delete'),
-),
-                     TextButton(
-  onPressed: () {
-   
-  },
-  child: const Text('Edit'),
-),
+                          TextButton(
+                            onPressed: () {
+                              // Show a confirmation dialog
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Confirm Deletion'),
+                                    content: const Text(
+                                        'Are you sure you want to delete this transaction?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text('Cancel'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: const Text('Delete'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          deleteTransaction(transaction['_id']);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: const Text('Delete'),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text('Edit'),
+                          ),
                         ],
                       ),
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       );
     }).toList();
   }
 }
-

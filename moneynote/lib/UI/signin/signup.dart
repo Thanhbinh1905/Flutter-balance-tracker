@@ -1,8 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:BalanceTracker/main.dart';
+import 'dart:convert';
+import 'package:BalanceTracker/constants/constant.dart';
+import 'package:http/http.dart' as http;
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
+  Future<void> _register() async {
+    final data = {
+      'username': _usernameController.text,
+      'password': _passwordController.text,
+      'email': _emailController.text,
+      'phone': _phoneController.text,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('${GetConstant().apiEndPoint}/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData is Map<String, dynamic>) {
+          // Xử lý đăng ký thành công, chẳng hạn như điều hướng đến trang đăng nhập
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginForm()),
+          );
+        } else {
+          _showErrorDialog('Dữ liệu trả về không hợp lệ');
+        }
+      } else {
+        _showErrorDialog('Đăng ký thất bại: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorDialog('Lỗi: ${e.toString()}');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Lỗi'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +87,14 @@ class SignUpScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 30),
-              _buildTextField('Tên tài khoản'),
+              _buildTextField('Tên tài khoản', _usernameController),
               const SizedBox(height: 15),
-              _buildTextField('Mật khẩu', isPassword: true),
+              _buildTextField('Mật khẩu', _passwordController,
+                  isPassword: true),
               const SizedBox(height: 15),
-              _buildTextField('Gmail'),
+              _buildTextField('Gmail', _emailController),
               const SizedBox(height: 15),
-              _buildTextField('Số điện thoại'),
+              _buildTextField('Số điện thoại', _phoneController),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -36,7 +104,8 @@ class SignUpScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginForm()),
+                        MaterialPageRoute(
+                            builder: (context) => const LoginForm()),
                       );
                     },
                     child: const Text('Đăng nhập',
@@ -48,9 +117,7 @@ class SignUpScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Xử lý đăng ký
-                  },
+                  onPressed: _register,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -68,8 +135,10 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String label, {bool isPassword = false}) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      {bool isPassword = false}) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       decoration: InputDecoration(
         filled: true,

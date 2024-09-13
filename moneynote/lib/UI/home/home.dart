@@ -37,10 +37,10 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
       // Update other relevant fields
     });
   }
-    void _handleLogout() {
- 
+
+  void _handleLogout() {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const MyApp()),
+      MaterialPageRoute(builder: (context) => const LoginForm()),
       (Route<dynamic> route) => false,
     );
   }
@@ -52,7 +52,10 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
       hometab(metadata: widget.metadata),
       calendar(metadata: widget.metadata),
       report(metadata: widget.metadata),
-      orther(metadata: widget.metadata,onLogout: _handleLogout,),
+      orther(
+        metadata: widget.metadata,
+        onLogout: _handleLogout,
+      ),
     ];
     userMetadata = widget.metadata;
   }
@@ -185,7 +188,8 @@ class _hometab extends State<hometab> {
       setState(() {});
     }
   }
-Future<void> createTransaction() async {
+
+  Future<void> createTransaction() async {
     // Kiểm tra xem đã chọn danh mục chưa
     if (selectedIndex2 < 0 || selectedIndex2 >= categoriesOutcome.length) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -201,7 +205,8 @@ Future<void> createTransaction() async {
     final amount = double.tryParse(amountController.text);
     if (amount == null || amount <= 0 || amount > 1000000000) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng nhập số tiền hợp lệ (tối đa 1 tỷ)')),
+        const SnackBar(
+            content: Text('Vui lòng nhập số tiền hợp lệ (tối đa 1 tỷ)')),
       );
       return;
     }
@@ -211,9 +216,9 @@ Future<void> createTransaction() async {
       'transaction_description': noteController.text,
       'transaction_date': selectedDate.toIso8601String(),
       'category': selectedCategory.id,
-'transaction_type': KselectedIndex == 0 ? 'outcome' : 'income',
-  };
-print(transactionData); 
+      'transaction_type': KselectedIndex == 0 ? 'outcome' : 'income',
+    };
+    print(transactionData);
     try {
       final response = await http.post(
         Uri.parse('${GetConstant().apiEndPoint}/transaction'),
@@ -229,7 +234,7 @@ print(transactionData);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Tạo thành công')),
         );
-        
+
         // Reset các trường nhập liệu
         setState(() {
           amountController.clear();
@@ -237,11 +242,12 @@ print(transactionData);
           selectedIndex2 = -1; // Reset danh mục đã chọn
         });
       } else {
-      // Xử lý lỗi
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi: ${response.statusCode} - ${response.body}')),
-      );
-    }
+        // Xử lý lỗi
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Lỗi: ${response.statusCode} - ${response.body}')),
+        );
+      }
     } catch (e) {
       // Xử lý lỗi kết nối
       ScaffoldMessenger.of(context).showSnackBar(
@@ -485,11 +491,10 @@ print(transactionData);
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChinhSuaTienChi(),
-                      )
-                    ).then((_) {
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ChinhSuaTienChi(),
+                        )).then((_) {
                       // Refresh data after adding a new category
                       getCategoryIncome();
                       getCategoryOutcome();
