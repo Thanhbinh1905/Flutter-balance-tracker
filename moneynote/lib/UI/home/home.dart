@@ -10,8 +10,10 @@ import 'package:BalanceTracker/UI/calendar/calendar.dart';
 import 'package:BalanceTracker/constants/constant.dart';
 import 'package:BalanceTracker/utils/color_convert.dart';
 import 'package:BalanceTracker/utils/icon_convert.dart';
+import 'package:BalanceTracker/utils/currency_settings.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'homedb.dart';
+import 'package:intl/intl.dart'; // Thêm import này
 import 'package:http/http.dart' as http;
 
 Map<String, dynamic>? userMetadata;
@@ -214,11 +216,11 @@ class _hometab extends State<hometab> {
     final transactionData = {
       'transaction_amount': amount,
       'transaction_description': noteController.text,
-      'transaction_date': selectedDate.toIso8601String(),
+      'transaction_date': DateFormat('dd/MM/yyyy').format(selectedDate),
       'category': selectedCategory.id,
       'transaction_type': KselectedIndex == 0 ? 'outcome' : 'income',
     };
-    print(transactionData);
+    // print(transactionData);
     try {
       final response = await http.post(
         Uri.parse('${GetConstant().apiEndPoint}/transaction'),
@@ -451,13 +453,7 @@ class _hometab extends State<hometab> {
                   decoration: null,
                 ),
               ),
-              const Text(
-                "Đ",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: CupertinoColors.white,
-                    decoration: TextDecoration.none),
-              ),
+              CurrencySettings.showCurrency()
             ],
           ),
         ),
@@ -714,13 +710,7 @@ class _hometab extends State<hometab> {
                   decoration: null,
                 ),
               ),
-              const Text(
-                "Đ",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: CupertinoColors.white,
-                    decoration: TextDecoration.none),
-              ),
+              CurrencySettings.showCurrency()
             ],
           ),
         ),

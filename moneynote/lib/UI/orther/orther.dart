@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:BalanceTracker/UI//account/account.dart'; // Đảm bảo đường dẫn đúng
+import 'package:BalanceTracker/UI//account/account.dart';
+import 'package:BalanceTracker/UI//currency/currency_select.dart';
 
 class orther extends StatelessWidget {
   final Map<String, dynamic> metadata;
@@ -45,9 +46,8 @@ class orther extends StatelessWidget {
         color: Colors.white.withOpacity(0.7),
         child: Column(
           children: [
-            _buildMenuItem(context, "Báo cáo theo danh mục",
-                Icons.arrow_forward_ios, () {}),
-            _buildMenuItem(context, "Tài khoản", Icons.arrow_forward_ios, () {
+            _buildMenuItem(context, "Báo cáo theo danh mục", Icons.menu, () {}),
+            _buildMenuItem(context, "Tài khoản", Icons.account_circle, () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -55,9 +55,15 @@ class orther extends StatelessWidget {
                         AccountPage(metadata: metadata, onLogout: onLogout)),
               );
             }),
-            _buildMenuItem(context, "Ngôn ngữ", Icons.arrow_forward_ios, () {}),
+            _buildMenuItem(context, "Ngôn ngữ", Icons.language, () {}),
             _buildMenuItem(
-                context, "Đơn vị tiền tệ", Icons.arrow_forward_ios, () {}),
+                context, "Đơn vị tiền tệ", Icons.currency_exchange_rounded, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CurrencySelectorScreen()),
+              );
+            }),
           ],
         ),
       )),
@@ -97,7 +103,10 @@ class orther extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Expanded(child: Text(text)),
-                Icon(icon),
+                Icon(
+                  icon,
+                  size: 20,
+                ),
               ],
             ),
           ),

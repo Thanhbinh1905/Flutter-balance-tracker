@@ -21,8 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final data = {
       'username': _usernameController.text,
       'password': _passwordController.text,
-      'email': _emailController.text,
-      'phone': _phoneController.text,
+      'gmail': _emailController.text,
+      // 'phone': _phoneController.text,
     };
 
     try {
@@ -93,8 +93,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   isPassword: true),
               const SizedBox(height: 15),
               _buildTextField('Gmail', _emailController),
-              const SizedBox(height: 15),
-              _buildTextField('Số điện thoại', _phoneController),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

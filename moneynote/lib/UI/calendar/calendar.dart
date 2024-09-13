@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:BalanceTracker/utils/color_convert.dart';
 import 'package:BalanceTracker/utils/icon_convert.dart';
 import 'package:BalanceTracker/constants/constant.dart';
+import 'package:BalanceTracker/utils/currency_settings.dart';
 
 Map<String, dynamic>? userMetadata;
 const greybgcolor = Color(0xFFDFE6DD);
@@ -298,32 +299,71 @@ class _CalendarScreenState extends State<calendar> {
         Column(
           children: [
             const Text('Thu nhập'),
-            Text(
-              '${totalIncome.toStringAsFixed(0)}đ',
-              style: const TextStyle(color: greenbgcolor),
-            ),
+            FutureBuilder<String>(
+              future: CurrencySettings
+                  .getCurrencySymbol(), // Hàm lấy ký hiệu tiền tệ
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(); // Hiển thị khi đang chờ
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  // Hiển thị thu nhập và ký hiệu tiền tệ khi dữ liệu đã sẵn sàng
+                  return Text(
+                    '${totalIncome.toStringAsFixed(0)} ${snapshot.data ?? ''}',
+                    style: const TextStyle(color: greenbgcolor),
+                  );
+                }
+              },
+            )
           ],
         ),
         Column(
           children: [
             const Text('Chi tiêu'),
-            Text(
-              '${totalOutcome.toStringAsFixed(0)}đ',
-              style: const TextStyle(
-                color: Colors.red,
-              ),
-            ),
+            FutureBuilder<String>(
+              future: CurrencySettings
+                  .getCurrencySymbol(), // Hàm lấy ký hiệu tiền tệ
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(); // Hiển thị khi đang chờ
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  // Hiển thị thu nhập và ký hiệu tiền tệ khi dữ liệu đã sẵn sàng
+                  return Text(
+                    '${totalOutcome.toStringAsFixed(0)} ${snapshot.data ?? ''}',
+                    style: TextStyle(
+                      color: totalOutcome >= 0 ? greenbgcolor : Colors.red,
+                    ),
+                  );
+                }
+              },
+            )
           ],
         ),
         Column(
           children: [
             const Text('Tổng'),
-            Text(
-              '${total.toStringAsFixed(0)}đ',
-              style: TextStyle(
-                color: total >= 0 ? greenbgcolor : Colors.red,
-              ),
-            ),
+            FutureBuilder<String>(
+              future: CurrencySettings
+                  .getCurrencySymbol(), // Hàm lấy ký hiệu tiền tệ
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(); // Hiển thị khi đang chờ
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  // Hiển thị thu nhập và ký hiệu tiền tệ khi dữ liệu đã sẵn sàng
+                  return Text(
+                    '${total.toStringAsFixed(0)} ${snapshot.data ?? ''}',
+                    style: TextStyle(
+                      color: total >= 0 ? greenbgcolor : Colors.red,
+                    ),
+                  );
+                }
+              },
+            )
           ],
         ),
       ],
@@ -434,19 +474,34 @@ class _CalendarScreenState extends State<calendar> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.only(right: 5, left: 5),
-                          child: Text(
-                            transaction['transaction_type'] == 'income'
-                                ? '${transaction['transaction_amount']}đ'
-                                : '-${transaction['transaction_amount']}đ',
-                            style: TextStyle(
-                              color: transaction['transaction_type'] == 'income'
-                                  ? Colors.green
-                                  : Colors.red,
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ),
+                            padding: const EdgeInsets.only(right: 5, left: 5),
+                            child: FutureBuilder<String>(
+                              future: CurrencySettings
+                                  .getCurrencySymbol(), // Hàm lấy ký hiệu tiền tệ
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator(); // Hiển thị khi đang chờ
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  // Hiển thị thu nhập và ký hiệu tiền tệ khi dữ liệu đã sẵn sàng
+                                  return Text(
+                                    transaction['transaction_type'] == 'income'
+                                        ? '${transaction['transaction_amount']} ${snapshot.data ?? ''}'
+                                        : '-${transaction['transaction_amount']} ${snapshot.data ?? ''}',
+                                    style: TextStyle(
+                                      color: transaction['transaction_type'] ==
+                                              'income'
+                                          ? Colors.green
+                                          : Colors.red,
+                                      fontSize: 12.0,
+                                    ),
+                                  );
+                                }
+                              },
+                            )),
                         Container(
                           padding: const EdgeInsets.only(right: 12),
                           child: const Icon(
