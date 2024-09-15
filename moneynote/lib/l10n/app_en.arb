@@ -17,5 +17,6 @@
     "total": "Total",
     "calendar": "Calendar",
     "insert": "Insert",
-    "report": "Report"
+    "report": "Report",
+    "exportToExcel": "Export to Excel"
 }

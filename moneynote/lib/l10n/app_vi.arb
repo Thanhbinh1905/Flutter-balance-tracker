@@ -17,5 +17,6 @@
     "total": "Tổng",
     "calendar": "Lịch",
     "insert": "Nhập vào",
-    "report": "Báo cáo"
+    "report": "Báo cáo",
+    "exportToExcel": "Xuất ra excel"
   }
