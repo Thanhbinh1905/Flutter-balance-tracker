@@ -1,45 +1,42 @@
+import 'package:BalanceTracker/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'UI/home/home.dart'; // Đường dẫn import đến home.dart của bạn
 import 'package:BalanceTracker/constants/constant.dart';
 import 'package:BalanceTracker/UI/signin/signup.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LanguageProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: _checkLoginStatus(),
-    );
-  }
-
-  Widget _checkLoginStatus() {
-    // Implement actual login status check
-    return FutureBuilder<bool>(
-      future: _getLoginStatus(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return snapshot.data == true
-              ? const BalanceTrackerHome(metadata: {})
-              : const LoginForm();
-        }
-        return const CircularProgressIndicator();
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return MaterialApp(
+          title: 'Balance Tracker',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          locale: languageProvider.currentLocale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const LoginForm(), // Add this line
+        );
       },
     );
-  }
-
-  Future<bool> _getLoginStatus() async {
-    // TODO: Implement actual login status check
-    // For example, check if a token exists in secure storage
-    await Future.delayed(
-        const Duration(seconds: 1)); // Simulating async operation
-    return false; // Return true if logged in, false otherwise
   }
 }
 

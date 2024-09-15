@@ -20,7 +20,7 @@ class orther extends StatelessWidget {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
-     final l10n = AppLocalizations.of(context)!;
+     final l10n = AppLocalizations.of(context);
     return Column(children: [
       Container(
           height: srcHeight / 12,
@@ -36,7 +36,7 @@ class orther extends StatelessWidget {
           ),
           child:  Center(
             child: Text(
-              l10n.other,
+              l10n?.other ?? '',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16.0,
@@ -51,8 +51,8 @@ class orther extends StatelessWidget {
         color: Colors.white.withOpacity(0.7),
         child: Column(
           children: [
-            _buildMenuItem(context, l10n.reportByCategory, Icons.menu, () {}),
-            _buildMenuItem(context, l10n.account, Icons.account_circle, () {
+            _buildMenuItem(context, l10n?.reportByCategory ?? '', Icons.menu, () {}),
+            _buildMenuItem(context, l10n?.account ?? '', Icons.account_circle, () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -60,11 +60,11 @@ class orther extends StatelessWidget {
                         AccountPage(metadata: metadata, onLogout: onLogout)),
               );
             }),
-            _buildMenuItem(context, l10n.language, Icons.language, () {
+            _buildMenuItem(context, l10n?.language ?? '', Icons.language, () {
               _showLanguageDialog(context, Provider.of<LanguageProvider>(context, listen: false));
             }),
             _buildMenuItem(
-                context, l10n.currencyUnit, Icons.currency_exchange_rounded, () {
+                context, l10n?.currencyUnit ?? '', Icons.currency_exchange_rounded, () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
