@@ -71,8 +71,7 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
       report(metadata: widget.metadata, onRefresh: refreshData),
       orther(
         metadata: widget.metadata,
-        onLogout: _handleLogout,
-        onRefresh: refreshData,
+        onLogout: _handleLogout,onRefresh: refreshData,
       ),
     ];
     userMetadata = widget.metadata;

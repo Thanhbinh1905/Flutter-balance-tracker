@@ -133,8 +133,8 @@ class orther extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-                     _buildLanguageOption(context, l10n.vietnamese, 'vi', languageProvider),
-              _buildLanguageOption(context, l10n.english, 'en', languageProvider),
+                     _buildLanguageOption(context, l10n.vietnamese??'', 'vi', languageProvider),
+              _buildLanguageOption(context, l10n.english??'', 'en', languageProvider),
        
             ],
           ),

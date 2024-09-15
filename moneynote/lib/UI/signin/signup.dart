@@ -17,12 +17,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  String _passwordStrengthMessage = '';
+
+  void _checkPasswordStrength(String password) {
+    if (password.length < 6) {
+      _passwordStrengthMessage = 'Mật khẩu quá ngắn';
+    } else if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$')
+        .hasMatch(password)) {
+      _passwordStrengthMessage = 'Mật khẩu cần có chữ hoa, chữ thường và số';
+    } else {
+      _passwordStrengthMessage = 'Mật khẩu mạnh';
+    }
+    setState(() {});
+  }
+
   Future<void> _register() async {
     final data = {
       'username': _usernameController.text,
       'password': _passwordController.text,
       'gmail': _emailController.text,
-      // 'phone': _phoneController.text,
     };
 
     try {
@@ -35,7 +48,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData is Map<String, dynamic>) {
-          // Xử lý đăng ký thành công, chẳng hạn như điều hướng đến trang đăng nhập
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const LoginForm()),
@@ -80,7 +92,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image.asset('assets/images/pig.png', height: 100),
               const SizedBox(height: 100),
               const Text(
                 'Đăng ký',
@@ -90,7 +101,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
               _buildTextField('Tên tài khoản', _usernameController),
               const SizedBox(height: 15),
               _buildTextField('Mật khẩu', _passwordController,
-                  isPassword: true),
+                  isPassword: true, isNewPassword: true),
+              if (_passwordStrengthMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    _passwordStrengthMessage,
+                    style: TextStyle(
+                      color: _passwordStrengthMessage == 'Mật khẩu mạnh'
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 15),
               _buildTextField('Gmail', _emailController),
               const SizedBox(height: 20),
@@ -134,19 +157,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildTextField(String label, TextEditingController controller,
-      {bool isPassword = false}) {
-    return TextField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.grey[200],
-        labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
+      {bool isPassword = false, bool isNewPassword = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          obscureText: isPassword,
+          onChanged: isNewPassword ? _checkPasswordStrength : null,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.grey[200],
+            labelText: label,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

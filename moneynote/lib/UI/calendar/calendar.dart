@@ -124,7 +124,7 @@ class _CalendarScreenState extends State<calendar> {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Column(
         children: [
