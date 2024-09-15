@@ -9,6 +9,7 @@ import 'package:BalanceTracker/utils/color_convert.dart';
 import 'package:BalanceTracker/utils/icon_convert.dart';
 import 'package:BalanceTracker/constants/constant.dart';
 import 'package:BalanceTracker/utils/currency_settings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Map<String, dynamic>? userMetadata;
 const greybgcolor = Color(0xFFDFE6DD);
@@ -122,6 +123,7 @@ class _CalendarScreenState extends State<calendar> {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         children: [
@@ -150,8 +152,8 @@ class _CalendarScreenState extends State<calendar> {
                   ),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
-                child: const Text(
-                  "Lịch",
+                child:  Text(
+                  l10n?.calendar ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.0,

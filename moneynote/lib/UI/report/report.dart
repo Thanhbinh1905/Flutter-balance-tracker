@@ -1,14 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:fl_chart/fl_chart.dart';
 // import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
+
 import 'package:BalanceTracker/constants/constant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:BalanceTracker/utils/color_convert.dart';
 import 'package:BalanceTracker/utils/icon_convert.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Map<String, dynamic>? userMetadata;
 
@@ -397,6 +400,7 @@ class _ReportScreenState extends State<report> {
   }
 
   Widget get _monthlyReportFrame {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Container(
@@ -484,11 +488,11 @@ class _ReportScreenState extends State<report> {
                           padding: const EdgeInsets.all(8),
                           child: Row(
                             children: [
-                              const Flexible(
+                               Flexible(
                                 // flex:
                                 //     1, // Cung cấp nhiều không gian hơn cho phần "Chi tiêu"
                                 child: Text(
-                                  'Chi tiêu',
+                                  l10n?.expense ?? '',
                                   overflow: TextOverflow
                                       .ellipsis, // Cắt bớt nếu quá dài
                                   maxLines: 1,
@@ -567,9 +571,9 @@ class _ReportScreenState extends State<report> {
                           padding: const EdgeInsets.all(8),
                           child: Row(
                             children: [
-                              const Flexible(
+                               Flexible(
                                 child: Text(
-                                  'Thu nhập',
+                                  l10n?.income ?? '',
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: TextStyle(
@@ -645,9 +649,9 @@ class _ReportScreenState extends State<report> {
                         borderRadius: BorderRadius.circular(8)),
                     child: Row(
                       children: [
-                        const Expanded(
+                         Expanded(
                           child: Text(
-                            'Tổng',
+                            l10n?.total ?? '',
                             style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                         ),
@@ -709,7 +713,7 @@ class _ReportScreenState extends State<report> {
                   child: Column(
                     children: [
                       Text(
-                        'Chi tiêu',
+                        l10n?.expense ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: isExpenseSelected ? Colors.black : Colors.grey,
@@ -738,7 +742,7 @@ class _ReportScreenState extends State<report> {
                   child: Column(
                     children: [
                       Text(
-                        'Thu nhập',
+                        l10n?.income ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color:
@@ -791,6 +795,7 @@ class _ReportScreenState extends State<report> {
   }
 
   Widget get _yearlyReportFrame {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Container(
@@ -876,11 +881,11 @@ class _ReportScreenState extends State<report> {
                           padding: const EdgeInsets.all(8),
                           child: Row(
                             children: [
-                              const Flexible(
+                               Flexible(
                                 // flex:
                                 //     1, // Cung cấp nhiều không gian hơn cho phần "Chi tiêu"
                                 child: Text(
-                                  'Chi tiêu',
+                                  l10n?.expense ?? '',
                                   overflow: TextOverflow
                                       .ellipsis, // Cắt bớt nếu quá dài
                                   maxLines: 1,
@@ -1095,7 +1100,7 @@ class _ReportScreenState extends State<report> {
                   child: Column(
                     children: [
                       Text(
-                        'Chi tiêu',
+                        l10n?.expense ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: isExpenseSelected ? Colors.black : Colors.grey,
@@ -1124,7 +1129,7 @@ class _ReportScreenState extends State<report> {
                   child: Column(
                     children: [
                       Text(
-                        'Thu nhập',
+                        l10n?.income ?? '',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color:
@@ -1180,6 +1185,7 @@ class _ReportScreenState extends State<report> {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Column(
         children: [
@@ -1210,7 +1216,7 @@ class _ReportScreenState extends State<report> {
                 // inactiveFgColor: Colors.white,
                 initialLabelIndex: kSelectedIndex,
                 totalSwitches: 2,
-                labels: const ['Hàng tháng', 'Hàng năm'],
+                labels:  [l10n?.month ?? '', l10n?.year ?? ''],
                 customTextStyles: [
                   TextStyle(
                     fontSize: 12.0,

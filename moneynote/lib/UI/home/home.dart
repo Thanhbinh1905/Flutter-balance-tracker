@@ -67,7 +67,7 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
     return CupertinoPageScaffold(
         child: CupertinoTabScaffold(
             tabBar: CupertinoTabBar(
-              items: const [
+              items:  [
                 BottomNavigationBarItem(
                     icon: Icon(Icons.edit), label: 'Nhập vào'),
                 BottomNavigationBarItem(
