@@ -1,4 +1,5 @@
 import 'package:BalanceTracker/main.dart';
+import 'package:BalanceTracker/UI/otphandle/otpscreen.dart';
 import 'package:flutter/material.dart';
 
 class AccountPage extends StatelessWidget {
@@ -106,12 +107,6 @@ class AccountPage extends StatelessWidget {
                             )
                           ],
                         ),
-                        // Row(
-                        //   children: [
-                        //     Text(" Số điện thoại: ${metadata['phone']}",
-                        //         style: const TextStyle(color: Colors.grey))
-                        //   ],
-                        // )
                       ],
                     )),
               ),
@@ -135,7 +130,14 @@ class AccountPage extends StatelessWidget {
                   child: Material(
                     borderRadius: BorderRadius.circular(8),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  OtpScreen(metadata: metadata)),
+                        );
+                      },
                       splashColor: Colors.grey.withOpacity(0.3), // Màu gợn sóng
                       customBorder: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
