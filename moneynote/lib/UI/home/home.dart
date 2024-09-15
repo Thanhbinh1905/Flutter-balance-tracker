@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:BalanceTracker/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:BalanceTracker/UI/report/report.dart';
 import 'package:BalanceTracker/UI/orther/orther.dart';
 import 'package:BalanceTracker/UI/calendar/calendar.dart';
@@ -46,17 +46,33 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
       (Route<dynamic> route) => false,
     );
   }
+    void refreshData() {
+    setState(() {
+      // Recreate the tabs to force a refresh
+      _tabs = [
+        hometab(metadata: widget.metadata, onRefresh: refreshData),
+        calendar(metadata: widget.metadata, onRefresh: refreshData),
+        report(metadata: widget.metadata, onRefresh: refreshData),
+        orther(
+          metadata: widget.metadata,
+          onLogout: _handleLogout,
+          onRefresh: refreshData,
+        ),
+      ];
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _tabs = [
-      hometab(metadata: widget.metadata),
-      calendar(metadata: widget.metadata),
-      report(metadata: widget.metadata),
+      hometab(metadata: widget.metadata, onRefresh: refreshData),
+      calendar(metadata: widget.metadata, onRefresh: refreshData),
+      report(metadata: widget.metadata, onRefresh: refreshData),
       orther(
         metadata: widget.metadata,
         onLogout: _handleLogout,
+        onRefresh: refreshData,
       ),
     ];
     userMetadata = widget.metadata;
@@ -64,18 +80,19 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return CupertinoPageScaffold(
         child: CupertinoTabScaffold(
             tabBar: CupertinoTabBar(
               items:  [
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.edit), label: 'Nhập vào'),
+                    icon: Icon(Icons.edit), label: l10n?.insert ?? ''),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.calendar_month), label: 'Lịch'),
+                    icon: Icon(Icons.calendar_month), label: l10n?.calendar ?? ''),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.pie_chart), label: 'Báo cáo'),
+                    icon: Icon(Icons.pie_chart), label: l10n?.report ?? ''),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.more_horiz), label: 'Khác')
+                    icon: Icon(Icons.more_horiz), label: l10n?.other ?? '')
               ],
               activeColor:
                   const Color(0xFF62C42A), // Color for the selected tab item
@@ -93,8 +110,8 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
 
 class hometab extends StatefulWidget {
   final Map<String, dynamic> metadata;
-
-  const hometab({super.key, required this.metadata});
+final VoidCallback onRefresh;
+  const hometab({super.key, required this.metadata, required this.onRefresh});
 
   @override
   _hometab createState() => _hometab();
@@ -202,6 +219,7 @@ class _hometab extends State<hometab> {
 
     // Lấy danh mục đã chọn
     final selectedCategory = categoriesOutcome[selectedIndex2];
+    final l10n = AppLocalizations.of(context);
 
     // Lấy số tiền từ trường nhập liệu
     final amount = double.tryParse(amountController.text);
@@ -234,7 +252,7 @@ class _hometab extends State<hometab> {
       if (response.statusCode == 200) {
         // Giao dịch được tạo thành công
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tạo thành công')),
+           SnackBar(content: Text(l10n?.addsuccessful ?? '')),
         );
 
         // Reset các trường nhập liệu
@@ -262,6 +280,7 @@ class _hometab extends State<hometab> {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Column(
         children: [
@@ -292,7 +311,7 @@ class _hometab extends State<hometab> {
                 // inactiveFgColor: Colors.white,
                 initialLabelIndex: KselectedIndex,
                 totalSwitches: 2,
-                labels: const ['Tiền chi', 'Tiền thu'],
+                labels:  [l10n?.expense ?? '', l10n?.income ?? ''],
                 customTextStyles: [
                   TextStyle(
                     fontSize: 12.0,
@@ -340,6 +359,7 @@ class _hometab extends State<hometab> {
   }
 
   Widget _buildTienChiFrame() {
+    final l10n = AppLocalizations.of(context);
     final filteredCategoriesOutcome = categoriesOutcome
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
@@ -401,8 +421,8 @@ class _hometab extends State<hometab> {
         Row(
           children: [
             const SizedBox(width: 16.0),
-            const Text(
-              "Ghi chú",
+            Text(
+              l10n?.note ?? '',
               style: TextStyle(
                   fontSize: 14.0,
                   color: CupertinoColors.black,
@@ -412,7 +432,7 @@ class _hometab extends State<hometab> {
             Expanded(
               child: CupertinoTextField(
                 controller: noteController,
-                placeholder: "Nhập ghi chú",
+                placeholder: l10n?.note ?? '',
                 padding: const EdgeInsets.symmetric(
                     vertical: 12.0, horizontal: 12.0),
                 decoration: BoxDecoration(
@@ -430,8 +450,8 @@ class _hometab extends State<hometab> {
           height: 45,
           child: Row(
             children: [
-              const Text(
-                "Tiền chi",
+              Text(
+                l10n?.expense ?? '',
                 style: TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.bold,
@@ -458,10 +478,10 @@ class _hometab extends State<hometab> {
           ),
         ),
         const SizedBox(height: 10.0),
-        const Padding(
+         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            "Danh sách",
+            l10n?.list ?? '',
             style: TextStyle(
                 fontSize: 16.0,
                 color: Color.fromARGB(255, 0, 0, 0),
@@ -505,9 +525,9 @@ class _hometab extends State<hometab> {
                       // ),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Center(
+                    child:  Center(
                       child: Text(
-                        "Chỉnh sửa >",
+                        l10n?.edit ?? '',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
@@ -584,8 +604,8 @@ class _hometab extends State<hometab> {
                     ),
                   ),
                   onPressed: createTransaction,
-                  child: const Text(
-                    "Nhập tiền chi",
+                  child: Text(
+                    l10n?.addExpense ?? '',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -597,6 +617,7 @@ class _hometab extends State<hometab> {
   }
 
   Widget _buildTienThuFrame() {
+    final l10n = AppLocalizations.of(context);
     final filteredCategoriesIncome = categoriesIncome
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
@@ -658,8 +679,8 @@ class _hometab extends State<hometab> {
         Row(
           children: [
             const SizedBox(width: 16.0),
-            const Text(
-              "Ghi chú",
+            Text(
+              l10n?.note ?? '',
               style: TextStyle(
                   fontSize: 14.0,
                   color: CupertinoColors.black,
@@ -669,7 +690,7 @@ class _hometab extends State<hometab> {
             Expanded(
               child: CupertinoTextField(
                 controller: noteController,
-                placeholder: "Nhập ghi chú",
+                placeholder: l10n?.note ?? '',
                 padding: const EdgeInsets.symmetric(
                     vertical: 12.0, horizontal: 12.0),
                 decoration: BoxDecoration(
@@ -687,8 +708,8 @@ class _hometab extends State<hometab> {
           height: 45,
           child: Row(
             children: [
-              const Text(
-                "Tiền thu",
+               Text(
+                l10n?.income ?? '',
                 style: TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.bold,
@@ -715,10 +736,10 @@ class _hometab extends State<hometab> {
           ),
         ),
         const SizedBox(height: 10.0),
-        const Padding(
+         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            "Danh sách",
+            l10n?.list ?? '',
             style: TextStyle(
                 fontSize: 16.0,
                 color: Color.fromARGB(255, 0, 0, 0),
@@ -767,9 +788,9 @@ class _hometab extends State<hometab> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Center(
+                    child:  Center(
                       child: Text(
-                        "Chỉnh sửa >",
+                        l10n?.edit ?? '',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
@@ -846,8 +867,8 @@ class _hometab extends State<hometab> {
                     ),
                   ),
                   onPressed: createTransaction,
-                  child: const Text(
-                    "Nhập tiền thu",
+                  child: Text(
+                    l10n?.addIncome ?? '',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,

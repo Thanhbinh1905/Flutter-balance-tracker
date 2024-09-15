@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:BalanceTracker/utils/currency_symbol.dart';
 import 'package:BalanceTracker/utils/currency_settings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CurrencySelectorScreen extends StatefulWidget {
   const CurrencySelectorScreen({super.key});
@@ -41,8 +42,9 @@ class _CurrencySelectorScreenState extends State<CurrencySelectorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Chọn đơn vị tiền tệ')),
+      appBar: AppBar(title: Text(l10n?.currency ?? '')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -61,7 +63,7 @@ class _CurrencySelectorScreenState extends State<CurrencySelectorScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Ký hiệu tiền tệ: $_currencySymbol',
+            ' ${l10n?.currencySymbol ?? ''}: $_currencySymbol',
             style: const TextStyle(fontSize: 20),
           ),
         ],

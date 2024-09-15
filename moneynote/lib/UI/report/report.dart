@@ -17,8 +17,8 @@ Map<String, dynamic>? userMetadata;
 
 class report extends StatefulWidget {
   final Map<String, dynamic> metadata;
-
-  const report({super.key, required this.metadata});
+  final VoidCallback onRefresh;
+  const report({super.key, required this.metadata, required this.onRefresh});
 
   @override
   _ReportScreenState createState() => _ReportScreenState();

@@ -1,3 +1,4 @@
+import 'package:BalanceTracker/UI/report/report.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:BalanceTracker/UI/home/homedb.dart';
@@ -17,8 +18,8 @@ const greenbgcolor = Color(0xFF62C42A);
 
 class calendar extends StatefulWidget {
   final Map<String, dynamic> metadata;
-
-  const calendar({super.key, required this.metadata});
+  final VoidCallback onRefresh;
+  const calendar({super.key, required this.metadata, required this.onRefresh});
 
   @override
   _CalendarScreenState createState() => _CalendarScreenState();

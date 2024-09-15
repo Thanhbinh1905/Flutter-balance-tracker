@@ -8,10 +8,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class orther extends StatelessWidget {
   final Map<String, dynamic> metadata;
   final VoidCallback onLogout;
+  final VoidCallback onRefresh;
   const orther({
     super.key,
     required this.metadata,
     required this.onLogout,
+    required this.onRefresh,
   });
 
   @override
@@ -128,26 +130,13 @@ class orther extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(l10n.selectLanguage),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildLanguageListTile(
-                    l10n.english,
-                    'en',
-                    languageProvider,
-                    setState,
-                  ),
-                  _buildLanguageListTile(
-                    l10n.vietnamese,
-                    'vi',
-                    languageProvider,
-                    setState,
-                  ),
-                ],
-              );
-            },
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+                     _buildLanguageOption(context, l10n.vietnamese, 'vi', languageProvider),
+              _buildLanguageOption(context, l10n.english, 'en', languageProvider),
+       
+            ],
           ),
           actions: [
             TextButton(
@@ -158,9 +147,8 @@ class orther extends StatelessWidget {
               child: Text(l10n.apply),
               onPressed: () {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.languageChanged)),
-                );
+                // Áp dụng ngôn ngữ đã chọn
+                languageProvider.applySelectedLocale();
               },
             ),
           ],
@@ -169,27 +157,32 @@ class orther extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageListTile(String title, String languageCode, LanguageProvider languageProvider, StateSetter setState) {
-    final isSelected = languageProvider.currentLocale.languageCode == languageCode;
-    return Container(
-      decoration: BoxDecoration(
-        border: isSelected ? Border.all(color: Colors.blue, width: 2) : null,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: ListTile(
-        title: Text(title),
-        onTap: () {
-         
-        },
+  Widget _buildLanguageOption(BuildContext context, String label, String languageCode, LanguageProvider languageProvider) {
+    return InkWell(
+      onTap: () {
+        languageProvider.selectLocale(Locale(languageCode));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: languageProvider.selectedLocale.languageCode == languageCode
+                ? Theme.of(context).primaryColor
+                : Colors.transparent,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label),
+            if (languageProvider.selectedLocale.languageCode == languageCode)
+              Icon(Icons.check, color: Theme.of(context).primaryColor),
+          ],
+        ),
       ),
     );
   }
 
-  void _changeLanguage(String languageCode) {
-    // TODO: Implement language change logic
-    // This might involve updating a global state or calling a method from a language management service
-    print('Changing language to: $languageCode');
-    // After changing the language, you might need to rebuild the entire app
-    // to reflect the changes. This depends on your localization implementation.
-  }
 }
