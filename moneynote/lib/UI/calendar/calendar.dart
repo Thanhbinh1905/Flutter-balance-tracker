@@ -1,3 +1,4 @@
+import 'package:BalanceTracker/UI/report/report.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:BalanceTracker/UI/home/homedb.dart';
@@ -17,8 +18,8 @@ const greenbgcolor = Color(0xFF62C42A);
 
 class calendar extends StatefulWidget {
   final Map<String, dynamic> metadata;
-
-  const calendar({super.key, required this.metadata});
+  final VoidCallback onRefresh;
+  const calendar({super.key, required this.metadata, required this.onRefresh});
 
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
@@ -79,39 +80,6 @@ class _CalendarScreenState extends State<calendar> {
     }
   }
 
-  Future<void> editTransaction(
-      String transactionId, Map<String, dynamic> updatedData) async {
-    final url = Uri.parse(
-        '${GetConstant().apiEndPoint}/transaction?transaction_id=$transactionId');
-    try {
-      final response = await http.patch(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id'],
-        },
-        body: json.encode(updatedData),
-      );
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Giao dịch đã được cập nhật thành công')),
-        );
-        refreshTransactions();
-      } else {
-        final errorMessage = json.decode(response.body)['message'] ??
-            'Không thể cập nhật giao dịch';
-        throw Exception(errorMessage);
-      }
-    } catch (e) {
-      print('Lỗi khi cập nhật giao dịch: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Không thể cập nhật giao dịch: ${e.toString()}')),
-      );
-    }
-  }
-
   Future<void> deleteTransaction(String transactionId) async {
     final url = Uri.parse(
         '${GetConstant().apiEndPoint}/transaction?transaction_id=$transactionId');
@@ -124,19 +92,19 @@ class _CalendarScreenState extends State<calendar> {
         },
       );
       if (response.statusCode == 200) {
-        // Successfully edited
+        // Successfully deleted
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Transaction deleted successfully')),
         );
         // Refresh the transaction list
         refreshTransactions();
       } else {
-        throw Exception('Failed to edit transaction');
+        throw Exception('Failed to delete transaction');
       }
     } catch (e) {
       print('Error deleting transaction: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to edit transaction')),
+        const SnackBar(content: Text('Failed to delete transaction')),
       );
     }
   }
@@ -156,7 +124,7 @@ class _CalendarScreenState extends State<calendar> {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Column(
         children: [
@@ -583,19 +551,7 @@ class _CalendarScreenState extends State<calendar> {
                             child: const Text('Delete'),
                           ),
                           TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditTransactionScreen(
-                                    transaction: _selectedTransaction!,
-                                    onTransactionUpdated: () {
-                                      refreshTransactions();
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
+                            onPressed: () {},
                             child: const Text('Edit'),
                           ),
                         ],
@@ -608,161 +564,5 @@ class _CalendarScreenState extends State<calendar> {
         ),
       );
     }).toList();
-  }
-}
-
-class EditTransactionScreen extends StatefulWidget {
-  final Map<String, dynamic> transaction;
-  final VoidCallback onTransactionUpdated;
-
-  const EditTransactionScreen({
-    super.key,
-    required this.transaction,
-    required this.onTransactionUpdated,
-  });
-
-  @override
-  _EditTransactionScreenState createState() => _EditTransactionScreenState();
-}
-
-class _EditTransactionScreenState extends State<EditTransactionScreen> {
-  late TextEditingController _amountController;
-  late TextEditingController _noteController;
-  late DateTime _selectedDate;
-  late String _transactionType;
-  late String _selectedCategoryId;
-  List<Map<String, dynamic>> _categories = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _amountController = TextEditingController(
-        text: widget.transaction['transaction_amount'].toString());
-    _noteController = TextEditingController(
-        text: widget.transaction['transaction_description']);
-    _selectedDate =
-        DateFormat('dd/MM/yyyy').parse(widget.transaction['transaction_date']);
-    _transactionType = widget.transaction['transaction_type'];
-    _selectedCategoryId = widget.transaction['category']['_id'];
-    _loadCategories();
-  }
-
-  Future<void> _loadCategories() async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-            '${GetConstant().apiEndPoint}/category?category_type=$_transactionType'),
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id'],
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _categories = List<Map<String, dynamic>>.from(data['metadata']);
-        });
-      } else {
-        throw Exception('Failed to load categories');
-      }
-    } catch (e) {
-      print('Error loading categories: $e');
-    }
-  }
-
-  Future<void> _updateTransaction() async {
-    try {
-      final response = await http.patch(
-        Uri.parse(
-            '${GetConstant().apiEndPoint}/transaction?transaction_id=${widget.transaction['_id']}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': userMetadata?['_id'],
-        },
-        body: json.encode({
-          'transaction_amount': double.parse(_amountController.text),
-          'transaction_description': _noteController.text,
-          'transaction_date': DateFormat('dd/MM/yyyy').format(_selectedDate),
-          'category': _selectedCategoryId,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        widget.onTransactionUpdated();
-        Navigator.pop(context);
-      } else {
-        throw Exception('Failed to update transaction');
-      }
-    } catch (e) {
-      print('Error updating transaction: $e');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-            'Chỉnh sửa ${_transactionType == 'income' ? 'Thu nhập' : 'Chi tiêu'}'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Số tiền'),
-            ),
-            TextField(
-              controller: _noteController,
-              decoration: const InputDecoration(labelText: 'Ghi chú'),
-            ),
-            const SizedBox(height: 16),
-            Text('Ngày: ${DateFormat('dd/MM/yyyy').format(_selectedDate)}'),
-            ElevatedButton(
-              onPressed: () async {
-                final DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: _selectedDate,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2100),
-                );
-                if (picked != null && picked != _selectedDate) {
-                  setState(() {
-                    _selectedDate = picked;
-                  });
-                }
-              },
-              child: const Text('Chọn ngày'),
-            ),
-            const SizedBox(height: 16),
-            const Text('Danh mục:'),
-            Wrap(
-              spacing: 8.0,
-              children: _categories.map((category) {
-                return ChoiceChip(
-                  label: Text(category['category_name']),
-                  selected: _selectedCategoryId == category['_id'],
-                  onSelected: (bool selected) {
-                    setState(() {
-                      _selectedCategoryId =
-                          selected ? category['_id'] : _selectedCategoryId;
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _updateTransaction,
-              child: const Text('Cập nhật'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

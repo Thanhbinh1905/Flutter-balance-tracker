@@ -7,6 +7,7 @@ import 'package:BalanceTracker/UI/home/home.dart';
 import 'package:BalanceTracker/utils/color_convert.dart';
 import 'package:BalanceTracker/utils/icon_convert.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key});
@@ -94,6 +95,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -133,7 +135,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   // inactiveFgColor: Colors.white,
                   initialLabelIndex: KselectedIndex,
                   totalSwitches: 2,
-                  labels: const ['Tiền chi', 'Tiền thu'],
+                  labels:  [l10n?.expense ?? '',l10n?.income ?? ''],
                   customTextStyles: [
                     TextStyle(
                       fontSize: 12.0,
@@ -192,6 +194,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   Widget _suaTienChiFrame() {
+    final l10n = AppLocalizations.of(context);
     final filteredCategoriesOutcome = categoriesOutcome
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
@@ -223,9 +226,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child:  Center(
                     child: Text(
-                      "Thêm danh mục",
+                      l10n?.addcategory ?? '',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
@@ -301,6 +304,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   Widget _suaTienThuFrame() {
+    final l10n = AppLocalizations.of(context);
     final filteredCategoriesIncome = categoriesIncome
         .where((category) =>
             category.categoryName != 'null' && category.categoryIcon != 'null')
@@ -331,9 +335,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child:  Center(
                     child: Text(
-                      "Thêm danh mục",
+                      l10n?.addcategory ?? '',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
@@ -430,9 +434,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   }
 
   Future<void> _addCategory() async {
+    final l10n = AppLocalizations.of(context);
     if (_categoryName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a category name')),
+         SnackBar(content: Text(l10n?.plsaddcategory ?? '')),
       );
       return;
     }
@@ -455,7 +460,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
       if (response.statusCode == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Category created successfully')),
+         SnackBar(content: Text(l10n?.addsuccessful ?? '')),
       );
            Navigator.of(context).pop();
       Navigator.of(context).pop();
@@ -478,9 +483,10 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tạo mới'),
+        title: Text(l10n?.addcategory ?? ''),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -488,13 +494,13 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Tên',
+              Text(
+                l10n?.name ?? '',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Vui lòng nhập vào tên đề mục',
+                decoration: InputDecoration(
+                  hintText: l10n?.plsaddcategory ?? '',
                   border: OutlineInputBorder(),
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -506,7 +512,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              const Text('Biểu tượng',
+              Text(l10n?.icon ?? '',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               SizedBox(
@@ -546,7 +552,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('Màu sắc',
+              Text(l10n?.color ?? '',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               SizedBox(
@@ -660,6 +666,7 @@ class _DeleCateState extends State<DeleCate> {
   }
 
   Future<void> _updateCategory() async {
+    final l10n = AppLocalizations.of(context);
     final categoryId = widget.categoryIncome?.id ?? widget.categoryOutcome?.id;
     final apiEndpoint =
         '${GetConstant().apiEndPoint}/category?category_id=$categoryId';
@@ -679,13 +686,11 @@ class _DeleCateState extends State<DeleCate> {
         },
         body: jsonEncode(payload),
       );
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      print(payload);
+;
       if (response.statusCode == 200) {
         // print(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Category updated successfully')),
+           SnackBar(content: Text(l10n?.updatecategory ?? '')),
         );
         Navigator.pop(context, true);
       } else {
@@ -702,6 +707,7 @@ class _DeleCateState extends State<DeleCate> {
   }
 
   Future<void> _deleteCategory() async {
+    final l10n = AppLocalizations.of(context);
     final categoryId = widget.categoryIncome?.id ?? widget.categoryOutcome?.id;
     final apiEndpoint =
         '${GetConstant().apiEndPoint}/category?category_id=$categoryId';
@@ -725,7 +731,7 @@ class _DeleCateState extends State<DeleCate> {
       if (response.statusCode == 200) {
         // print(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Category updated successfully')),
+          SnackBar(content: Text(l10n?.deletecategory ?? '')),
         );
         Navigator.pop(context, true);
       } else {
@@ -753,19 +759,20 @@ class _DeleCateState extends State<DeleCate> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
+                  final l10n = AppLocalizations.of(context);
                   return AlertDialog(
-                    title: const Text('Xác nhận xóa'),
+                    title:  Text(l10n?.apply??''),
                     content:
-                        const Text('Bạn có chắc chắn muốn xóa danh mục này?'),
+                        Text(l10n?.confirmdeletecategory ?? ''),
                     actions: <Widget>[
                       TextButton(
-                        child: const Text('Hủy'),
+                        child:  Text(l10n?.cancel??''),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                       ),
                       TextButton(
-                        child: const Text('Xóa'),
+                        child:  Text(l10n?.delete??''),
                         onPressed: () {
                           Navigator.of(context).pop();
                           _deleteCategory();
@@ -780,20 +787,22 @@ class _DeleCateState extends State<DeleCate> {
         ],
       ),
       body: ListView(
+
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('Tên',
+      
+          Text(AppLocalizations.of(context)?.name ?? '',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(
-              hintText: 'Nhập tên danh mục',
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)?.plsaddcategory ?? '',
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
-          const Text('Biểu tượng',
+          Text(AppLocalizations.of(context)?.icon ?? '',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           SizedBox(
@@ -828,7 +837,7 @@ class _DeleCateState extends State<DeleCate> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('Màu sắc',
+          Text(AppLocalizations.of(context)?.color ?? '',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           SizedBox(
@@ -871,7 +880,7 @@ class _DeleCateState extends State<DeleCate> {
                 backgroundColor: Colors.orange,
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: const Text('Lưu', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)?.save ?? '', style: TextStyle(color: Colors.white)),
             ),
           ),
         ],

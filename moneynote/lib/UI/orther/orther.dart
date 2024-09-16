@@ -3,30 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:BalanceTracker/UI//account/account.dart';
 import 'package:BalanceTracker/UI//currency/currency_select.dart';
 import 'package:provider/provider.dart';
-
-import 'package:excel/excel.dart' as excel;
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:BalanceTracker/constants/constant.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class orther extends StatelessWidget {
   final Map<String, dynamic> metadata;
   final VoidCallback onLogout;
+  final VoidCallback onRefresh;
   const orther({
     super.key,
     required this.metadata,
     required this.onLogout,
+    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     final srcHeight = MediaQuery.of(context).size.height;
     final srcWidth = MediaQuery.of(context).size.width;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(children: [
       Container(
           height: srcHeight / 12,
@@ -42,7 +36,7 @@ class orther extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              l10n.other,
+              l10n?.other ?? '',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 16.0,
@@ -57,8 +51,10 @@ class orther extends StatelessWidget {
         color: Colors.white.withOpacity(0.7),
         child: Column(
           children: [
-            _buildMenuItem(context, l10n.reportByCategory, Icons.menu, () {}),
-            _buildMenuItem(context, l10n.account, Icons.account_circle, () {
+            _buildMenuItem(
+                context, l10n?.reportByCategory ?? '', Icons.menu, () {}),
+            _buildMenuItem(context, l10n?.account ?? '', Icons.account_circle,
+                () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -66,22 +62,17 @@ class orther extends StatelessWidget {
                         AccountPage(metadata: metadata, onLogout: onLogout)),
               );
             }),
-            _buildMenuItem(context, l10n.language, Icons.language, () {
+            _buildMenuItem(context, l10n?.language ?? '', Icons.language, () {
               _showLanguageDialog(context,
                   Provider.of<LanguageProvider>(context, listen: false));
             }),
-            _buildMenuItem(
-                context, l10n.currencyUnit, Icons.currency_exchange_rounded,
-                () {
+            _buildMenuItem(context, l10n?.currencyUnit ?? '',
+                Icons.currency_exchange_rounded, () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const CurrencySelectorScreen()),
               );
-            }),
-            _buildMenuItem(context, l10n.exportToExcel, Icons.file_download,
-                () {
-              exportToExcel(context);
             }),
           ],
         ),
@@ -143,26 +134,14 @@ class orther extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(l10n.selectLanguage),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildLanguageListTile(
-                    l10n.english,
-                    'en',
-                    languageProvider,
-                    setState,
-                  ),
-                  _buildLanguageListTile(
-                    l10n.vietnamese,
-                    'vi',
-                    languageProvider,
-                    setState,
-                  ),
-                ],
-              );
-            },
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLanguageOption(
+                  context, l10n.vietnamese ?? '', 'vi', languageProvider),
+              _buildLanguageOption(
+                  context, l10n.english ?? '', 'en', languageProvider),
+            ],
           ),
           actions: [
             TextButton(
@@ -173,9 +152,8 @@ class orther extends StatelessWidget {
               child: Text(l10n.apply),
               onPressed: () {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.languageChanged)),
-                );
+                // Áp dụng ngôn ngữ đã chọn
+                languageProvider.applySelectedLocale();
               },
             ),
           ],
@@ -184,89 +162,32 @@ class orther extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageListTile(String title, String languageCode,
-      LanguageProvider languageProvider, StateSetter setState) {
-    final isSelected =
-        languageProvider.currentLocale.languageCode == languageCode;
-    return Container(
-      decoration: BoxDecoration(
-        border: isSelected ? Border.all(color: Colors.blue, width: 2) : null,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: ListTile(
-        title: Text(title),
-        onTap: () {},
+  Widget _buildLanguageOption(BuildContext context, String label,
+      String languageCode, LanguageProvider languageProvider) {
+    return InkWell(
+      onTap: () {
+        languageProvider.selectLocale(Locale(languageCode));
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: languageProvider.selectedLocale.languageCode == languageCode
+                ? Theme.of(context).primaryColor
+                : Colors.transparent,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label),
+            if (languageProvider.selectedLocale.languageCode == languageCode)
+              Icon(Icons.check, color: Theme.of(context).primaryColor),
+          ],
+        ),
       ),
     );
-  }
-
-  void _changeLanguage(String languageCode) {
-    // TODO: Implement language change logic
-    // This might involve updating a global state or calling a method from a language management service
-    print('Changing language to: $languageCode');
-    // After changing the language, you might need to rebuild the entire app
-    // to reflect the changes. This depends on your localization implementation.
-  }
-
-  Future<List<Map<String, dynamic>>> getTransactions() async {
-    final url = Uri.parse('${GetConstant().apiEndPoint}/transaction');
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'CLIENT_ID': metadata['_id'],
-        },
-      );
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body)['metadata'];
-        return data.cast<Map<String, dynamic>>();
-      } else {
-        throw Exception('Failed to load transactions');
-      }
-    } catch (e) {
-      print('Error: $e');
-      throw Exception('Error occurred while fetching transactions');
-    }
-  }
-
-  Future<void> exportToExcel(BuildContext context) async {
-    try {
-      final transactions = await getTransactions();
-
-      var excelFile = excel.Excel.createExcel();
-      excel.Sheet sheetObject = excelFile['Transactions'];
-
-      // Add headers
-      sheetObject
-          .appendRow(['Date', 'Category', 'Amount', 'Type', 'Description']);
-
-      // Add data
-      for (var transaction in transactions) {
-        sheetObject.appendRow([
-          transaction['transaction_date'],
-          transaction['category']['category_name'],
-          transaction['transaction_amount'].toString(),
-          transaction['transaction_type'],
-          transaction['transaction_description'],
-        ]);
-      }
-
-      // Save file
-      var fileBytes = excelFile.save();
-      var directory = await getApplicationDocumentsDirectory();
-      File(('${directory.path}/transactions.xlsx'))
-        ..createSync(recursive: true)
-        ..writeAsBytesSync(fileBytes!);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Excel file exported successfully')),
-      );
-    } catch (e) {
-      print('Error exporting to Excel: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to export Excel file')),
-      );
-    }
   }
 }
