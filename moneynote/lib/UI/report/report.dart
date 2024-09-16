@@ -72,7 +72,7 @@ class _ReportScreenState extends State<report> {
             selectedDate.month.toString(), selectedDate.year.toString())
         .then((data) {
       setState(() {
-        print("hehehehe $data");
+        // print("hehehehe $data");
         dataTransaction = data;
       });
     }).catchError((error) {
@@ -488,7 +488,7 @@ class _ReportScreenState extends State<report> {
                           padding: const EdgeInsets.all(8),
                           child: Row(
                             children: [
-                               Flexible(
+                              Flexible(
                                 // flex:
                                 //     1, // Cung cấp nhiều không gian hơn cho phần "Chi tiêu"
                                 child: Text(
@@ -496,7 +496,7 @@ class _ReportScreenState extends State<report> {
                                   overflow: TextOverflow
                                       .ellipsis, // Cắt bớt nếu quá dài
                                   maxLines: 1,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 10,
                                       color: Colors
                                           .grey), //ảm bảo văn bản chỉ hiển thị trên một dòng
@@ -571,12 +571,12 @@ class _ReportScreenState extends State<report> {
                           padding: const EdgeInsets.all(8),
                           child: Row(
                             children: [
-                               Flexible(
+                              Flexible(
                                 child: Text(
                                   l10n?.income ?? '',
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 10, color: Colors.grey),
                                 ),
                               ),
@@ -649,10 +649,11 @@ class _ReportScreenState extends State<report> {
                         borderRadius: BorderRadius.circular(8)),
                     child: Row(
                       children: [
-                         Expanded(
+                        Expanded(
                           child: Text(
                             l10n?.total ?? '',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
                           ),
                         ),
                         Expanded(
@@ -881,7 +882,7 @@ class _ReportScreenState extends State<report> {
                           padding: const EdgeInsets.all(8),
                           child: Row(
                             children: [
-                               Flexible(
+                              Flexible(
                                 // flex:
                                 //     1, // Cung cấp nhiều không gian hơn cho phần "Chi tiêu"
                                 child: Text(
@@ -889,7 +890,7 @@ class _ReportScreenState extends State<report> {
                                   overflow: TextOverflow
                                       .ellipsis, // Cắt bớt nếu quá dài
                                   maxLines: 1,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 10,
                                       color: Colors
                                           .grey), //ảm bảo văn bản chỉ hiển thị trên một dòng
@@ -1216,7 +1217,7 @@ class _ReportScreenState extends State<report> {
                 // inactiveFgColor: Colors.white,
                 initialLabelIndex: kSelectedIndex,
                 totalSwitches: 2,
-                labels:  [l10n?.month ?? '', l10n?.year ?? ''],
+                labels: [l10n?.month ?? '', l10n?.year ?? ''],
                 customTextStyles: [
                   TextStyle(
                     fontSize: 12.0,
