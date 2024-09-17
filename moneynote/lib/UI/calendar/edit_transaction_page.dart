@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:BalanceTracker/constants/constant.dart';
 import 'package:BalanceTracker/utils/currency_settings.dart';
+import 'package:BalanceTracker/utils/icon_convert.dart';
+import 'package:BalanceTracker/utils/color_convert.dart';
 import 'package:intl/intl.dart';
 
 class EditTransactionPage extends StatefulWidget {
@@ -147,25 +149,85 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
               controller: _descriptionController,
               decoration: const InputDecoration(labelText: 'Mô tả'),
             ),
-            DropdownButton<String>(
-              value: _selectedCategoryId,
-              items: _categories.map((category) {
-                return DropdownMenuItem<String>(
-                  value: category['_id'],
-                  child: Text(category['category_name']),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedCategoryId = newValue;
-                });
-              },
-              hint: const Text('Chọn danh mục'),
+            // Thêm vùng chọn ngày ở đây
+            InkWell(
+              onTap: () => _selectDate(context),
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: 'Ngày giao dịch',
+                  border: OutlineInputBorder(),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(DateFormat('dd/MM/yyyy').format(_selectedDate)),
+                    const Icon(Icons.calendar_today),
+                  ],
+                ),
+              ),
             ),
-            TextButton(
-              onPressed: () => _selectDate(context),
-              child: Text(
-                  'Chọn ngày: ${DateFormat('dd/MM/yyyy').format(_selectedDate)}'),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200, // Điều chỉnh chiều cao phù hợp
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const AlwaysScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 1.6,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedCategoryId = category['_id'];
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: _selectedCategoryId == category['_id']
+                            ? Colors.green[50]
+                            : Colors.white,
+                        border: Border.all(
+                          color: _selectedCategoryId == category['_id']
+                              ? Colors.green
+                              : Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            IconConverter.getIconDataFromString(
+                                    category['category_icon']) ??
+                                Icons.error,
+                            color: ColorConverter.getColorFromString(
+                                category['category_color']),
+                            size: 24,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            category['category_name'],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _selectedCategoryId == category['_id']
+                                  ? Colors.green
+                                  : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
