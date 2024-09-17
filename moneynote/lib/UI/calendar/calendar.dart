@@ -43,6 +43,7 @@ class _CalendarScreenState extends State<calendar> {
     userMetadata = widget.metadata;
     currentMonth = DateFormat('MM').format(_focusedDay);
     currentYear = DateFormat('yyyy').format(_focusedDay);
+    
 
     // Fetch transaction data and update UI
     getTransaction(currentMonth, currentYear).then((data) {

@@ -39,6 +39,7 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
       // Update other relevant fields
     });
   }
+  
 
   void _handleLogout() {
     Navigator.of(context).pushAndRemoveUntil(
@@ -46,21 +47,23 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
       (Route<dynamic> route) => false,
     );
   }
+  
+
     void refreshData() {
     setState(() {
-      // Recreate the tabs to force a refresh
-      _tabs = [
-        hometab(metadata: widget.metadata, onRefresh: refreshData),
-        calendar(metadata: widget.metadata, onRefresh: refreshData),
-        report(metadata: widget.metadata, onRefresh: refreshData),
-        orther(
-          metadata: widget.metadata,
-          onLogout: _handleLogout,
-          onRefresh: refreshData,
-        ),
-      ];
+      // Thay vì tạo lại toàn bộ _tabs, chỉ cập nhật các tab cần thiết
+      _tabs[0] = hometab(metadata: widget.metadata, onRefresh: refreshData);
+      _tabs[1] = calendar(metadata: widget.metadata, onRefresh: refreshData);
+      _tabs[2] = report(metadata: widget.metadata, onRefresh: refreshData);
+      _tabs[3] = orther(
+        metadata: widget.metadata,
+        onLogout: _handleLogout,
+        onRefresh: refreshData,
+   
+      );
     });
   }
+
 
   @override
   void initState() {
@@ -103,7 +106,8 @@ class _BalanceTrackerHome extends State<BalanceTrackerHome> {
                   return _tabs[index];
                 },
               ));
-            }));
+            }
+            ));
   }
 }
 
@@ -129,6 +133,12 @@ class _hometab extends State<hometab> {
     getCategoryOutcome();
   }
 
+ void refresh() {
+    setState(() {
+      getCategoryIncome();
+      getCategoryOutcome();
+    });
+  }
   TextEditingController noteController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   DateTime selectedDate = DateTime.now();
@@ -260,6 +270,7 @@ class _hometab extends State<hometab> {
           noteController.clear();
           selectedIndex2 = -1; // Reset danh mục đã chọn
         });
+        widget.onRefresh();
       } else {
         // Xử lý lỗi
         ScaffoldMessenger.of(context).showSnackBar(
@@ -511,8 +522,7 @@ class _hometab extends State<hometab> {
                           builder: (context) => const ChinhSuaTienChi(),
                         )).then((_) {
                       // Refresh data after adding a new category
-                      getCategoryIncome();
-                      getCategoryOutcome();
+                     widget.onRefresh();
                     });
                   },
                   child: Container(
