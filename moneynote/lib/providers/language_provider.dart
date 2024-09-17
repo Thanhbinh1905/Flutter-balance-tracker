@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageProvider extends ChangeNotifier {
   Locale _currentLocale = const Locale('vi');
-  Locale _selectedLocale = const Locale('vi');
+  Locale _selectedLocale = const Locale('en');
 
   Locale get currentLocale => _currentLocale;
   Locale get selectedLocale => _selectedLocale;
