@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:BalanceTracker/UI/home/homedb.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:BalanceTracker/UI/calendar/edit_transaction_page.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -109,6 +110,39 @@ class _CalendarScreenState extends State<calendar> {
     }
   }
 
+  Future<void> editTransaction(String transactionId) async {
+    final url = Uri.parse(
+        '${GetConstant().apiEndPoint}/transaction?transaction_id=$transactionId');
+    try {
+      final response = await http.patch(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'CLIENT_ID': userMetadata?['_id'],
+        },
+        body: jsonEncode({
+          "transaction_amount": 1000,
+          "transaction_description": "hihiii",
+          "category": "66cb81fadcee3a1d4e15a5a7"
+        }),
+      );
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaction edited successfully')),
+        );
+        // Refresh the transaction list
+        refreshTransactions();
+      } else {
+        throw Exception('Failed to edit transaction');
+      }
+    } catch (e) {
+      // print('Error deleting transaction: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to edit transaction')),
+      );
+    }
+  }
+
   void refreshTransactions() {
     getTransaction(currentMonth, currentYear).then((data) {
       setState(() {
@@ -153,10 +187,10 @@ class _CalendarScreenState extends State<calendar> {
                   ),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
-                child:  Text(
+                child: Text(
                   l10n?.calendar ?? '',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16.0,
                     color: Color(0xFF62C42A),
                     decoration: TextDecoration.none,
@@ -184,15 +218,6 @@ class _CalendarScreenState extends State<calendar> {
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);
               },
-              // onDaySelected: (selectedDay, focusedDay) {
-              //   setState(() {
-              //     _selectedDay = selectedDay;
-              //     _focusedDay = focusedDay;
-
-              //     // String formattedDate =
-              //     //     DateFormat('yyyy-MM-dd').format(_selectedDay);
-              //   });
-              // },
               onPageChanged: (focusedDay) async {
                 setState(() {
                   _focusedDay = focusedDay;
@@ -551,7 +576,18 @@ class _CalendarScreenState extends State<calendar> {
                             child: const Text('Delete'),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditTransactionPage(
+                                    transaction: transaction,
+                                    clientId: userMetadata?['_id'] ?? '',
+                                    refreshTransactions: refreshTransactions,
+                                  ),
+                                ),
+                              );
+                            },
                             child: const Text('Edit'),
                           ),
                         ],
