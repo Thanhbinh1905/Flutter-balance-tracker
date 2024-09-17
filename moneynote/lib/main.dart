@@ -7,7 +7,7 @@ import 'package:BalanceTracker/constants/constant.dart';
 import 'package:BalanceTracker/UI/signin/signup.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'package:BalanceTracker/UI/otphandle/otpscreen.dart';
 
 void main() {
   runApp(
@@ -19,7 +19,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +89,75 @@ class _LoginFormState extends State<LoginForm> {
         _showErrorDialog('Error: ${e.toString()}');
       }
     }
+  }
+
+  Future<void> _forgotPassword() async {
+    final emailController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Quên mật khẩu'),
+          content: TextField(
+            controller: emailController,
+            decoration: const InputDecoration(hintText: "Nhập email của bạn"),
+            keyboardType: TextInputType.emailAddress,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Hủy'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Gửi'),
+              onPressed: () async {
+                if (emailController.text.isNotEmpty) {
+                  try {
+                    final response = await http.post(
+                      Uri.parse('${GetConstant().apiEndPoint}/forget-password'),
+                      headers: {'Content-Type': 'application/json'},
+                      body: jsonEncode({'email': emailController.text}),
+                    );
+
+                    if (response.statusCode == 200) {
+                      Navigator.of(context).pop(); // Đóng dialog
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Thành công'),
+                            content: Text(
+                                'Đã gửi thành công đến email ${emailController.text}'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      _showErrorDialog(
+                          'Gửi yêu cầu thất bại: ${response.statusCode}');
+                    }
+                  } catch (e) {
+                    _showErrorDialog('Lỗi: ${e.toString()}');
+                  }
+                } else {
+                  _showErrorDialog('Vui lòng nhập email');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showErrorDialog(String message) {
@@ -167,9 +236,15 @@ class _LoginFormState extends State<LoginForm> {
               ),
               const SizedBox(height: 16),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Bạn chưa có tài khoản? '),
+                  TextButton(
+                    onPressed: _forgotPassword,
+                    child: const Text(
+                      'Quên mật khẩu?',
+                      style: TextStyle(color: Colors.green),
+                    ),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -177,7 +252,6 @@ class _LoginFormState extends State<LoginForm> {
                         MaterialPageRoute(
                             builder: (context) => const SignUpScreen()),
                       );
-                      // TODO: Implement registration logic
                     },
                     child: const Text(
                       'Đăng ký',
